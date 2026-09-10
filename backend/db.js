@@ -2,14 +2,17 @@ const Database = require('better-sqlite3');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 
-const DB_PATH = path.join(__dirname, 'data', 'cghi.db');
+const fs = require('fs');
+const DB_DIR = path.join(__dirname, 'data');
+if (!fs.existsSync(DB_DIR)) {
+  fs.mkdirSync(DB_DIR, { recursive: true });
+}
+const DB_PATH = path.join(DB_DIR, 'cghi.db');
 const db = new Database(DB_PATH);
 
-// Enable WAL mode for performance
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 
-// ── SCHEMA ──────────────────────────────────────────────────────────────
 db.exec(`
   CREATE TABLE IF NOT EXISTS admins (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -72,25 +75,48 @@ db.exec(`
     apply_email TEXT,
     apply_subject TEXT,
     closing_date TEXT,
+    document_url TEXT,
+    published INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS resources (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    description TEXT,
+    document_url TEXT,
+    date TEXT,
     published INTEGER DEFAULT 1,
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
   );
 `);
 
-// ── SEED (only if tables are empty) ─────────────────────────────────────
+// Idempotent migration: databases created before document_url existed on
+// jobs need the column added; fresh databases already get it from the
+// CREATE TABLE above.
+try {
+  const jobCols = db.prepare('PRAGMA table_info(jobs)').all();
+  if (!jobCols.some(c => c.name === 'document_url')) {
+    db.exec('ALTER TABLE jobs ADD COLUMN document_url TEXT');
+    console.log('[DB] Migration: added jobs.document_url column.');
+  }
+} catch (err) {
+  console.error('[DB] jobs.document_url migration failed:', err.message);
+}
+
 function seedIfEmpty() {
-    // Admin
     const adminCount = db.prepare('SELECT COUNT(*) as c FROM admins').get().c;
     if (adminCount === 0) {
-        const hash = bcrypt.hashSync('Admin@CGHI2025!', 10);
+        const seedPassword = process.env.SEED_ADMIN_PASSWORD || 'Admin@CGHI2025!';
+        const hash = bcrypt.hashSync(seedPassword, 10);
         db.prepare("INSERT INTO admins (email, password_hash, name) VALUES (?, ?, ?)").run(
             'admin@pandemicintelcenter.org', hash, 'CGP Administrator'
         );
-        console.log('[DB] Admin user seeded: admin@pandemicintelcenter.org / Admin@CGHI2025!');
+        console.log('[DB] Admin user seeded: admin@pandemicintelcenter.org');
     }
 
-    // Heroes
     const heroCount = db.prepare('SELECT COUNT(*) as c FROM heroes').get().c;
     if (heroCount === 0) {
         const insertHero = db.prepare(`
@@ -137,7 +163,7 @@ function seedIfEmpty() {
             {
                 title: 'Rapid, Evidence-Based Response at Scale',
                 topic: 'Emergency Preparedness & Response',
-                description: 'From IHR/JEE technical facilitation to Marburg and Mpox response planning CGP equips frontline responders with decision tools, simulation exercises, and 7-1-7 readiness frameworks.',
+                description: 'From IHR/JEE technical facilitation to Marburg and Mpox response planning CGP equips frontline responders with decision tools, simulation exercises, and 7-1-1 readiness frameworks.',
                 btn1_text: 'View Projects', btn1_link: '/projects',
                 btn2_text: 'Partner With Us', btn2_link: '/contact',
                 image_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/10/WhatsApp-Image-2025-10-22-at-12.17.43-1024x683.jpeg',
@@ -148,7 +174,6 @@ function seedIfEmpty() {
         console.log('[DB] 5 heroes seeded.');
     }
 
-    // News
     const newsCount = db.prepare('SELECT COUNT(*) as c FROM news').get().c;
     if (newsCount === 0) {
         db.prepare(`
@@ -166,7 +191,6 @@ function seedIfEmpty() {
         console.log('[DB] 1 news article seeded.');
     }
 
-    // Partners
     const partnerCount = db.prepare('SELECT COUNT(*) as c FROM partners').get().c;
     if (partnerCount === 0) {
         const insertPartner = db.prepare('INSERT INTO partners (name, logo_url, website, sort_order, published) VALUES (?, ?, ?, ?, 1)');
@@ -188,7 +212,6 @@ function seedIfEmpty() {
         console.log('[DB] 12 partners seeded.');
     }
 
-    // Jobs
     const jobCount = db.prepare('SELECT COUNT(*) as c FROM jobs').get().c;
     if (jobCount === 0) {
         const insertJob = db.prepare(`
@@ -242,6 +265,27 @@ function seedIfEmpty() {
             'Application – Research Associate',
         );
         console.log('[DB] 2 jobs seeded.');
+    }
+
+    const resourceCount = db.prepare('SELECT COUNT(*) as c FROM resources').get().c;
+    if (resourceCount === 0) {
+        const insertResource = db.prepare(`
+      INSERT INTO resources (title, description, document_url, date, published)
+      VALUES (?, ?, ?, ?, 1)
+    `);
+        insertResource.run(
+            'Kenya Decision-Making Tool for Public Health Emergencies (DMT-PHE)',
+            'A framework that guides rapid, evidence-based action during outbreaks, validated in October 2025 under KNPHI leadership with technical facilitation by CGP.',
+            'https://pandemicintelcenter.org/wp-content/uploads/2025/10/WhatsApp-Image-2025-10-22-at-12.17.44-1-1024x683.jpeg',
+            'October 2025'
+        );
+        insertResource.run(
+            'Technical Areas of Work at CGP',
+            'An overview of the technical capability areas CGP operates in, from epidemic intelligence to digital health and One Health surveillance.',
+            '',
+            'September 2025'
+        );
+        console.log('[DB] 2 resources seeded.');
     }
 }
 

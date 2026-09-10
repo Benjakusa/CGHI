@@ -1,0 +1,110 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
+export default function Navbar({ activePage }) {
+    const { isAuthenticated, admin, logout } = useAuth();
+    const navigate = useNavigate();
+    const [profileOpen, setProfileOpen] = useState(false);
+    const [navOpen, setNavOpen] = useState(false);
+    const dropRef = useRef(null);
+
+    // Close dropdown on outside click
+    useEffect(() => {
+        function handle(e) {
+            if (dropRef.current && !dropRef.current.contains(e.target)) setProfileOpen(false);
+        }
+        document.addEventListener('mousedown', handle);
+        return () => document.removeEventListener('mousedown', handle);
+    }, []);
+
+    // Toggle body.nav-open so the mobile CSS engages
+    useEffect(() => {
+        if (navOpen) document.body.classList.add('nav-open');
+        else document.body.classList.remove('nav-open');
+        return () => document.body.classList.remove('nav-open');
+    }, [navOpen]);
+
+    function handleLogout() {
+        logout();
+        setProfileOpen(false);
+        setNavOpen(false);
+        navigate('/');
+    }
+
+    function closeNav() {
+        setNavOpen(false);
+    }
+
+    return (
+        <header className="site-header">
+            <div className="wrap">
+                <a className="brand" href="/" aria-label="CGP Home" onClick={closeNav}>
+                    <img className="brand-logo" src="/Assets/logo.png" alt="Center for Global Health & Pandemic Intelligence" />
+                </a>
+                <button
+                    type="button"
+                    className="nav-toggle"
+                    aria-label="Toggle menu"
+                    aria-expanded={navOpen}
+                    onClick={() => setNavOpen(o => !o)}
+                >
+                    <span></span><span></span><span></span>
+                </button>
+                <nav className="primary-nav" aria-label="Primary">
+                    <a href="/" className={activePage === 'home' ? 'active' : ''} onClick={closeNav}>Home</a>
+                    <div className="dropdown">
+                        <button className="dropbtn">Who We Are <span aria-hidden="true"><i className="bi bi-chevron-down"></i></span></button>
+                        <div className="dropdown-content">
+                            <a href="/about" onClick={closeNav}>About Us</a>
+                            <a href="/careers" onClick={closeNav}>Careers</a>
+                            <a href="/contact" onClick={closeNav}>Contact</a>
+                            <a href="/privacy" onClick={closeNav}>Privacy Policy</a>
+                        </div>
+                    </div>
+                    <div className="dropdown">
+                        <button className="dropbtn">What We Do <span aria-hidden="true"><i className="bi bi-chevron-down"></i></span></button>
+                        <div className="dropdown-content">
+                            <a href="/what-we-do" onClick={closeNav}>Overview</a>
+                            <a href="/projects" onClick={closeNav}>Projects &amp; Impact</a>
+                            <a href="/initiatives" onClick={closeNav}>CGP Initiatives</a>
+                            <a href="/resources" onClick={closeNav}>Resources</a>
+                        </div>
+                    </div>
+                    <a href="/news" className={activePage === 'news' ? 'active' : ''} onClick={closeNav}>News &amp; Insights</a>
+
+                    <div className="nav-profile-wrap" ref={dropRef} style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+                        <button
+                            className="nav-search-btn"
+                            type="button"
+                            aria-label={isAuthenticated ? 'Admin menu' : 'Staff login'}
+                            onClick={() => isAuthenticated ? setProfileOpen(o => !o) : navigate('/admin/login')}
+                            style={{ gap: '6px' }}
+                        >
+                            <i className={`bi ${isAuthenticated ? 'bi-person-fill-check' : 'bi-person-circle'}`}></i>
+                            {isAuthenticated ? (admin?.name?.split(' ')[0] || 'Admin') : 'Staff'}
+                        </button>
+                        {isAuthenticated && profileOpen && (
+                            <div style={{
+                                position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+                                background: '#fff', border: '1px solid var(--border)',
+                                borderRadius: '6px', minWidth: '180px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                                zIndex: 9999, overflow: 'hidden'
+                            }}>
+                                <a href="/admin" onClick={closeNav} style={{ display: 'block', padding: '12px 16px', borderBottom: '1px solid var(--border)', color: 'var(--ink)', textDecoration: 'none', fontSize: '0.92rem' }}>
+                                    <i className="bi bi-speedometer2" style={{ marginRight: '8px' }}></i>Dashboard
+                                </a>
+                                <button onClick={handleLogout} style={{
+                                    display: 'block', width: '100%', padding: '12px 16px', textAlign: 'left',
+                                    background: 'none', border: 'none', cursor: 'pointer', color: '#c0392b', fontSize: '0.92rem'
+                                }}>
+                                    <i className="bi bi-box-arrow-right" style={{ marginRight: '8px' }}></i>Sign Out
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </nav>
+            </div>
+        </header>
+    );
+}

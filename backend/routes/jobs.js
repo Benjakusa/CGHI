@@ -27,29 +27,29 @@ router.get('/admin', auth, (req, res) => {
 
 // Admin: create
 router.post('/admin', auth, (req, res) => {
-    const { title, department, location, employment_type, description, qualifications, preferred_experience, apply_email, apply_subject, closing_date, published } = req.body;
+    const { title, department, location, employment_type, description, qualifications, preferred_experience, apply_email, apply_subject, closing_date, document_url, published } = req.body;
     if (!title) return res.status(400).json({ error: 'Title is required.' });
     const result = db.prepare(`
-    INSERT INTO jobs (title,department,location,employment_type,description,qualifications,preferred_experience,apply_email,apply_subject,closing_date,published,updated_at)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+    INSERT INTO jobs (title,department,location,employment_type,description,qualifications,preferred_experience,apply_email,apply_subject,closing_date,document_url,published,updated_at)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
   `).run(
         title, department || '', location || '', employment_type || '', description || '',
         JSON.stringify(qualifications || []), JSON.stringify(preferred_experience || []),
-        apply_email || '', apply_subject || '', closing_date || '', published ? 1 : 0, now()
+        apply_email || '', apply_subject || '', closing_date || '', document_url || '', published ? 1 : 0, now()
     );
     res.json({ id: result.lastInsertRowid });
 });
 
 // Admin: update
 router.put('/admin/:id', auth, (req, res) => {
-    const { title, department, location, employment_type, description, qualifications, preferred_experience, apply_email, apply_subject, closing_date, published } = req.body;
+    const { title, department, location, employment_type, description, qualifications, preferred_experience, apply_email, apply_subject, closing_date, document_url, published } = req.body;
     const result = db.prepare(`
-    UPDATE jobs SET title=?,department=?,location=?,employment_type=?,description=?,qualifications=?,preferred_experience=?,apply_email=?,apply_subject=?,closing_date=?,published=?,updated_at=?
+    UPDATE jobs SET title=?,department=?,location=?,employment_type=?,description=?,qualifications=?,preferred_experience=?,apply_email=?,apply_subject=?,closing_date=?,document_url=?,published=?,updated_at=?
     WHERE id=?
   `).run(
         title, department || '', location || '', employment_type || '', description || '',
         JSON.stringify(qualifications || []), JSON.stringify(preferred_experience || []),
-        apply_email || '', apply_subject || '', closing_date || '', published ? 1 : 0, now(), req.params.id
+        apply_email || '', apply_subject || '', closing_date || '', document_url || '', published ? 1 : 0, now(), req.params.id
     );
     if (result.changes === 0) return res.status(404).json({ error: 'Not found.' });
     res.json({ ok: true });
