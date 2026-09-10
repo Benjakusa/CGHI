@@ -2032,13 +2032,13 @@ figcaption {
 /* Ensure ALL buttons map strictly to brand blue or white outline */
 .btn:not(.btn-outline):not(.btn-white) {
   background: var(--brand) !important;
-  border-color: var(--brand) !important;
+  border-color: var(--white) !important;
   color: var(--white) !important;
 }
 
 .btn:not(.btn-outline):not(.btn-white):hover {
   background: var(--brand-dark) !important;
-  border-color: var(--brand-dark) !important;
+  border-color: var(--white) !important;
   color: var(--white) !important;
 }
 
