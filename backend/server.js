@@ -5,6 +5,16 @@ const cors = require('cors');
 const multer = require('multer');
 const fs = require('fs');
 
+// Startup sanity check — makes a missing .env obvious in the logs
+// instead of turning into silent 401s on every authenticated request.
+if (!process.env.JWT_SECRET) {
+    console.error(
+        '[CGHI API] WARNING: JWT_SECRET is not set. ' +
+        `Looked for .env at ${path.join(__dirname, '.env')}. ` +
+        'Authenticated endpoints will refuse requests until this is fixed.'
+    );
+}
+
 const app = express();
 const PORT = process.env.PORT || 4000;
 
@@ -15,10 +25,35 @@ if (!fs.existsSync(uploadsDir)) {
     console.log(`[CGHI API] Created uploads directory: ${uploadsDir}`);
 }
 
-app.use(cors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:8080'],
+// ── CORS ────────────────────────────────────────────────────────────────
+// Allow the common Vite / React dev origins, plus LAN access so you can
+// test from a phone on the same network. Requests with no Origin header
+// (curl, Postman, server-to-server) are always allowed.
+const ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:8080',
+    'http://127.0.0.1:8080'
+];
+
+const corsOptions = {
+    origin(origin, callback) {
+        // No origin (curl / same-origin / server-to-server) → allow
+        if (!origin) return callback(null, true);
+        if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+        // Allow LAN IPs on the usual dev ports, e.g. http://192.168.1.20:5173
+        if (/^http:\/\/(\d{1,3}\.){3}\d{1,3}:(5173|3000|8080)$/.test(origin)) {
+            return callback(null, true);
+        }
+        console.warn(`[CGHI API] CORS blocked origin: ${origin}`);
+        return callback(new Error(`Origin ${origin} not allowed by CORS`));
+    },
     credentials: true
-}));
+};
+
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 
 // Serve uploaded images from public/uploads
@@ -52,6 +87,11 @@ const upload = multer({
 // Auth middleware (required for upload endpoint)
 const authMiddleware = require('./middleware/auth');
 
+// Hoist the db handle — routes already require it, so this is a no-op
+// after the first load, but it makes the stats handler synchronous and
+// avoids any "require inside request handler" surprises.
+const db = require('./db');
+
 // ── UPLOAD ENDPOINT ─────────────────────────────────────────────────────
 app.post('/api/upload', authMiddleware, upload.single('image'), (req, res) => {
     if (!req.file) {
@@ -79,23 +119,29 @@ app.use('/api/jobs', require('./routes/jobs'));
 
 // Admin stats (overview)
 app.get('/api/admin/stats', authMiddleware, (req, res) => {
-    const db = require('./db');
     const stat = (table) => {
         try {
             const total = db.prepare(`SELECT COUNT(*) as c FROM ${table}`).get().c;
             const published = db.prepare(`SELECT COUNT(*) as c FROM ${table} WHERE published=1`).get().c;
             return { total, published, unpublished: total - published };
         } catch (err) {
-            console.error(`Error getting stats for ${table}:`, err.message);
+            console.error(`[CGHI API] Error getting stats for ${table}:`, err.message);
             return { total: 0, published: 0, unpublished: 0 };
         }
     };
-    res.json({
-        heroes: stat('heroes'),
-        news: stat('news'),
-        partners: stat('partners'),
-        jobs: stat('jobs')
-    });
+
+    try {
+        const payload = {
+            heroes: stat('heroes'),
+            news: stat('news'),
+            partners: stat('partners'),
+            jobs: stat('jobs')
+        };
+        res.json(payload);
+    } catch (err) {
+        console.error('[CGHI API] /api/admin/stats failed:', err);
+        res.status(500).json({ error: 'Failed to compute dashboard statistics.' });
+    }
 });
 
 // ── ERROR HANDLING ──────────────────────────────────────────────────────
@@ -107,6 +153,10 @@ app.use((err, req, res, next) => {
         }
         return res.status(400).json({ error: err.message });
     }
+    // Multer fileFilter rejections
+    if (err && /Only images/.test(err.message)) {
+        return res.status(400).json({ error: err.message });
+    }
     res.status(500).json({ error: err.message || 'Internal server error' });
 });
 
@@ -114,4 +164,5 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
     console.log(`[CGHI API] Running on http://localhost:${PORT}`);
     console.log(`[CGHI API] Uploads served from ${uploadsDir}`);
+    console.log(`[CGHI API] CORS allowed origins: ${ALLOWED_ORIGINS.join(', ')} + LAN IPs on :5173/:3000/:8080`);
 });

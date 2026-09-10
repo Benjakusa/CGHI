@@ -46,46 +46,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  /* ── SEARCH OVERLAY ─────────────────────────────────────── */
-  var openBtns = document.querySelectorAll('[data-search-open]');
-  var overlay = document.getElementById('search-overlay');
-  var input = document.getElementById('search-input');
-  var results = document.getElementById('search-results');
-  var closeBtn = document.querySelector('.search-close');
-
-  function openSearch() { overlay.classList.add('open'); setTimeout(function () { input.focus(); }, 50); }
-  function closeSearch() { overlay.classList.remove('open'); }
-
-  openBtns.forEach(function (b) { b.addEventListener('click', openSearch); });
-  if (closeBtn) closeBtn.addEventListener('click', closeSearch);
-  document.addEventListener('keydown', function (e) {
-    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); openSearch(); }
-    if (e.key === 'Escape') closeSearch();
-  });
-
-  if (input && window.CGP_INDEX) {
-    input.addEventListener('input', function () {
-      var q = input.value.trim().toLowerCase();
-      results.innerHTML = '';
-      if (q.length < 2) return;
-      var matches = window.CGP_INDEX.filter(function (item) {
-        return (item.title + ' ' + item.body).toLowerCase().indexOf(q) !== -1;
-      }).slice(0, 10);
-      if (!matches.length) {
-        results.innerHTML = '<p class="search-hint">No matches found. Try a different term.</p>';
-        return;
-      }
-      matches.forEach(function (m) {
-        var idx = m.body.toLowerCase().indexOf(q);
-        var snip = idx >= 0 ? '…' + m.body.substring(Math.max(0, idx - 40), idx + 80) + '…' : m.body.substring(0, 120);
-        var a = document.createElement('a');
-        a.href = m.url;
-        a.innerHTML = '<div class="r-section">' + m.section + '</div><strong>' + m.title + '</strong><div class="r-snip">' + snip + '</div>';
-        results.appendChild(a);
-      });
-    });
-  }
-
   /* ── HERO CAROUSEL ──────────────────────────────────────── */
   var carousel = document.querySelector('.hero-carousel');
   if (!carousel) return;

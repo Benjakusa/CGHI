@@ -105,7 +105,7 @@ new_nav = """<nav class="primary-nav" aria-label="Primary">
         </div>
       </div>
       <a href="news.html" class="[NEWS_ACTIVE]">News & Insights</a>
-      <button class="nav-search-btn" data-search-open type="button">Search <span aria-hidden="true">/</span></button>
+      <a href="admin/login.html" class="nav-search-btn">Staff</a>
     </nav>"""
 
 html_files = glob.glob('*.html')
