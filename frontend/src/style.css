@@ -469,13 +469,14 @@ body.nav-open .nav-toggle span:nth-child(3) {
   height: 100%;
   object-fit: cover;
   display: block;
+  /* Uniform dark overlay across the entire hero slide */
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .hero-slide-panel {
   position: relative;
   z-index: 2;
   width: 100%;
-  background: rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -591,13 +592,14 @@ body.nav-open .nav-toggle span:nth-child(3) {
     width: 100%;
     min-width: 0;
     padding: 40px 20px 200px;
-    background: rgba(0, 0, 0, 0.6);
     justify-content: flex-start;
     padding-top: 56px;
   }
 
   .hero-slide-img {
     position: absolute;
+    /* Uniform dark overlay across the entire hero slide on mobile */
+    background: rgba(0, 0, 0, 0.5);
   }
 
   .hero-slide-panel h1 {
