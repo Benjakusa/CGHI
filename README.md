@@ -143,7 +143,14 @@ npm run build    # Outputs to dist/
 
 ### 5. Seed Admin Account
 
-On first backend startup, if no admin exists, the server auto-seeds one using `SEED_ADMIN_PASSWORD` from `.env`. Default fallback is `Admin@CGHI2025!`.
+On first backend startup, if no admin exists, the server auto-seeds one using `SEED_ADMIN_PASSWORD` and `SEED_ADMIN_EMAIL` from `.env`. The default fallback credentials are:
+
+| Field   | Value                          |
+|---------|--------------------------------|
+| Email   | `admin@pandemicintelcenter.org` |
+| Password| `Admin@CGHI2025!`              |
+
+These can be overridden via environment variables.
 
 Login with the seeded email and password to get a JWT token sent as a Bearer token for authenticated API calls.
 

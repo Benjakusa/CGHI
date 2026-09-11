@@ -109,7 +109,7 @@ try {
 function seedIfEmpty() {
     const adminCount = db.prepare('SELECT COUNT(*) as c FROM admins').get().c;
     if (adminCount === 0) {
-        const seedEmail = process.env.SEED_ADMIN_EMAIL || 'admin@Kisumu2010.com';
+        const seedEmail = process.env.SEED_ADMIN_EMAIL || 'admin@pandemicintelcenter.org';
         const seedPassword = process.env.SEED_ADMIN_PASSWORD || 'Admin@CGHI2025!';
         const hash = bcrypt.hashSync(seedPassword, 10);
         db.prepare("INSERT INTO admins (email, password_hash, name) VALUES (?, ?, ?)").run(
