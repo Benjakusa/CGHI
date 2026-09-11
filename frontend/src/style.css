@@ -470,7 +470,7 @@ body.nav-open .nav-toggle span:nth-child(3) {
   object-fit: cover;
   display: block;
   /* Uniform dark overlay across the entire hero slide */
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
 }
 
 .hero-slide-panel {
@@ -599,7 +599,7 @@ body.nav-open .nav-toggle span:nth-child(3) {
   .hero-slide-img {
     position: absolute;
     /* Uniform dark overlay across the entire hero slide on mobile */
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.7);
   }
 
   .hero-slide-panel h1 {
