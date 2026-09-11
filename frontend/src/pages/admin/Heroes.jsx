@@ -234,6 +234,7 @@ export default function HeroesAdmin() {
                                             fontSize: isMobile ? '0.75rem' : '0.85rem',
                                             whiteSpace: 'nowrap'
                                         }}>
+                                            <i className={h.published ? 'bi bi-toggle-off' : 'bi bi-toggle-on'} style={{ marginRight: '4px' }}></i>
                                             {h.published ? 'Unpublish' : 'Publish'}
                                         </button>
                                         <button onClick={() => { setCurrent(h); setModalOpen(true); }} style={{ 
@@ -243,7 +244,10 @@ export default function HeroesAdmin() {
                                             padding: isMobile ? '6px 10px' : '6px 12px', 
                                             cursor: 'pointer',
                                             fontSize: isMobile ? '0.75rem' : '0.85rem'
-                                        }}>Edit</button>
+                                        }}>
+                                            <i className="bi bi-pencil" style={{ marginRight: '4px' }}></i>
+                                            Edit
+                                        </button>
                                         <button onClick={() => handleDelete(h.id)} style={{ 
                                             background: '#fdf3f2', 
                                             color: '#c0392b', 
@@ -252,7 +256,10 @@ export default function HeroesAdmin() {
                                             padding: isMobile ? '6px 10px' : '6px 12px', 
                                             cursor: 'pointer',
                                             fontSize: isMobile ? '0.75rem' : '0.85rem'
-                                        }}>Delete</button>
+                                        }}>
+                                            <i className="bi bi-trash" style={{ marginRight: '4px' }}></i>
+                                            Delete
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
