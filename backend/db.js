@@ -112,9 +112,9 @@ function seedIfEmpty() {
         const seedPassword = process.env.SEED_ADMIN_PASSWORD || 'Admin@CGHI2025!';
         const hash = bcrypt.hashSync(seedPassword, 10);
         db.prepare("INSERT INTO admins (email, password_hash, name) VALUES (?, ?, ?)").run(
-            'admin@pandemicintelcenter.org', hash, 'CGP Administrator'
+            'admin@Kisumu2010.com', hash, 'CGP Administrator'
         );
-        console.log('[DB] Admin user seeded: admin@pandemicintelcenter.org');
+        console.log('[DB] Admin user seeded: admin@Kisumu2010.com');
     }
 
     const heroCount = db.prepare('SELECT COUNT(*) as c FROM heroes').get().c;
