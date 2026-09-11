@@ -54,7 +54,17 @@ export default function Navbar({ activePage }) {
                 <nav className="primary-nav" aria-label="Primary">
                     <a href="/" className={activePage === 'home' ? 'active' : ''} onClick={closeNav}>Home</a>
                     <div className="dropdown">
-                        <button className="dropbtn">Who We Are <span aria-hidden="true"><i className="bi bi-chevron-down"></i></span></button>
+                        <button className="dropbtn" onClick={(e) => {
+                            if (window.innerWidth <= 900) {
+                                e.stopPropagation();
+                                const content = e.currentTarget.nextElementSibling;
+                                if (content) {
+                                    const isOpen = content.classList.contains('open');
+                                    document.querySelectorAll('.dropdown-content.open').forEach(d => d.classList.remove('open'));
+                                    if (!isOpen) content.classList.add('open');
+                                }
+                            }
+                        }}>Who We Are <span aria-hidden="true"><i className="bi bi-chevron-down"></i></span></button>
                         <div className="dropdown-content">
                             <a href="/about" onClick={closeNav}>About Us</a>
                             <a href="/careers" onClick={closeNav}>Careers</a>
@@ -63,7 +73,17 @@ export default function Navbar({ activePage }) {
                         </div>
                     </div>
                     <div className="dropdown">
-                        <button className="dropbtn">What We Do <span aria-hidden="true"><i className="bi bi-chevron-down"></i></span></button>
+                        <button className="dropbtn" onClick={(e) => {
+                            if (window.innerWidth <= 900) {
+                                e.stopPropagation();
+                                const content = e.currentTarget.nextElementSibling;
+                                if (content) {
+                                    const isOpen = content.classList.contains('open');
+                                    document.querySelectorAll('.dropdown-content.open').forEach(d => d.classList.remove('open'));
+                                    if (!isOpen) content.classList.add('open');
+                                }
+                            }
+                        }}>What We Do <span aria-hidden="true"><i className="bi bi-chevron-down"></i></span></button>
                         <div className="dropdown-content">
                             <a href="/what-we-do" onClick={closeNav}>Overview</a>
                             <a href="/projects" onClick={closeNav}>Projects &amp; Impact</a>

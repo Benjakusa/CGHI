@@ -154,3 +154,6 @@ window.initSiteLogic = function () {
   });
 
 };
+
+// Auto-run on load
+document.addEventListener('DOMContentLoaded', window.initSiteLogic);
