@@ -264,7 +264,7 @@ export default function Initiatives() {
           <h4>Contact</h4>
           <ul>
             <li>Westlands, Nairobi, Kenya</li>
-            <li><a href="tel:+254721117845">+254 721 117 845</a></li>
+            
             <li><a href="mailto:info@pandemicintelcenter.org">info@pandemicintelcenter.org</a></li>
             <li>08:00 16:00, Mon Fri</li>
           </ul>

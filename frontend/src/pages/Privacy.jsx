@@ -80,7 +80,7 @@ export default function Privacy() {
                 <p><strong>The Center for Global Health and Pandemic Intelligence</strong></p>
                 <p>Westlands, Nairobi, Kenya</p>
                 <p>Email: <a href="mailto:info@pandemicintelcenter.org">info@pandemicintelcenter.org</a></p>
-                <p>Telephone: <a href="tel:+254721117845">+254 721 117 845</a></p>
+                <p>Telephone: N/A</p>
                 <p>Office hours: 08:00 to 16:00 East Africa Time, Monday to Friday</p>
               </div>
               <p>
@@ -374,7 +374,7 @@ export default function Privacy() {
                 <p><strong>The Center for Global Health and Pandemic Intelligence</strong></p>
                 <p>Westlands, Nairobi, Kenya</p>
                 <p>Email: <a href="mailto:info@pandemicintelcenter.org">info@pandemicintelcenter.org</a></p>
-                <p>Telephone: <a href="tel:+254721117845">+254 721 117 845</a></p>
+                <p>Telephone: N/A</p>
                 <p>Office hours: 08:00 to 16:00 East Africa Time, Monday to Friday</p>
               </div>
             </div>

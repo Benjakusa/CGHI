@@ -449,12 +449,14 @@ export default function Home() {
               <h2>Strategic Partnerships</h2>
             </div>
             <div className="partners-carousel">
-              {partners.map(p => (
-                <div className="partner-card" key={p.id}>
-                  <img src={resolveAssetUrl(p.logo_url)} alt={p.name} loading="lazy" />
-                  <h4>{p.name}</h4>
-                </div>
-              ))}
+              <div className="partners-carousel-track">
+                {[...partners, ...partners].map((p, i) => (
+                  <div className="partner-card" key={p.id + '_' + i}>
+                    <img src={resolveAssetUrl(p.logo_url)} alt={p.name} loading="lazy" />
+                    <h4>{p.name}</h4>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>

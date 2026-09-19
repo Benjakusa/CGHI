@@ -20,5 +20,5 @@ window.CGP_INDEX = [
   {url:"news.html", section:"News & Insights", title:"Kenya Validates Groundbreaking Decision-Making Tool for Public Health Emergencies (DMT-PHE)", body:"KNPHI Palladium TDDAP2 CGP October 2025 validation One Health coordination 7-1-7 ten high-risk counties national rollout"},
   {url:"resources.html", section:"Resources", title:"Resources", body:"research reports policy briefs technical documents guidelines toolkits publications case studies coming soon"},
   {url:"careers.html", section:"Careers", title:"Technical Specialist Consultants & Research Associates", body:"Expressions of Interest EOI Technical Consultants Research Associates Master's degree epidemiology veterinary medicine PhD 8 years experience cover letter resume technical proposal"},
-  {url:"contact.html", section:"Contact", title:"Contact CGP", body:"Westlands Nairobi Kenya +254 721 117 845 info@pandemicintelcenter.org 08:00 16:00 Monday Friday"},
+  {url:"contact.html", section:"Contact", title:"Contact CGP", body:"Westlands Nairobi Kenya  info@pandemicintelcenter.org 08:00 16:00 Monday Friday"},
 ];

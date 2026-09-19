@@ -24,6 +24,7 @@ import NewsAdmin from './pages/admin/NewsAdmin';
 import PartnersAdmin from './pages/admin/PartnersAdmin';
 import CareersAdmin from './pages/admin/CareersAdmin';
 import ResourcesAdmin from './pages/admin/ResourcesAdmin';
+import JobApplications from './pages/admin/JobApplications';
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
           <Route path="/admin/partners" element={<ProtectedRoute><PartnersAdmin /></ProtectedRoute>} />
           <Route path="/admin/careers" element={<ProtectedRoute><CareersAdmin /></ProtectedRoute>} />
           <Route path="/admin/resources" element={<ProtectedRoute><ResourcesAdmin /></ProtectedRoute>} />
+          <Route path="/admin/job-applications" element={<ProtectedRoute><JobApplications /></ProtectedRoute>} />
         </Routes>
       </Router>
     </AuthProvider>

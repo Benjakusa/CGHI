@@ -65,9 +65,9 @@ export default function Contact() {
               </div>
               <div className="contact-info-item">
                 <span className="contact-info-icon" aria-hidden="true"><i className="bi bi-envelope-fill"></i></span>
-                <h3>Email &amp; Phone</h3>
-                <p><a href="mailto:info@pandemicintelcenter.org">info@pandemicintelcenter.org</a><br /><a
-                    href="tel:+254721117845">+254 721 117 845</a></p>
+                <h3>Email</h3>
+                <p><a href="mailto:info@pandemicintelcenter.org">info@pandemicintelcenter.org</a>
+                    </p>
               </div>
             </div>
 
