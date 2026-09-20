@@ -269,7 +269,8 @@ body.nav-open .nav-toggle span:nth-child(3) {
 }
 
 .dropdown:hover .dropbtn,
-.dropdown:focus-within .dropbtn {
+.dropdown:focus-within .dropbtn,
+.dropdown.open .dropbtn {
   color: var(--white);
   border-bottom-color: rgba(255, 255, 255, 0.8);
   background: rgba(255, 255, 255, 0.12);
@@ -292,12 +293,29 @@ body.nav-open .nav-toggle span:nth-child(3) {
   pointer-events: none;
 }
 
+/* Menus open on hover or on click (see bindNavDropdowns in site.js). The
+   .open class is owned by that controller, so the toggle both opens and
+   closes the menu. */
 .dropdown:hover .dropdown-content,
-.dropdown:focus-within .dropdown-content {
+.dropdown.open .dropdown-content {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
   pointer-events: auto;
+}
+
+/* A menu closed by clicking its toggle ignores :hover until the pointer
+   leaves it, so the toggle always closes the menu visibly. */
+.dropdown.dismissed:hover .dropdown-content {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
+
+.dropdown.dismissed:hover .dropbtn {
+  border-bottom-color: transparent;
+  background: none;
 }
 
 .dropdown-content a {
@@ -432,7 +450,8 @@ body.nav-open .nav-toggle span:nth-child(3) {
     display: none;
   }
 
-  .dropdown-content.open {
+  .dropdown-content.open,
+  .dropdown.open .dropdown-content {
     display: block !important;
   }
 }

@@ -1,8 +1,90 @@
 // CGP — Enhanced site.js: hero carousel + nav toggle + search overlay
+
+/* ── NAV DROPDOWNS ──────────────────────────────────────────
+   The nav markup lives inside the page <header> (inline on most pages,
+   the shared React <Navbar /> on others), so a single delegated listener
+   covers every menu. Menus still open on hover, but they now also open and
+   close on click (a11y: Enter/Space on the focused toggle, Escape closes),
+   which the pure CSS :hover rule alone could not do.
+   Re-binding is guarded so repeated calls never stack listeners. */
+window.bindNavDropdowns = function () {
+  if (window.__cgpNavDropdownsBound) return;
+  window.__cgpNavDropdownsBound = true;
+
+  function setOpen(dropdown, open) {
+    if (!dropdown) return;
+    var content = dropdown.querySelector('.dropdown-content');
+    var btn = dropdown.querySelector('.dropbtn');
+    dropdown.classList.toggle('open', open);
+    // An explicit close has to beat the :hover fallback, otherwise clicking
+    // the toggle twice while the pointer sits on it looks like nothing happens.
+    if (open) dropdown.classList.remove('dismissed');
+    else if (dropdown.matches(':hover')) dropdown.classList.add('dismissed');
+    if (content) content.classList.toggle('open', open);
+    if (btn) {
+      btn.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+  }
+
+  function closeAll(except) {
+    document.querySelectorAll('header.site-header .dropdown.open').forEach(function (dd) {
+      if (dd !== except) setOpen(dd, false);
+    });
+    document.querySelectorAll('header.site-header .dropdown-content.open').forEach(function (c) {
+      if (c.closest('.dropdown') !== except) c.classList.remove('open');
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+    var target = e.target;
+    if (!target || !target.closest) return;
+
+    var btn = target.closest('.dropbtn');
+    if (btn && btn.closest('header.site-header')) {
+      var dd = btn.closest('.dropdown');
+      var willOpen = !dd.classList.contains('open');
+      e.preventDefault();
+      closeAll(dd);
+      setOpen(dd, willOpen);
+      return;
+    }
+
+    // Link inside a menu: let it navigate, then reset the menu state.
+    if (target.closest('header.site-header .dropdown-content a')) {
+      closeAll(null);
+      return;
+    }
+
+    // Anywhere else: dismiss every open menu.
+    if (!target.closest('header.site-header')) closeAll(null);
+  });
+
+  // Once the pointer leaves a menu that was closed by click, let :hover
+  // control it again.
+  document.addEventListener('mouseout', function (e) {
+    var target = e.target;
+    if (!target || !target.closest) return;
+    var dd = target.closest('header.site-header .dropdown.dismissed');
+    if (!dd) return;
+    if (e.relatedTarget && dd.contains(e.relatedTarget)) return;
+    dd.classList.remove('dismissed');
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' || e.key === 'Esc') closeAll(null);
+  });
+};
+
 window.initSiteLogic = function () {
+  window.bindNavDropdowns();
+
   /* ── NAV TOGGLE ─────────────────────────────────────────── */
+  // React StrictMode re-runs page effects in dev, so initSiteLogic can be
+  // called twice per mount: guard the bindings instead of double-toggling.
   var toggle = document.querySelector('.nav-toggle');
-  if (toggle) {
+  if (toggle && !toggle.dataset.navBound) {
+    toggle.dataset.navBound = 'true';
     toggle.addEventListener('click', function () {
       document.body.classList.toggle('nav-open');
       // Close all open dropdowns when nav closes
@@ -14,21 +96,28 @@ window.initSiteLogic = function () {
     });
   }
   document.querySelectorAll('nav.primary-nav a').forEach(function (a) {
+    if (a.dataset.navBound) return;
+    a.dataset.navBound = 'true';
     a.addEventListener('click', function () { document.body.classList.remove('nav-open'); });
   });
-  // Close mobile nav on outside click
-  document.addEventListener('click', function (e) {
-    if (document.body.classList.contains('nav-open')) {
-      var nav = document.querySelector('nav.primary-nav');
-      var tog = document.querySelector('.nav-toggle');
-      if (nav && tog && !nav.contains(e.target) && !tog.contains(e.target)) {
-        document.body.classList.remove('nav-open');
+  // Close mobile nav on outside click (bound once, the flag lives on <body>)
+  if (!document.body.dataset.navOutsideBound) {
+    document.body.dataset.navOutsideBound = 'true';
+    document.addEventListener('click', function (e) {
+      if (document.body.classList.contains('nav-open')) {
+        var nav = document.querySelector('nav.primary-nav');
+        var tog = document.querySelector('.nav-toggle');
+        if (nav && tog && !nav.contains(e.target) && !tog.contains(e.target)) {
+          document.body.classList.remove('nav-open');
+        }
       }
-    }
-  });
+    });
+  }
 
   /* ── MOBILE DROPDOWN TOGGLE ─────────────────────────────── */
   document.querySelectorAll('.dropdown .dropbtn').forEach(function (btn) {
+    if (btn.dataset.navBound) return;
+    btn.dataset.navBound = 'true';
     btn.addEventListener('click', function (e) {
       // Only on mobile (nav is fixed/stacked)
       if (window.innerWidth <= 900) {
@@ -154,6 +243,10 @@ window.initSiteLogic = function () {
   });
 
 };
+
+// Wire the nav dropdowns immediately (delegated, so it also covers markup
+// rendered later by React and survives client-side route changes).
+window.bindNavDropdowns();
 
 // Auto-run on load
 document.addEventListener('DOMContentLoaded', window.initSiteLogic);
