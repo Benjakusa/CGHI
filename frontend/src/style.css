@@ -23,6 +23,8 @@
   --radius: 8px;
   --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  /* Selective-corner radius for cards: top-right + bottom-left */
+  --card-radius: 16px;
 }
 
 *,
@@ -36,8 +38,6 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
-  /* Prevent horizontal scroll at the viewport level (safe — does NOT clip
-     absolutely-positioned descendants inside the page) */
   overflow-x: hidden;
 }
 
@@ -153,7 +153,6 @@ figure {
   background: var(--brand);
   border-bottom: 3px solid var(--brand-dark);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
-  /* Must NOT clip the dropdown that overflows below the header */
   overflow: visible;
 }
 
@@ -165,7 +164,6 @@ figure {
   padding-bottom: 0;
   height: 68px;
   gap: 20px;
-  /* Critical: keeps the dropdown able to render outside the 68px bar */
   overflow: visible;
 }
 
@@ -264,7 +262,6 @@ body.nav-open .nav-toggle span:nth-child(3) {
 /* ---------- Dropdown ---------- */
 .dropdown {
   position: relative;
-  /* Do NOT clip — lets the absolute panel overflow the header */
   overflow: visible;
 }
 
@@ -313,9 +310,6 @@ body.nav-open .nav-toggle span:nth-child(3) {
   pointer-events: none;
 }
 
-/* Menus open on hover or on click (see bindNavDropdowns in site.js). The
-   .open class is owned by that controller, so the toggle both opens and
-   closes the menu. */
 .dropdown:hover .dropdown-content,
 .dropdown.open .dropdown-content {
   opacity: 1;
@@ -324,8 +318,6 @@ body.nav-open .nav-toggle span:nth-child(3) {
   pointer-events: auto;
 }
 
-/* A menu closed by clicking its toggle ignores :hover until the pointer
-   leaves it, so the toggle always closes the menu visibly. */
 .dropdown.dismissed:hover .dropdown-content {
   opacity: 0;
   visibility: hidden;
@@ -338,8 +330,6 @@ body.nav-open .nav-toggle span:nth-child(3) {
   background: none;
 }
 
-/* Group / item matching the route passed as `activePage` to <Navbar />, so the
-   shared navbar shows where the visitor is without each page hand-rolling it. */
 .dropdown.active .dropbtn {
   border-bottom-color: rgba(255, 255, 255, 0.8);
   background: rgba(255, 255, 255, 0.12);
@@ -394,7 +384,6 @@ body.nav-open .nav-toggle span:nth-child(3) {
   opacity: 1;
 }
 
-/* ---------- Mobile nav ---------- */
 @media (max-width: 900px) {
   nav.primary-nav {
     position: fixed;
@@ -500,7 +489,6 @@ body.nav-open .nav-toggle span:nth-child(3) {
   max-height: 780px;
   overflow: hidden;
   background: var(--black);
-  /* Keep hero BELOW the header so dropdowns overlap it */
   z-index: 1;
 }
 
@@ -3259,8 +3247,6 @@ button.btn-primary:hover,
    overflow is handled at the html/body level instead.
    ============================================================ */
 
-/* Content wrappers that should never cause horizontal scroll.
-   .wrap is deliberately NOT in this list. */
 main, section, .page-header, .section-surface, .cta-strip,
 .grid-2, .grid-3, .grid-4, .pillar-grid, .job-card, .resource-card,
 .article-card, .project-card, .initiative-card, .value-card, .stat-card,
@@ -3270,8 +3256,6 @@ main, section, .page-header, .section-surface, .cta-strip,
   overflow-x: hidden;
 }
 
-/* Navbar chain must NEVER clip the dropdown. This rule is here so
-   nothing else later in the file can accidentally re-clip it. */
 .site-header,
 .site-header .wrap,
 nav.primary-nav,
@@ -3279,7 +3263,6 @@ nav.primary-nav,
   overflow: visible;
 }
 
-/* Layering: header > hero. The dropdown sits above both. */
 .site-header { z-index: 100; }
 nav.primary-nav { z-index: 100; }
 .dropdown-content { z-index: 200; }
@@ -3287,14 +3270,12 @@ nav.primary-nav { z-index: 100; }
 .page-header,
 section { position: relative; z-index: 1; }
 
-/* Images always responsive */
 img {
   max-width: 100%;
   height: auto;
   object-fit: cover;
 }
 
-/* Forms: stack vertically on mobile, full-width buttons, 44px tap targets */
 input[type="text"], input[type="email"], input[type="password"],
 input[type="number"], input[type="date"], input[type="search"],
 textarea, select {
@@ -3308,7 +3289,6 @@ input[type="submit"], input[type="button"] {
   min-width: 44px;
 }
 
-/* Prevent any element from touching viewport edges on mobile */
 @media (max-width: 768px) {
   .wrap {
     padding-left: 16px;
@@ -3508,4 +3488,50 @@ input[type="submit"], input[type="button"] {
     text-align: center;
     gap: 8px;
   }
+}
+
+/* ============================================================
+   SELECTIVE CARD CORNERS
+   ------------------------------------------------------------
+   Applies rounded corners ONLY to the top-right and bottom-left
+   (corners 2 and 4). The top-left and bottom-right corners stay
+   perfectly square (90°).
+
+   Syntax: border-radius: TL TR BR BL
+           → 0 (TL)  16px (TR)  0 (BR)  16px (BL)
+
+   Applies to every card-like surface across the site so the
+   geometry is consistent.
+   ============================================================ */
+.card,
+.icon-card,
+.project-card,
+.stat-card,
+.value-card,
+.article-card,
+.initiative-card,
+.partner-card,
+.job-card,
+.resource-card,
+.privacy-right,
+.apply-doc,
+.vm-card,
+.privacy-contact-card,
+.privacy-table,
+.accordion-plus,
+.card-icon,
+.resource-card-icon,
+.contact-info-grid,
+.contact-info-item,
+.apply-card,
+.job-card-toggle,
+.resource-card-link {
+  border-radius: 0 var(--card-radius) 0 var(--card-radius) !important;
+}
+
+/* Keep the article-card image flush with the new corner geometry —
+   the image sits at the top of the card, so its top-right corner
+   should match the card's rounded top-right; its top-left stays square. */
+.article-card-img {
+  border-radius: 0 var(--card-radius) 0 0 !important;
 }
