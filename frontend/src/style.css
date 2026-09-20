@@ -36,6 +36,9 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  /* Prevent horizontal scroll at the viewport level (safe — does NOT clip
+     absolutely-positioned descendants inside the page) */
+  overflow-x: hidden;
 }
 
 body {
@@ -45,6 +48,7 @@ body {
   font-size: 1rem;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 h1,
@@ -128,6 +132,9 @@ figure {
   max-width: var(--maxw);
   margin: 0 auto;
   padding: 0 48px;
+  /* NOTE: Do NOT set overflow-x: hidden here — it creates a clipping
+     context that traps the navbar dropdown. Overflow is handled on
+     html/body instead. */
 }
 
 @media (max-width: 600px) {
@@ -136,6 +143,9 @@ figure {
   }
 }
 
+/* ============================================================
+   SITE HEADER / NAVBAR
+   ============================================================ */
 .site-header {
   position: sticky;
   top: 0;
@@ -143,6 +153,8 @@ figure {
   background: var(--brand);
   border-bottom: 3px solid var(--brand-dark);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+  /* Must NOT clip the dropdown that overflows below the header */
+  overflow: visible;
 }
 
 .site-header .wrap {
@@ -153,6 +165,8 @@ figure {
   padding-bottom: 0;
   height: 68px;
   gap: 20px;
+  /* Critical: keeps the dropdown able to render outside the 68px bar */
+  overflow: visible;
 }
 
 .brand {
@@ -189,6 +203,9 @@ nav.primary-nav {
   align-items: center;
   gap: 4px;
   flex-wrap: nowrap;
+  position: relative;
+  z-index: 100;
+  overflow: visible;
 }
 
 nav.primary-nav>a,
@@ -244,8 +261,11 @@ body.nav-open .nav-toggle span:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
 }
 
+/* ---------- Dropdown ---------- */
 .dropdown {
   position: relative;
+  /* Do NOT clip — lets the absolute panel overflow the header */
+  overflow: visible;
 }
 
 .dropdown .dropbtn {
@@ -374,6 +394,7 @@ body.nav-open .nav-toggle span:nth-child(3) {
   opacity: 1;
 }
 
+/* ---------- Mobile nav ---------- */
 @media (max-width: 900px) {
   nav.primary-nav {
     position: fixed;
@@ -468,6 +489,9 @@ body.nav-open .nav-toggle span:nth-child(3) {
   }
 }
 
+/* ============================================================
+   HERO CAROUSEL
+   ============================================================ */
 .hero-carousel {
   position: relative;
   width: 100%;
@@ -476,6 +500,8 @@ body.nav-open .nav-toggle span:nth-child(3) {
   max-height: 780px;
   overflow: hidden;
   background: var(--black);
+  /* Keep hero BELOW the header so dropdowns overlap it */
+  z-index: 1;
 }
 
 .hero-slide {
@@ -500,7 +526,6 @@ body.nav-open .nav-toggle span:nth-child(3) {
   height: 100%;
   object-fit: cover;
   display: block;
-  /* Uniform dark overlay across the entire hero slide */
   background: rgba(0, 0, 0, 0.7);
 }
 
@@ -629,7 +654,6 @@ body.nav-open .nav-toggle span:nth-child(3) {
 
   .hero-slide-img {
     position: absolute;
-    /* Uniform dark overlay across the entire hero slide on mobile */
     background: rgba(0, 0, 0, 0.7);
   }
 
@@ -664,8 +688,13 @@ body.nav-open .nav-toggle span:nth-child(3) {
   }
 }
 
+/* ============================================================
+   SECTIONS
+   ============================================================ */
 section {
   padding: 88px 0;
+  position: relative;
+  z-index: 1;
 }
 
 section.tight {
@@ -751,6 +780,7 @@ section>.wrap:not(:has(.grid-2, .grid-3, .grid-4, .grid-auto, .accordion-item)) 
   justify-content: center;
   text-align: center;
   overflow: hidden;
+  z-index: 1;
 }
 
 .page-header::before {
@@ -822,6 +852,9 @@ section>.wrap:not(:has(.grid-2, .grid-3, .grid-4, .grid-auto, .accordion-item)) 
   margin-right: auto;
 }
 
+/* ============================================================
+   GRIDS & CARDS
+   ============================================================ */
 .grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -863,6 +896,7 @@ section>.wrap:not(:has(.grid-2, .grid-3, .grid-4, .grid-auto, .accordion-item)) 
 }
 
 @media (max-width: 600px) {
+
   .grid-3,
   .grid-4 {
     grid-template-columns: 1fr;
@@ -1261,36 +1295,38 @@ section>.wrap:not(:has(.grid-2, .grid-3, .grid-4, .grid-auto, .accordion-item)) 
   display: block;
 }
 
+/* ============================================================
+   PARTNERS CAROUSEL (auto-looping marquee)
+   ============================================================ */
 .partners-carousel {
   display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
+  overflow: hidden;
   gap: 24px;
-  padding: 12px 4px 24px;
+  padding: 12px 0 24px;
   margin-top: 12px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--sky) var(--surface);
-  -webkit-overflow-scrolling: touch;
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
 }
 
-.partners-carousel::-webkit-scrollbar {
-  height: 6px;
+.partners-carousel-track {
+  display: flex;
+  gap: 24px;
+  animation: marquee 30s linear infinite;
+  will-change: transform;
 }
 
-.partners-carousel::-webkit-scrollbar-track {
-  background: var(--surface);
-  border-radius: 4px;
+.partners-carousel-track:hover {
+  animation-play-state: paused;
 }
 
-.partners-carousel::-webkit-scrollbar-thumb {
-  background: var(--sky);
-  border-radius: 4px;
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 .partner-card {
-  flex: 0 0 calc(33.333% - 16px);
+  flex: 0 0 auto;
   min-width: 260px;
-  scroll-snap-align: start;
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -1320,6 +1356,43 @@ section>.wrap:not(:has(.grid-2, .grid-3, .grid-4, .grid-auto, .accordion-item)) 
   font-size: 0.9rem;
   color: var(--ink);
   margin: 0;
+}
+
+@media (max-width: 768px) {
+  .partner-card {
+    min-width: 200px;
+    padding: 24px 16px;
+  }
+  .partner-card img {
+    height: 48px;
+  }
+  .partner-card h4 {
+    font-size: 0.82rem;
+  }
+  .partners-carousel {
+    gap: 16px;
+    padding: 8px 0 16px;
+  }
+  .partners-carousel-track {
+    gap: 16px;
+    animation-duration: 20s;
+  }
+}
+
+@media (max-width: 480px) {
+  .partner-card {
+    min-width: 160px;
+    padding: 16px 12px;
+  }
+  .partner-card img {
+    height: 40px;
+  }
+  .partners-carousel {
+    gap: 12px;
+    padding: 4px 0 12px;
+    mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+  }
 }
 
 .partner-block {
@@ -1393,6 +1466,9 @@ section>.wrap:not(:has(.grid-2, .grid-3, .grid-4, .grid-auto, .accordion-item)) 
   border-radius: 20px;
 }
 
+/* ============================================================
+   FORMS
+   ============================================================ */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1451,6 +1527,9 @@ section>.wrap:not(:has(.grid-2, .grid-3, .grid-4, .grid-auto, .accordion-item)) 
   }
 }
 
+/* ============================================================
+   BUTTONS
+   ============================================================ */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -1536,6 +1615,9 @@ section>.wrap:not(:has(.grid-2, .grid-3, .grid-4, .grid-auto, .accordion-item)) 
   color: var(--black);
 }
 
+/* ============================================================
+   FOOTER
+   ============================================================ */
 .site-footer {
   background: var(--black);
   color: var(--white);
@@ -1634,6 +1716,49 @@ section>.wrap:not(:has(.grid-2, .grid-3, .grid-4, .grid-auto, .accordion-item)) 
   }
 }
 
+.footer-social {
+  display: flex;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.footer-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  color: var(--white);
+  background: transparent;
+  text-decoration: none;
+  font-size: 1.05rem;
+  transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.15s;
+}
+
+.footer-social a:hover {
+  background: var(--sky);
+  border-color: var(--sky);
+  color: var(--black);
+  transform: translateY(-2px);
+  opacity: 1;
+}
+
+.footer-social a:focus-visible {
+  outline: 2px solid var(--sky);
+  outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .footer-social {
+    justify-content: center;
+  }
+}
+
+/* ============================================================
+   SEARCH OVERLAY
+   ============================================================ */
 .search-overlay {
   position: fixed;
   inset: 0;
@@ -1726,6 +1851,9 @@ section>.wrap:not(:has(.grid-2, .grid-3, .grid-4, .grid-auto, .accordion-item)) 
   margin-top: 24px;
 }
 
+/* ============================================================
+   MISC PAGE PIECES
+   ============================================================ */
 .map-embed iframe {
   width: 100%;
   height: 380px;
@@ -2128,7 +2256,10 @@ button.btn-primary:hover,
   opacity: 1 !important;
   transform: translateY(-2px) !important;
 }
-/* Careers job cards */
+
+/* ============================================================
+   CAREERS JOB CARDS
+   ============================================================ */
 .job-card {
   background: var(--white);
   border: 1px solid var(--border);
@@ -2265,7 +2396,10 @@ button.btn-primary:hover,
     font-size: 1.05rem;
   }
 }
-/* Privacy Policy page */
+
+/* ============================================================
+   PRIVACY POLICY
+   ============================================================ */
 .privacy-section {
   padding: 72px 0 96px;
 }
@@ -2466,7 +2600,10 @@ button.btn-primary:hover,
     gap: 8px;
   }
 }
-/* Resources page cards */
+
+/* ============================================================
+   RESOURCES CARDS
+   ============================================================ */
 .resource-card {
   background: var(--white);
   border: 1px solid var(--border);
@@ -2572,380 +2709,10 @@ button.btn-primary:hover,
     font-size: 1.02rem;
   }
 }
-/* Footer social links */
-.footer-social {
-  display: flex;
-  gap: 12px;
-  margin-top: 22px;
-}
 
-.footer-social a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  color: var(--white);
-  background: transparent;
-  text-decoration: none;
-  font-size: 1.05rem;
-  transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.15s;
-}
-
-.footer-social a:hover {
-  background: var(--sky);
-  border-color: var(--sky);
-  color: var(--black);
-  transform: translateY(-2px);
-  opacity: 1;
-}
-
-.footer-social a:focus-visible {
-  outline: 2px solid var(--sky);
-  outline-offset: 3px;
-}
-
-@media (max-width: 480px) {
-  .footer-social {
-    justify-content: center;
-  }
-}
-/* ===== MOBILE RESPONSIVENESS ENHANCEMENTS ===== */
-
-/* Ensure no horizontal overflow on any page */
-main, section, .wrap, .page-header, .section-surface, .cta-strip,
-.grid-2, .grid-3, .grid-4, .pillar-grid, .job-card, .resource-card,
-.article-card, .project-card, .initiative-card, .value-card, .stat-card,
-.apply-card, .contact-info-grid, .map-embed, .footer-grid, .admin-shell,
-.admin-main, .admin-sidebar, .dash-grid, .privacy-doc, .accordion-item {
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-/* Images always responsive */
-img {
-  max-width: 100%;
-  height: auto;
-  object-fit: cover;
-}
-
-/* Forms: stack vertically on mobile, full-width buttons, 44px tap targets */
-input[type="text"], input[type="email"], input[type="password"],
-input[type="number"], input[type="date"], input[type="search"],
-textarea, select {
-  min-height: 44px;
-  font-size: 1rem;
-}
-
-button, .btn, .btn-primary, .dropbtn, .nav-search-btn,
-input[type="submit"], input[type="button"] {
-  min-height: 44px;
-  min-width: 44px;
-}
-
-/* Prevent any element from touching viewport edges on mobile */
-@media (max-width: 768px) {
-  .wrap {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-  .site-header .wrap {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-  .brand-logo {
-    height: 36px;
-  }
-  .cta-strip {
-    padding: 40px 0;
-  }
-  .apply-card {
-    padding: 24px 16px;
-  }
-  .section-header {
-    margin-bottom: 24px;
-  }
-  .grid-3 {
-    grid-template-columns: 1fr !important;
-  }
-  .grid-4 {
-    grid-template-columns: 1fr !important;
-  }
-  .grid-2 {
-    grid-template-columns: 1fr !important;
-    gap: 24px !important;
-  }
-  .pillar-grid {
-    grid-template-columns: 1fr !important;
-  }
-  .footer-grid {
-    grid-template-columns: 1fr !important;
-  }
-  .contact-info-grid {
-    grid-template-columns: 1fr !important;
-  }
-  .map-embed iframe {
-    height: 240px !important;
-  }
-  .job-card {
-    padding: 20px 16px !important;
-  }
-  .resource-card {
-    padding: 20px 16px !important;
-  }
-  .article-card {
-    padding: 16px !important;
-  }
-  .project-card {
-    padding: 16px !important;
-  }
-  .apply-docs {
-    grid-template-columns: 1fr !important;
-  }
-  .tech-area-list {
-    column-count: 1 !important;
-  }
-  .nav-toggle {
-    display: flex !important;
-  }
-  .mobile-sidebar-toggle {
-    display: flex !important;
-  }
-  .admin-sidebar {
-    position: fixed;
-    top: 68px;
-    left: 0;
-    bottom: 0;
-    width: 280px;
-    transform: translateX(-100%);
-    transition: transform 0.28s ease;
-    z-index: 200;
-    box-shadow: 4px 0 24px rgba(0,0,0,0.15);
-  }
-  .admin-sidebar.is-open {
-    transform: translateX(0);
-  }
-  .admin-shell-inner {
-    flex-direction: column;
-  }
-  .admin-main {
-    padding: 16px !important;
-  }
-  .dash-grid {
-    grid-template-columns: 1fr !important;
-  }
-  .privacy-doc {
-    padding: 0 !important;
-  }
-  .admin-title {
-    font-size: 1.25rem !important;
-  }
-  .careers-table-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  .careers-table-wrapper table {
-    min-width: 600px;
-  }
-  .admin-modal {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 100% !important;
-    max-height: 100vh !important;
-    border-radius: 0 !important;
-  }
-  .admin-modal-content {
-    border-radius: 0 !important;
-    max-height: calc(100vh - 32px) !important;
-    overflow-y: auto;
-  }
-  .apply-modal-content {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 100% !important;
-    max-height: 100vh !important;
-    border-radius: 0 !important;
-  }
-  .apply-modal-content-inner {
-    max-height: calc(100vh - 32px) !important;
-    overflow-y: auto;
-    padding: 16px !important;
-  }
-  .apply-modal {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-  .apply-modal-content {
-    border-radius: 0 !important;
-    max-height: calc(100vh - 32px) !important;
-    overflow-y: auto;
-  }
-  .nav-search-btn {
-    padding: 8px 12px !important;
-    font-size: 0.8rem !important;
-  }
-  .brand {
-    gap: 8px !important;
-  }
-  .hero-slide-panel {
-    padding: 24px 16px !important;
-  }
-  .hero-slide-eyebrow {
-    font-size: 0.7rem !important;
-  }
-  .section-label {
-    font-size: 0.75rem !important;
-  }
-  .dek {
-    font-size: 0.95rem !important;
-  }
-  .kicker-list {
-    font-size: 0.85rem !important;
-  }
-  .accordion-item {
-    padding: 12px 0 !important;
-  }
-  .accordion-item summary h3 {
-    font-size: 1rem !important;
-  }
-  .privacy-list {
-    padding-left: 1.2em !important;
-  }
-  .dash-card {
-    padding: 16px !important;
-  }
-  .admin-sidebar-label {
-    padding: 12px 16px !important;
-  }
-  .admin-sidebar-nav a {
-    padding: 10px 16px !important;
-    font-size: 0.85rem !important;
-  }
-  .mobile-sidebar-toggle {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    z-index: 210;
-    background: var(--brand);
-    border: none;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1.2rem;
-  }
-  .site-footer .wrap {
-    padding-left: 16px !important;
-    padding-right: 16px !important;
-  }
-  .footer-bottom {
-    flex-direction: column;
-    text-align: center;
-    gap: 8px;
-  }
-}
-
-/* Partners carousel - auto-looping right-to-left marquee */
-.partners-carousel {
-  display: flex;
-  overflow: hidden;
-  gap: 24px;
-  padding: 12px 0 24px;
-  margin-top: 12px;
-  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-}
-
-.partners-carousel-track {
-  display: flex;
-  gap: 24px;
-  animation: marquee 30s linear infinite;
-  will-change: transform;
-}
-
-.partners-carousel-track:hover {
-  animation-play-state: paused;
-}
-
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-.partner-card {
-  flex: 0 0 auto;
-  min-width: 260px;
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 32px 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 16px;
-  transition: box-shadow 0.2s, border-color 0.2s;
-}
-
-.partner-card:hover {
-  box-shadow: var(--shadow-lg);
-  border-color: var(--sky);
-}
-
-.partner-card img {
-  height: 60px;
-  width: auto;
-  object-fit: contain;
-}
-
-.partner-card h4 {
-  font-size: 0.9rem;
-  color: var(--ink);
-  margin: 0;
-}
-
-@media (max-width: 768px) {
-  .partner-card {
-    min-width: 200px;
-    padding: 24px 16px;
-  }
-  .partner-card img {
-    height: 48px;
-  }
-  .partner-card h4 {
-    font-size: 0.82rem;
-  }
-  .partners-carousel {
-    gap: 16px;
-    padding: 8px 0 16px;
-  }
-  .partners-carousel-track {
-    gap: 16px;
-    animation-duration: 20s;
-  }
-}
-
-@media (max-width: 480px) {
-  .partner-card {
-    min-width: 160px;
-    padding: 16px 12px;
-  }
-  .partner-card img {
-    height: 40px;
-  }
-  .partners-carousel {
-    gap: 12px;
-    padding: 4px 0 12px;
-    mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
-  }
-}
-
-/* ===== ADMIN JOB APPLICATIONS ===== */
+/* ============================================================
+   ADMIN JOB APPLICATIONS
+   ============================================================ */
 .applications-table {
   width: 100%;
   border-collapse: collapse;
@@ -3479,4 +3246,266 @@ input[type="submit"], input[type="button"] {
   .applications-table td:last-child::before { display: none; }
   .applications-table .doc-link { font-size: 0.8rem; padding: 4px 8px; }
   .applications-table .delete-btn { font-size: 0.78rem; padding: 4px 8px; }
+}
+
+/* ============================================================
+   MOBILE RESPONSIVENESS ENHANCEMENTS
+   ------------------------------------------------------------
+   IMPORTANT: .wrap and .site-header .wrap are intentionally
+   EXCLUDED from the "overflow-x: hidden" rule below. Applying
+   overflow-x: hidden to .wrap was clipping the navbar dropdown
+   so it could only appear inside the 68px header strip. The
+   navbar chain now forces overflow: visible, and horizontal
+   overflow is handled at the html/body level instead.
+   ============================================================ */
+
+/* Content wrappers that should never cause horizontal scroll.
+   .wrap is deliberately NOT in this list. */
+main, section, .page-header, .section-surface, .cta-strip,
+.grid-2, .grid-3, .grid-4, .pillar-grid, .job-card, .resource-card,
+.article-card, .project-card, .initiative-card, .value-card, .stat-card,
+.apply-card, .contact-info-grid, .map-embed, .footer-grid, .admin-shell,
+.admin-main, .admin-sidebar, .dash-grid, .privacy-doc, .accordion-item {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Navbar chain must NEVER clip the dropdown. This rule is here so
+   nothing else later in the file can accidentally re-clip it. */
+.site-header,
+.site-header .wrap,
+nav.primary-nav,
+.dropdown {
+  overflow: visible;
+}
+
+/* Layering: header > hero. The dropdown sits above both. */
+.site-header { z-index: 100; }
+nav.primary-nav { z-index: 100; }
+.dropdown-content { z-index: 200; }
+.hero-carousel,
+.page-header,
+section { position: relative; z-index: 1; }
+
+/* Images always responsive */
+img {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Forms: stack vertically on mobile, full-width buttons, 44px tap targets */
+input[type="text"], input[type="email"], input[type="password"],
+input[type="number"], input[type="date"], input[type="search"],
+textarea, select {
+  min-height: 44px;
+  font-size: 1rem;
+}
+
+button, .btn, .btn-primary, .dropbtn, .nav-search-btn,
+input[type="submit"], input[type="button"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Prevent any element from touching viewport edges on mobile */
+@media (max-width: 768px) {
+  .wrap {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .site-header .wrap {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .brand-logo {
+    height: 36px;
+  }
+  .cta-strip {
+    padding: 40px 0;
+  }
+  .apply-card {
+    padding: 24px 16px;
+  }
+  .section-header {
+    margin-bottom: 24px;
+  }
+  .grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+  .grid-4 {
+    grid-template-columns: 1fr !important;
+  }
+  .grid-2 {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+  .pillar-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .contact-info-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .map-embed iframe {
+    height: 240px !important;
+  }
+  .job-card {
+    padding: 20px 16px !important;
+  }
+  .resource-card {
+    padding: 20px 16px !important;
+  }
+  .article-card {
+    padding: 16px !important;
+  }
+  .project-card {
+    padding: 16px !important;
+  }
+  .apply-docs {
+    grid-template-columns: 1fr !important;
+  }
+  .tech-area-list {
+    column-count: 1 !important;
+  }
+  .nav-toggle {
+    display: flex !important;
+  }
+  .mobile-sidebar-toggle {
+    display: flex !important;
+  }
+  .admin-sidebar {
+    position: fixed;
+    top: 68px;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 0.28s ease;
+    z-index: 200;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+  }
+  .admin-sidebar.is-open {
+    transform: translateX(0);
+  }
+  .admin-shell-inner {
+    flex-direction: column;
+  }
+  .admin-main {
+    padding: 16px !important;
+  }
+  .dash-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .privacy-doc {
+    padding: 0 !important;
+  }
+  .admin-title {
+    font-size: 1.25rem !important;
+  }
+  .careers-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .careers-table-wrapper table {
+    min-width: 600px;
+  }
+  .admin-modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+  }
+  .admin-modal-content {
+    border-radius: 0 !important;
+    max-height: calc(100vh - 32px) !important;
+    overflow-y: auto;
+  }
+  .apply-modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+  }
+  .apply-modal-content-inner {
+    max-height: calc(100vh - 32px) !important;
+    overflow-y: auto;
+    padding: 16px !important;
+  }
+  .apply-modal {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .apply-modal-content {
+    border-radius: 0 !important;
+    max-height: calc(100vh - 32px) !important;
+    overflow-y: auto;
+  }
+  .nav-search-btn {
+    padding: 8px 12px !important;
+    font-size: 0.8rem !important;
+  }
+  .brand {
+    gap: 8px !important;
+  }
+  .hero-slide-panel {
+    padding: 24px 16px !important;
+  }
+  .hero-slide-eyebrow {
+    font-size: 0.7rem !important;
+  }
+  .section-label {
+    font-size: 0.75rem !important;
+  }
+  .dek {
+    font-size: 0.95rem !important;
+  }
+  .kicker-list {
+    font-size: 0.85rem !important;
+  }
+  .accordion-item {
+    padding: 12px 0 !important;
+  }
+  .accordion-item summary h3 {
+    font-size: 1rem !important;
+  }
+  .privacy-list {
+    padding-left: 1.2em !important;
+  }
+  .dash-card {
+    padding: 16px !important;
+  }
+  .admin-sidebar-label {
+    padding: 12px 16px !important;
+  }
+  .admin-sidebar-nav a {
+    padding: 10px 16px !important;
+    font-size: 0.85rem !important;
+  }
+  .mobile-sidebar-toggle {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 210;
+    background: var(--brand);
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.2rem;
+  }
+  .site-footer .wrap {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
 }
