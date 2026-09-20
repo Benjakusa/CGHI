@@ -156,7 +156,7 @@ export default function Home() {
                 <span className="stat-lbl">Reduction in detection-to-response time across 4 Kenyan counties</span>
               </div>
               <div className="stat-card" style={{borderRight: '1px solid rgba(255,255,255,0.1)', borderRadius: '0'}}>
-                <span className="stat-num" style={{fontSize: '2.2rem'}}>7 1 7</span>
+                <span className="stat-num" style={{fontSize: '2.2rem'}}>7-1-7</span>
                 <span className="stat-lbl">WHO-endorsed readiness targets applied in Migori &amp; national Mpox reviews</span>
               </div>
               <div className="stat-card" style={{borderRadius: '0'}}>

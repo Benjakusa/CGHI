@@ -7,12 +7,19 @@ export default function Navbar({ activePage }) {
     const navigate = useNavigate();
     const [profileOpen, setProfileOpen] = useState(false);
     const [navOpen, setNavOpen] = useState(false);
+    const [openDropdown, setOpenDropdown] = useState(null); // 'who' | 'what' | null
     const dropRef = useRef(null);
+    const navRef = useRef(null);
 
-    // Close dropdown on outside click
+    // Close profile dropdown + nav dropdowns on outside click
     useEffect(() => {
         function handle(e) {
-            if (dropRef.current && !dropRef.current.contains(e.target)) setProfileOpen(false);
+            if (dropRef.current && !dropRef.current.contains(e.target)) {
+                setProfileOpen(false);
+            }
+            if (navRef.current && !navRef.current.contains(e.target)) {
+                setOpenDropdown(null);
+            }
         }
         document.addEventListener('mousedown', handle);
         return () => document.removeEventListener('mousedown', handle);
@@ -29,19 +36,30 @@ export default function Navbar({ activePage }) {
         logout();
         setProfileOpen(false);
         setNavOpen(false);
+        setOpenDropdown(null);
         navigate('/');
     }
 
     function closeNav() {
         setNavOpen(false);
+        setOpenDropdown(null);
+    }
+
+    function toggleDropdown(name) {
+        setOpenDropdown(prev => (prev === name ? null : name));
     }
 
     return (
         <header className="site-header">
             <div className="wrap">
                 <a className="brand" href="/" aria-label="CGP Home" onClick={closeNav}>
-                    <img className="brand-logo" src="/Assets/logo.png" alt="Center for Global Health & Pandemic Intelligence" />
+                    <img
+                        className="brand-logo"
+                        src="/Assets/logo.png"
+                        alt="Center for Global Health & Pandemic Intelligence"
+                    />
                 </a>
+
                 <button
                     type="button"
                     className="nav-toggle"
@@ -49,76 +67,159 @@ export default function Navbar({ activePage }) {
                     aria-expanded={navOpen}
                     onClick={() => setNavOpen(o => !o)}
                 >
-                    <span></span><span></span><span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </button>
-                <nav className="primary-nav" aria-label="Primary">
-                    <a href="/" className={activePage === 'home' ? 'active' : ''} onClick={closeNav}>Home</a>
-                    <div className="dropdown">
-                        <button className="dropbtn" onClick={(e) => {
-                            if (window.innerWidth <= 900) {
+
+                <nav className="primary-nav" aria-label="Primary" ref={navRef}>
+                    <a
+                        href="/"
+                        className={activePage === 'home' ? 'active' : ''}
+                        onClick={closeNav}
+                    >
+                        Home
+                    </a>
+
+                    {/* ---------- Who We Are ---------- */}
+                    <div className={`dropdown ${openDropdown === 'who' ? 'open' : ''}`}>
+                        <button
+                            type="button"
+                            className="dropbtn"
+                            aria-haspopup="true"
+                            aria-expanded={openDropdown === 'who'}
+                            onClick={(e) => {
                                 e.stopPropagation();
-                                const content = e.currentTarget.nextElementSibling;
-                                if (content) {
-                                    const isOpen = content.classList.contains('open');
-                                    document.querySelectorAll('.dropdown-content.open').forEach(d => d.classList.remove('open'));
-                                    if (!isOpen) content.classList.add('open');
-                                }
-                            }
-                        }}>Who We Are <span aria-hidden="true"><i className="bi bi-chevron-down"></i></span></button>
-                        <div className="dropdown-content">
+                                toggleDropdown('who');
+                            }}
+                        >
+                            Who We Are{' '}
+                            <span aria-hidden="true">
+                                <i className="bi bi-chevron-down"></i>
+                            </span>
+                        </button>
+                        <div className={`dropdown-content ${openDropdown === 'who' ? 'open' : ''}`}>
                             <a href="/about" onClick={closeNav}>About Us</a>
                             <a href="/careers" onClick={closeNav}>Careers</a>
                             <a href="/contact" onClick={closeNav}>Contact</a>
                             <a href="/privacy" onClick={closeNav}>Privacy Policy</a>
                         </div>
                     </div>
-                    <div className="dropdown">
-                        <button className="dropbtn" onClick={(e) => {
-                            if (window.innerWidth <= 900) {
+
+                    {/* ---------- What We Do ---------- */}
+                    <div className={`dropdown ${openDropdown === 'what' ? 'open' : ''}`}>
+                        <button
+                            type="button"
+                            className="dropbtn"
+                            aria-haspopup="true"
+                            aria-expanded={openDropdown === 'what'}
+                            onClick={(e) => {
                                 e.stopPropagation();
-                                const content = e.currentTarget.nextElementSibling;
-                                if (content) {
-                                    const isOpen = content.classList.contains('open');
-                                    document.querySelectorAll('.dropdown-content.open').forEach(d => d.classList.remove('open'));
-                                    if (!isOpen) content.classList.add('open');
-                                }
-                            }
-                        }}>What We Do <span aria-hidden="true"><i className="bi bi-chevron-down"></i></span></button>
-                        <div className="dropdown-content">
+                                toggleDropdown('what');
+                            }}
+                        >
+                            What We Do{' '}
+                            <span aria-hidden="true">
+                                <i className="bi bi-chevron-down"></i>
+                            </span>
+                        </button>
+                        <div className={`dropdown-content ${openDropdown === 'what' ? 'open' : ''}`}>
                             <a href="/what-we-do" onClick={closeNav}>Overview</a>
                             <a href="/projects" onClick={closeNav}>Projects &amp; Impact</a>
                             <a href="/initiatives" onClick={closeNav}>CGP Initiatives</a>
                             <a href="/resources" onClick={closeNav}>Resources</a>
                         </div>
                     </div>
-                    <a href="/news" className={activePage === 'news' ? 'active' : ''} onClick={closeNav}>News &amp; Insights</a>
 
-                    <div className="nav-profile-wrap" ref={dropRef} style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+                    <a
+                        href="/news"
+                        className={activePage === 'news' ? 'active' : ''}
+                        onClick={closeNav}
+                    >
+                        News &amp; Insights
+                    </a>
+
+                    {/* ---------- Profile / Staff ---------- */}
+                    <div
+                        className="nav-profile-wrap"
+                        ref={dropRef}
+                        style={{
+                            position: 'relative',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                        }}
+                    >
                         <button
                             className="nav-search-btn"
                             type="button"
                             aria-label={isAuthenticated ? 'Admin menu' : 'Staff login'}
-                            onClick={() => isAuthenticated ? setProfileOpen(o => !o) : navigate('/admin/login')}
+                            onClick={() =>
+                                isAuthenticated
+                                    ? setProfileOpen(o => !o)
+                                    : navigate('/admin/login')
+                            }
                             style={{ gap: '6px' }}
                         >
-                            <i className={`bi ${isAuthenticated ? 'bi-person-fill-check' : 'bi-person-circle'}`}></i>
-                            {isAuthenticated ? (admin?.name?.split(' ')[0] || 'Admin') : 'Staff'}
+                            <i
+                                className={`bi ${
+                                    isAuthenticated ? 'bi-person-fill-check' : 'bi-person-circle'
+                                }`}
+                            ></i>
+                            {isAuthenticated ? admin?.name?.split(' ')[0] || 'Admin' : 'Staff'}
                         </button>
+
                         {isAuthenticated && profileOpen && (
-                            <div style={{
-                                position: 'absolute', top: 'calc(100% + 8px)', right: 0,
-                                background: '#fff', border: '1px solid var(--border)',
-                                borderRadius: '6px', minWidth: '180px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-                                zIndex: 9999, overflow: 'hidden'
-                            }}>
-                                <a href="/admin" onClick={closeNav} style={{ display: 'block', padding: '12px 16px', borderBottom: '1px solid var(--border)', color: 'var(--ink)', textDecoration: 'none', fontSize: '0.92rem' }}>
-                                    <i className="bi bi-speedometer2" style={{ marginRight: '8px' }}></i>Dashboard
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    top: 'calc(100% + 8px)',
+                                    right: 0,
+                                    background: '#fff',
+                                    border: '1px solid var(--border)',
+                                    borderRadius: '6px',
+                                    minWidth: '180px',
+                                    boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                                    zIndex: 9999,
+                                    overflow: 'hidden',
+                                }}
+                            >
+                                <a
+                                    href="/admin"
+                                    onClick={closeNav}
+                                    style={{
+                                        display: 'block',
+                                        padding: '12px 16px',
+                                        borderBottom: '1px solid var(--border)',
+                                        color: 'var(--ink)',
+                                        textDecoration: 'none',
+                                        fontSize: '0.92rem',
+                                    }}
+                                >
+                                    <i
+                                        className="bi bi-speedometer2"
+                                        style={{ marginRight: '8px' }}
+                                    ></i>
+                                    Dashboard
                                 </a>
-                                <button onClick={handleLogout} style={{
-                                    display: 'block', width: '100%', padding: '12px 16px', textAlign: 'left',
-                                    background: 'none', border: 'none', cursor: 'pointer', color: '#c0392b', fontSize: '0.92rem'
-                                }}>
-                                    <i className="bi bi-box-arrow-right" style={{ marginRight: '8px' }}></i>Sign Out
+                                <button
+                                    onClick={handleLogout}
+                                    style={{
+                                        display: 'block',
+                                        width: '100%',
+                                        padding: '12px 16px',
+                                        textAlign: 'left',
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        color: '#c0392b',
+                                        fontSize: '0.92rem',
+                                    }}
+                                >
+                                    <i
+                                        className="bi bi-box-arrow-right"
+                                        style={{ marginRight: '8px' }}
+                                    ></i>
+                                    Sign Out
                                 </button>
                             </div>
                         )}
