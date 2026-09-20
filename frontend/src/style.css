@@ -318,6 +318,18 @@ body.nav-open .nav-toggle span:nth-child(3) {
   background: none;
 }
 
+/* Group / item matching the route passed as `activePage` to <Navbar />, so the
+   shared navbar shows where the visitor is without each page hand-rolling it. */
+.dropdown.active .dropbtn {
+  border-bottom-color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.dropdown-content a.active {
+  background: var(--surface);
+  color: var(--brand) !important;
+}
+
 .dropdown-content a {
   display: block;
   padding: 12px 18px;

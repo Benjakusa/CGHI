@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { API_BASE, resolveAssetUrl } from '../context/AuthContext';
+import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 export default function News() {
@@ -20,37 +21,7 @@ export default function News() {
 
   return (
     <>
-      <header className="site-header">
-        <div className="wrap">
-          <a className="brand" href="/" aria-label="CGP Home">
-            <img className="brand-logo" src="Assets/logo.png" alt="Center for Global Health & Pandemic Intelligence" />
-          </a>
-          <button className="nav-toggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
-          <nav className="primary-nav" aria-label="Primary">
-            <a href="/">Home</a>
-            <div className="dropdown">
-              <button className="dropbtn">Who We Are <span aria-hidden="true"><i className="bi bi-chevron-down"></i></span></button>
-              <div className="dropdown-content">
-                <a href="/about">About Us</a>
-                <a href="/careers">Careers</a>
-                <a href="/contact">Contact</a>
-                <a href="/privacy">Privacy Policy</a>
-              </div>
-            </div>
-            <div className="dropdown">
-              <button className="dropbtn">What We Do <span aria-hidden="true"><i className="bi bi-chevron-down"></i></span></button>
-              <div className="dropdown-content">
-                <a href="/what-we-do">Overview</a>
-                <a href="/projects">Projects & Impact</a>
-                <a href="/initiatives">CGP Initiatives</a>
-                <a href="/resources">Resources</a>
-              </div>
-            </div>
-            <a href="/news" className="active">News & Insights</a>
-            <a href="/admin/login" className="nav-search-btn" aria-label="Staff login"><i className="bi bi-person-circle"></i> Staff</a>
-          </nav>
-        </div>
-      </header>
+      <Navbar activePage="news" />
 
       <main>
         <div className="page-header">

@@ -50,7 +50,7 @@ export default function Home() {
   if (loading) {
     return (
       <>
-        <Navbar />
+        <Navbar activePage="home" />
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
           <div>Loading...</div>
         </div>
@@ -75,7 +75,7 @@ export default function Home() {
 
   return (
     <React.Fragment>
-      <Navbar />
+      <Navbar activePage="home" />
 
       <main>
         <section className="hero-carousel" aria-label="Featured content carousel" role="region">

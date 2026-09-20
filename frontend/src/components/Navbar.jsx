@@ -11,6 +11,13 @@ export default function Navbar({ activePage }) {
     const dropRef = useRef(null);
     const navRef = useRef(null);
 
+    // Pages that live inside each dropdown, so the matching group and item can
+    // be highlighted with `.active` on every route.
+    const whoPages = ['about', 'careers', 'contact', 'privacy'];
+    const whatPages = ['what-we-do', 'projects', 'initiatives', 'resources'];
+    const whoActive = whoPages.includes(activePage);
+    const whatActive = whatPages.includes(activePage);
+
     // Close profile dropdown + nav dropdowns on outside click
     useEffect(() => {
         function handle(e) {
@@ -82,7 +89,7 @@ export default function Navbar({ activePage }) {
                     </a>
 
                     {/* ---------- Who We Are ---------- */}
-                    <div className={`dropdown ${openDropdown === 'who' ? 'open' : ''}`}>
+                    <div className={`dropdown${openDropdown === 'who' ? ' open' : ''}${whoActive ? ' active' : ''}`}>
                         <button
                             type="button"
                             className="dropbtn"
@@ -98,16 +105,16 @@ export default function Navbar({ activePage }) {
                                 <i className="bi bi-chevron-down"></i>
                             </span>
                         </button>
-                        <div className={`dropdown-content ${openDropdown === 'who' ? 'open' : ''}`}>
-                            <a href="/about" onClick={closeNav}>About Us</a>
-                            <a href="/careers" onClick={closeNav}>Careers</a>
-                            <a href="/contact" onClick={closeNav}>Contact</a>
-                            <a href="/privacy" onClick={closeNav}>Privacy Policy</a>
+                        <div className={`dropdown-content${openDropdown === 'who' ? ' open' : ''}`}>
+                            <a href="/about" className={activePage === 'about' ? 'active' : ''} onClick={closeNav}>About Us</a>
+                            <a href="/careers" className={activePage === 'careers' ? 'active' : ''} onClick={closeNav}>Careers</a>
+                            <a href="/contact" className={activePage === 'contact' ? 'active' : ''} onClick={closeNav}>Contact</a>
+                            <a href="/privacy" className={activePage === 'privacy' ? 'active' : ''} onClick={closeNav}>Privacy Policy</a>
                         </div>
                     </div>
 
                     {/* ---------- What We Do ---------- */}
-                    <div className={`dropdown ${openDropdown === 'what' ? 'open' : ''}`}>
+                    <div className={`dropdown${openDropdown === 'what' ? ' open' : ''}${whatActive ? ' active' : ''}`}>
                         <button
                             type="button"
                             className="dropbtn"
@@ -123,11 +130,11 @@ export default function Navbar({ activePage }) {
                                 <i className="bi bi-chevron-down"></i>
                             </span>
                         </button>
-                        <div className={`dropdown-content ${openDropdown === 'what' ? 'open' : ''}`}>
-                            <a href="/what-we-do" onClick={closeNav}>Overview</a>
-                            <a href="/projects" onClick={closeNav}>Projects &amp; Impact</a>
-                            <a href="/initiatives" onClick={closeNav}>CGP Initiatives</a>
-                            <a href="/resources" onClick={closeNav}>Resources</a>
+                        <div className={`dropdown-content${openDropdown === 'what' ? ' open' : ''}`}>
+                            <a href="/what-we-do" className={activePage === 'what-we-do' ? 'active' : ''} onClick={closeNav}>Overview</a>
+                            <a href="/projects" className={activePage === 'projects' ? 'active' : ''} onClick={closeNav}>Projects &amp; Impact</a>
+                            <a href="/initiatives" className={activePage === 'initiatives' ? 'active' : ''} onClick={closeNav}>CGP Initiatives</a>
+                            <a href="/resources" className={activePage === 'resources' ? 'active' : ''} onClick={closeNav}>Resources</a>
                         </div>
                     </div>
 
