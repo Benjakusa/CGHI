@@ -56,6 +56,17 @@ export default function Navbar({ activePage }) {
         setOpenDropdown(prev => (prev === name ? null : name));
     }
 
+    // Hover handlers: open immediately on enter, close on leave (only if this
+    // dropdown is the one currently open, to avoid race conditions when the
+    // pointer moves quickly between the two menus).
+    function openOnHover(name) {
+        setOpenDropdown(name);
+    }
+
+    function closeOnLeave(name) {
+        setOpenDropdown(prev => (prev === name ? null : prev));
+    }
+
     return (
         <header className="site-header">
             <div className="wrap">
@@ -89,7 +100,11 @@ export default function Navbar({ activePage }) {
                     </a>
 
                     {/* ---------- Who We Are ---------- */}
-                    <div className={`dropdown${openDropdown === 'who' ? ' open' : ''}${whoActive ? ' active' : ''}`}>
+                    <div
+                        className={`dropdown${openDropdown === 'who' ? ' open' : ''}${whoActive ? ' active' : ''}`}
+                        onMouseEnter={() => openOnHover('who')}
+                        onMouseLeave={() => closeOnLeave('who')}
+                    >
                         <button
                             type="button"
                             className="dropbtn"
@@ -114,7 +129,11 @@ export default function Navbar({ activePage }) {
                     </div>
 
                     {/* ---------- What We Do ---------- */}
-                    <div className={`dropdown${openDropdown === 'what' ? ' open' : ''}${whatActive ? ' active' : ''}`}>
+                    <div
+                        className={`dropdown${openDropdown === 'what' ? ' open' : ''}${whatActive ? ' active' : ''}`}
+                        onMouseEnter={() => openOnHover('what')}
+                        onMouseLeave={() => closeOnLeave('what')}
+                    >
                         <button
                             type="button"
                             className="dropbtn"
