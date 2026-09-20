@@ -129,7 +129,6 @@ export default function Careers() {
                 throw new Error(errData.error || 'Submission failed');
             }
 
-            const data = await res.json();
             setApplyModal({ ...applyModal, success: true });
             showToast('Application submitted successfully!', 'success');
         } catch (err) {
@@ -299,25 +298,16 @@ export default function Careers() {
                                     const isOpen = openJobId === j.id;
                                     return (
                                         <article className="job-card" key={j.id}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                                                <div>
-                                                    <span className="job-dept">{j.department || 'General'}</span>
-                                                    <h3 style={{ marginTop: '6px', marginBottom: '4px' }}>{j.title}</h3>
-                                                    <div style={{ display: 'flex', gap: '12px', fontSize: '0.82rem', color: 'var(--ink-muted)', flexWrap: 'wrap' }}>
-                                                        {j.location && <span><i className="bi bi-geo-alt"></i> {j.location}</span>}
-                                                        {j.employment_type && <span><i className="bi bi-clock"></i> {j.employment_type}</span>}
-                                                    </div>
+                                            <div style={{ marginBottom: '12px' }}>
+                                                <span className="job-dept">{j.department || 'General'}</span>
+                                                <h3 style={{ marginTop: '6px', marginBottom: '4px' }}>{j.title}</h3>
+                                                <div style={{ display: 'flex', gap: '12px', fontSize: '0.82rem', color: 'var(--ink-muted)', flexWrap: 'wrap' }}>
+                                                    {j.location && <span><i className="bi bi-geo-alt"></i> {j.location}</span>}
+                                                    {j.employment_type && <span><i className="bi bi-clock"></i> {j.employment_type}</span>}
                                                 </div>
-                                                <button
-                                                    className="btn-outline"
-                                                    onClick={() => toggleJob(j.id)}
-                                                    aria-expanded={isOpen}
-                                                >
-                                                    {isOpen ? 'Hide' : 'View'} Details
-                                                </button>
                                             </div>
 
-                                            {isOpen ? (
+                                            {isOpen && (
                                                 <div className="job-details-expanded">
                                                     {j.description}
                                                     {j.qualifications?.length > 0 && (
@@ -336,19 +326,25 @@ export default function Careers() {
                                                             </ul>
                                                         </>
                                                     )}
-                                                    <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid var(--border)' }}>
-                                                        <button className="btn" onClick={() => openApplyModal(j)}>
-                                                            <i className="bi bi-paper-plane"></i> Apply Now
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div style={{ marginTop: '16px', textAlign: 'right' }}>
-                                                    <button className="btn" onClick={() => openApplyModal(j)}>
-                                                        <i className="bi bi-paper-plane"></i> Apply Now
-                                                    </button>
                                                 </div>
                                             )}
+
+                                            {/* Footer actions: View Details (left) · Apply Now (right) */}
+                                            <div className="job-card-actions">
+                                                <button
+                                                    className="btn job-card-view-btn"
+                                                    onClick={() => toggleJob(j.id)}
+                                                    aria-expanded={isOpen}
+                                                >
+                                                    {isOpen ? 'Hide Details' : 'View Details'}
+                                                </button>
+                                                <button
+                                                    className="btn job-card-apply-btn"
+                                                    onClick={() => openApplyModal(j)}
+                                                >
+                                                    <i className="bi bi-paper-plane"></i> Apply Now
+                                                </button>
+                                            </div>
                                         </article>
                                     );
                                 })}
@@ -378,38 +374,78 @@ export default function Careers() {
                     </div>
                 </section>
 
-                <section className="section-surface">
-                    <div className="wrap">
-                        <div className="apply-card">
-                            <h2>How to Apply</h2>
-                            <p>Submit your application materials via the online form. We review applications on a rolling basis and will reach out
-                                if there is a match with our current needs. Qualified applicants from underrepresented groups are especially
-                                encouraged to apply.</p>
-
-                            <div className="apply-docs">
-                                <div className="apply-doc">
-                                    <h4><i className="bi bi-file-earmark-person"></i> CV / R\u00e9sum\u00e9</h4>
-                                    <p>Current curriculum vitae highlighting relevant experience and expertise.</p>
-                                </div>
-                                <div className="apply-doc">
-                                    <h4><i className="bi bi-file-earmark-text"></i> Cover Letter</h4>
-                                    <p>A brief letter (max 1 page) describing your interest and relevant qualifications.</p>
-                                </div>
-                                <div className="apply-doc">
-                                    <h4><i className="bi bi-file-earmark-arrow-up"></i> Work Sample</h4>
-                                    <p>One relevant writing sample, data analysis, or technical report.</p>
-                                </div>
-                            </div>
-
-                            <p style={{ color: 'rgba(255,255,255,0.72)', marginBottom: '18px' }}>Send your application to:</p>
-                            <a href="mailto:info@pandemicintelcenter.org" className="btn-primary"
-                                style={{ width: 'fit-content' }}>info@pandemicintelcenter.org</a>
-                            <p style={{ marginTop: '16px', fontSize: '0.88rem', color: 'rgba(255,255,255,0.55)' }}>Use the subject line:
-                                <em>Application Technical Consultant</em> or <em>Application Research Associate</em>
-                            </p>
-                        </div>
-                    </div>
-                </section>
+                {/* Local styles for job card action row */}
+                <style>{`
+                    /* Push the actions row to the bottom of the card so it aligns
+                       across cards of different content lengths. */
+                    .job-card {
+                        display: flex;
+                        flex-direction: column;
+                    }
+                    .job-card > .job-card-actions {
+                        margin-top: auto;
+                    }
+                    .job-card-actions {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 12px;
+                        padding-top: 20px;
+                        margin-top: 20px;
+                        border-top: 1px solid var(--border);
+                        flex-wrap: wrap;
+                    }
+                    /* View Details: solid blue background */
+                    .job-card .job-card-view-btn {
+                        background: var(--brand) !important;
+                        border: 2px solid var(--brand) !important;
+                        color: #ffffff !important;
+                        border-radius: var(--radius) !important;
+                        font-weight: 700;
+                        font-size: 0.85rem;
+                        padding: 10px 18px;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        white-space: nowrap;
+                        transition: background 0.18s, border-color 0.18s, transform 0.15s;
+                    }
+                    .job-card .job-card-view-btn:hover {
+                        background: var(--brand-dark) !important;
+                        border-color: var(--brand-dark) !important;
+                        transform: translateY(-1px);
+                    }
+                    /* Apply Now: solid blue with icon */
+                    .job-card .job-card-apply-btn {
+                        background: var(--brand) !important;
+                        border: 2px solid var(--brand) !important;
+                        color: #ffffff !important;
+                        border-radius: var(--radius) !important;
+                        font-weight: 700;
+                        font-size: 0.85rem;
+                        padding: 10px 18px;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
+                        white-space: nowrap;
+                        transition: background 0.18s, border-color 0.18s, transform 0.15s;
+                    }
+                    .job-card .job-card-apply-btn:hover {
+                        background: var(--brand-dark) !important;
+                        border-color: var(--brand-dark) !important;
+                        transform: translateY(-1px);
+                    }
+                    /* On very narrow widths, let the buttons stack nicely */
+                    @media (max-width: 420px) {
+                        .job-card-actions {
+                            flex-direction: column;
+                            align-items: stretch;
+                        }
+                        .job-card-actions .btn {
+                            width: 100%;
+                        }
+                    }
+                `}</style>
             </main>
 
             <Footer />
