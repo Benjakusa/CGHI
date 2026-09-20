@@ -1,24 +1,33 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+
+const WHO_PAGES = ['about', 'careers', 'contact', 'privacy'];
+const WHAT_PAGES = ['what-we-do', 'projects', 'initiatives', 'resources'];
 
 export default function Navbar({ activePage }) {
     const { isAuthenticated, admin, logout } = useAuth();
     const navigate = useNavigate();
+
     const [profileOpen, setProfileOpen] = useState(false);
     const [navOpen, setNavOpen] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(null); // 'who' | 'what' | null
+
     const dropRef = useRef(null);
     const navRef = useRef(null);
+    const hoverCapable = useRef(false);
 
-    // Pages that live inside each dropdown, so the matching group and item can
-    // be highlighted with `.active` on every route.
-    const whoPages = ['about', 'careers', 'contact', 'privacy'];
-    const whatPages = ['what-we-do', 'projects', 'initiatives', 'resources'];
-    const whoActive = whoPages.includes(activePage);
-    const whatActive = whatPages.includes(activePage);
+    // Detect hover capability once (desktop vs touch)
+    useEffect(() => {
+        hoverCapable.current =
+            typeof window !== 'undefined' &&
+            window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    }, []);
 
-    // Close profile dropdown + nav dropdowns on outside click
+    const whoActive = WHO_PAGES.includes(activePage);
+    const whatActive = WHAT_PAGES.includes(activePage);
+
+    // Outside click closes profile + any open dropdown
     useEffect(() => {
         function handle(e) {
             if (dropRef.current && !dropRef.current.contains(e.target)) {
@@ -29,15 +38,25 @@ export default function Navbar({ activePage }) {
             }
         }
         document.addEventListener('mousedown', handle);
-        return () => document.removeEventListener('mousedown', handle);
+        document.addEventListener('touchstart', handle);
+        return () => {
+            document.removeEventListener('mousedown', handle);
+            document.removeEventListener('touchstart', handle);
+        };
     }, []);
 
-    // Toggle body.nav-open so the mobile CSS engages
+    // Lock body scroll when mobile nav is open
     useEffect(() => {
-        if (navOpen) document.body.classList.add('nav-open');
-        else document.body.classList.remove('nav-open');
+        document.body.classList.toggle('nav-open', navOpen);
         return () => document.body.classList.remove('nav-open');
     }, [navOpen]);
+
+    // Close everything on route change
+    useEffect(() => {
+        setNavOpen(false);
+        setOpenDropdown(null);
+        setProfileOpen(false);
+    }, [activePage]);
 
     function handleLogout() {
         logout();
@@ -52,31 +71,40 @@ export default function Navbar({ activePage }) {
         setOpenDropdown(null);
     }
 
+    // Click toggle (works on mobile + desktop)
     function toggleDropdown(name) {
         setOpenDropdown(prev => (prev === name ? null : name));
     }
 
-    // Hover handlers: open immediately on enter, close on leave (only if this
-    // dropdown is the one currently open, to avoid race conditions when the
-    // pointer moves quickly between the two menus).
-    function openOnHover(name) {
+    // Hover handlers — no-op on touch devices
+    function handleMouseEnter(name) {
+        if (!hoverCapable.current) return;
         setOpenDropdown(name);
     }
-
-    function closeOnLeave(name) {
+    function handleMouseLeave(name) {
+        if (!hoverCapable.current) return;
         setOpenDropdown(prev => (prev === name ? null : prev));
     }
+
+    const dropdownClass = (name, isActive) =>
+        [
+            'dropdown',
+            openDropdown === name ? 'open' : '',
+            isActive ? 'has-active' : '',
+        ]
+            .filter(Boolean)
+            .join(' ');
 
     return (
         <header className="site-header">
             <div className="wrap">
-                <a className="brand" href="/" aria-label="CGP Home" onClick={closeNav}>
+                <Link className="brand" to="/" aria-label="CGP Home" onClick={closeNav}>
                     <img
                         className="brand-logo"
                         src="/Assets/logo.png"
                         alt="Center for Global Health & Pandemic Intelligence"
                     />
-                </a>
+                </Link>
 
                 <button
                     type="button"
@@ -85,96 +113,83 @@ export default function Navbar({ activePage }) {
                     aria-expanded={navOpen}
                     onClick={() => setNavOpen(o => !o)}
                 >
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span />
+                    <span />
+                    <span />
                 </button>
 
                 <nav className="primary-nav" aria-label="Primary" ref={navRef}>
-                    <a
-                        href="/"
-                        className={activePage === 'home' ? 'active' : ''}
+                    <NavLink
+                        to="/"
+                        end
+                        className={({ isActive }) => (isActive ? 'active' : '')}
                         onClick={closeNav}
                     >
                         Home
-                    </a>
+                    </NavLink>
 
                     {/* ---------- Who We Are ---------- */}
                     <div
-                        className={`dropdown${openDropdown === 'who' ? ' open' : ''}${whoActive ? ' active' : ''}`}
-                        onMouseEnter={() => openOnHover('who')}
-                        onMouseLeave={() => closeOnLeave('who')}
+                        className={dropdownClass('who', whoActive)}
+                        onMouseEnter={() => handleMouseEnter('who')}
+                        onMouseLeave={() => handleMouseLeave('who')}
                     >
                         <button
                             type="button"
                             className="dropbtn"
                             aria-haspopup="true"
                             aria-expanded={openDropdown === 'who'}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                toggleDropdown('who');
-                            }}
+                            onClick={() => toggleDropdown('who')}
                         >
                             Who We Are{' '}
                             <span aria-hidden="true">
-                                <i className="bi bi-chevron-down"></i>
+                                <i className="bi bi-chevron-down" />
                             </span>
                         </button>
-                        <div className={`dropdown-content${openDropdown === 'who' ? ' open' : ''}`}>
-                            <a href="/about" className={activePage === 'about' ? 'active' : ''} onClick={closeNav}>About Us</a>
-                            <a href="/careers" className={activePage === 'careers' ? 'active' : ''} onClick={closeNav}>Careers</a>
-                            <a href="/contact" className={activePage === 'contact' ? 'active' : ''} onClick={closeNav}>Contact</a>
-                            <a href="/privacy" className={activePage === 'privacy' ? 'active' : ''} onClick={closeNav}>Privacy Policy</a>
+                        <div className="dropdown-content">
+                            <NavLink to="/about" onClick={closeNav}>About Us</NavLink>
+                            <NavLink to="/careers" onClick={closeNav}>Careers</NavLink>
+                            <NavLink to="/contact" onClick={closeNav}>Contact</NavLink>
+                            <NavLink to="/privacy" onClick={closeNav}>Privacy Policy</NavLink>
                         </div>
                     </div>
 
                     {/* ---------- What We Do ---------- */}
                     <div
-                        className={`dropdown${openDropdown === 'what' ? ' open' : ''}${whatActive ? ' active' : ''}`}
-                        onMouseEnter={() => openOnHover('what')}
-                        onMouseLeave={() => closeOnLeave('what')}
+                        className={dropdownClass('what', whatActive)}
+                        onMouseEnter={() => handleMouseEnter('what')}
+                        onMouseLeave={() => handleMouseLeave('what')}
                     >
                         <button
                             type="button"
                             className="dropbtn"
                             aria-haspopup="true"
                             aria-expanded={openDropdown === 'what'}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                toggleDropdown('what');
-                            }}
+                            onClick={() => toggleDropdown('what')}
                         >
                             What We Do{' '}
                             <span aria-hidden="true">
-                                <i className="bi bi-chevron-down"></i>
+                                <i className="bi bi-chevron-down" />
                             </span>
                         </button>
-                        <div className={`dropdown-content${openDropdown === 'what' ? ' open' : ''}`}>
-                            <a href="/what-we-do" className={activePage === 'what-we-do' ? 'active' : ''} onClick={closeNav}>Overview</a>
-                            <a href="/projects" className={activePage === 'projects' ? 'active' : ''} onClick={closeNav}>Projects &amp; Impact</a>
-                            <a href="/initiatives" className={activePage === 'initiatives' ? 'active' : ''} onClick={closeNav}>CGP Initiatives</a>
-                            <a href="/resources" className={activePage === 'resources' ? 'active' : ''} onClick={closeNav}>Resources</a>
+                        <div className="dropdown-content">
+                            <NavLink to="/what-we-do" onClick={closeNav}>Overview</NavLink>
+                            <NavLink to="/projects" onClick={closeNav}>Projects &amp; Impact</NavLink>
+                            <NavLink to="/initiatives" onClick={closeNav}>CGP Initiatives</NavLink>
+                            <NavLink to="/resources" onClick={closeNav}>Resources</NavLink>
                         </div>
                     </div>
 
-                    <a
-                        href="/news"
-                        className={activePage === 'news' ? 'active' : ''}
+                    <NavLink
+                        to="/news"
+                        className={({ isActive }) => (isActive ? 'active' : '')}
                         onClick={closeNav}
                     >
                         News &amp; Insights
-                    </a>
+                    </NavLink>
 
                     {/* ---------- Profile / Staff ---------- */}
-                    <div
-                        className="nav-profile-wrap"
-                        ref={dropRef}
-                        style={{
-                            position: 'relative',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                        }}
-                    >
+                    <div className="nav-profile-wrap" ref={dropRef}>
                         <button
                             className="nav-search-btn"
                             type="button"
@@ -184,67 +199,27 @@ export default function Navbar({ activePage }) {
                                     ? setProfileOpen(o => !o)
                                     : navigate('/admin/login')
                             }
-                            style={{ gap: '6px' }}
                         >
                             <i
                                 className={`bi ${
-                                    isAuthenticated ? 'bi-person-fill-check' : 'bi-person-circle'
+                                    isAuthenticated
+                                        ? 'bi-person-fill-check'
+                                        : 'bi-person-circle'
                                 }`}
-                            ></i>
-                            {isAuthenticated ? admin?.name?.split(' ')[0] || 'Admin' : 'Staff'}
+                            />
+                            {isAuthenticated
+                                ? admin?.name?.split(' ')[0] || 'Admin'
+                                : 'Staff'}
                         </button>
 
                         {isAuthenticated && profileOpen && (
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    top: 'calc(100% + 8px)',
-                                    right: 0,
-                                    background: '#fff',
-                                    border: '1px solid var(--border)',
-                                    borderRadius: '6px',
-                                    minWidth: '180px',
-                                    boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-                                    zIndex: 9999,
-                                    overflow: 'hidden',
-                                }}
-                            >
-                                <a
-                                    href="/admin"
-                                    onClick={closeNav}
-                                    style={{
-                                        display: 'block',
-                                        padding: '12px 16px',
-                                        borderBottom: '1px solid var(--border)',
-                                        color: 'var(--ink)',
-                                        textDecoration: 'none',
-                                        fontSize: '0.92rem',
-                                    }}
-                                >
-                                    <i
-                                        className="bi bi-speedometer2"
-                                        style={{ marginRight: '8px' }}
-                                    ></i>
+                            <div className="profile-menu">
+                                <Link to="/admin" onClick={closeNav}>
+                                    <i className="bi bi-speedometer2" />
                                     Dashboard
-                                </a>
-                                <button
-                                    onClick={handleLogout}
-                                    style={{
-                                        display: 'block',
-                                        width: '100%',
-                                        padding: '12px 16px',
-                                        textAlign: 'left',
-                                        background: 'none',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        color: '#c0392b',
-                                        fontSize: '0.92rem',
-                                    }}
-                                >
-                                    <i
-                                        className="bi bi-box-arrow-right"
-                                        style={{ marginRight: '8px' }}
-                                    ></i>
+                                </Link>
+                                <button onClick={handleLogout} type="button">
+                                    <i className="bi bi-box-arrow-right" />
                                     Sign Out
                                 </button>
                             </div>
