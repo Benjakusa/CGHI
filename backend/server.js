@@ -134,6 +134,12 @@ app.get('/api/admin/stats', authMiddleware, (req, res) => {
 
 // Job Applications
 const applicationsDir = path.join(__dirname, 'data', 'uploads');
+// Ensure the applications upload directory exists before multer writes to it
+// (missing directory would crash/500 on Render's ephemeral filesystem).
+if (!fs.existsSync(applicationsDir)) {
+    fs.mkdirSync(applicationsDir, { recursive: true });
+    console.log(`[CGHI API] Created applications directory: ${applicationsDir}`);
+}
 
 const jobApplicationsStorage = multer.diskStorage({
     destination: (req, file, cb) => {
