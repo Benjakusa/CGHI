@@ -28,7 +28,7 @@ export default function News() {
           <div className="wrap">
             <nav className="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span>News & Insights
             </nav>
-            <h1>{activeArticle ? activeArticle.title : 'News & Insights'}</h1>
+            <h1 style={{ color: 'var(--sky)' }}>{activeArticle ? activeArticle.title : 'News & Insights'}</h1>
             <p className="dek">
               {activeArticle
                 ? `${activeArticle.published_at || ''}${activeArticle.published_at ? ' · ' : ''}${activeArticle.category || 'News'}`
@@ -38,6 +38,7 @@ export default function News() {
         </div>
 
         {activeArticle ? (
+          <>
           <section>
             <div className="wrap">
               <p style={{marginBottom: '24px'}}>
@@ -58,11 +59,11 @@ export default function News() {
                 </figure>
               )}
 
-              <p style={{fontSize: '1.15rem', fontWeight: 500, marginBottom: '24px', maxWidth: '70ch'}}>
+              <p style={{fontSize: '1.15rem', fontWeight: 500, marginBottom: '24px'}}>
                 {activeArticle.excerpt}
               </p>
 
-              <div style={{maxWidth: '70ch', whiteSpace: 'pre-line', fontSize: '1.02rem', lineHeight: 1.7, color: 'var(--ink-soft)'}}>
+              <div style={{whiteSpace: 'pre-line', fontSize: '1.05rem', lineHeight: 1.75, color: 'var(--ink-soft)'}}>
                 {activeArticle.content || ''}
               </div>
 
@@ -73,6 +74,50 @@ export default function News() {
               )}
             </div>
           </section>
+
+          {news.filter(n => String(n.id) !== String(activeArticle.id)).length > 0 && (
+            <section style={{paddingBottom: '64px'}}>
+              <div className="wrap">
+                <h2 style={{marginBottom: '24px', fontSize: '1.5rem'}}>
+                  More News &amp; Insights
+                </h2>
+                <div className="grid-3">
+                  {news
+                    .filter(n => String(n.id) !== String(activeArticle.id))
+                    .map(n => (
+                      <article className="article-card" key={n.id}>
+                        {n.image_url && (
+                          <img
+                            className="article-card-img"
+                            src={resolveAssetUrl(n.image_url)}
+                            alt={n.title}
+                            loading="lazy"
+                          />
+                        )}
+                        <div className="article-card-body">
+                          <div className="article-meta">{n.published_at}{n.category ? ` · ${n.category}` : ''}</div>
+                          <h3>{n.title}</h3>
+                          <p>{n.excerpt}</p>
+                          <a
+                            className="text-link"
+                            href={`/news?article=${n.id}`}
+                            style={{display: 'block', marginTop: '16px'}}
+                          >
+                            Read More <i className="bi bi-arrow-right"></i>
+                          </a>
+                        </div>
+                      </article>
+                    ))}
+                </div>
+                <p style={{marginTop: '24px'}}>
+                  <a className="text-link" href="/news">
+                    View all news <i className="bi bi-arrow-right"></i>
+                  </a>
+                </p>
+              </div>
+            </section>
+          )}
+          </>
         ) : (
           <section>
             <div className="wrap">
