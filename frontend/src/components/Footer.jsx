@@ -1,89 +1,80 @@
-/**
- * Site footer.
- *
- * Rebuilt to the audit spec: organisation description, Explore / Resources /
- * Contact columns, social links, and the legal row (Privacy Policy, Terms of
- * Use, Accessibility Statement, copyright). All navigation is data-driven from
- * `src/content/navigation.js` so the footer can never point at a page the
- * router does not serve.
- */
-
 import React from 'react';
-import SmartLink from './SmartLink';
-import { BRAND, CONTACT, SOCIAL } from '../config/site';
-import { FOOTER_NAV, FOOTER_LEGAL } from '../content/navigation';
 
 export default function Footer() {
-  const year = new Date().getFullYear();
-
-  return (
-    <footer className="site-footer">
-      <div className="wrap">
-        <div className="footer-grid">
-          <div className="footer-brand">
-            <p className="footer-tagline">{BRAND.tagline}</p>
-            <p className="footer-mission">
-              A multidisciplinary policy, research and implementation hub strengthening global and
-              regional health security through evidence-driven action — preventing, detecting and
-              responding to public health threats in vulnerable and high-risk settings.
-            </p>
-
-            <ul className="footer-social" aria-label={`${BRAND.abbr} on social media`}>
-              {SOCIAL.map((s) => (
-                <li key={s.label}>
-                  <a
-                    href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`${BRAND.abbr} on ${s.label}`}
-                  >
-                    <i className={`bi ${s.icon}`} aria-hidden="true" />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {FOOTER_NAV.map((column) => (
-            <nav key={column.title} className="footer-column" aria-label={column.title}>
-              <h2 className="footer-heading">{column.title}</h2>
-              <ul>
-                {column.links.map((link) => (
-                  <li key={link.to + link.label}>
-                    <SmartLink to={link.to}>{link.label}</SmartLink>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          ))}
-
-          <div className="footer-column">
-            <h2 className="footer-heading">Contact</h2>
-            <address className="footer-address">
-              <span>{CONTACT.address.formatted}</span>
-              <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
-              <span>
-                {CONTACT.hours.days}, {CONTACT.hours.time}
-              </span>
-            </address>
-          </div>
-        </div>
-
-        <div className="footer-bottom">
-          <p className="footer-copyright">
-            © {year} {BRAND.legalName}. All rights reserved.
-          </p>
-          <nav aria-label="Legal">
-            <ul className="footer-legal">
-              {FOOTER_LEGAL.map((link) => (
-                <li key={link.to}>
-                  <SmartLink to={link.to}>{link.label}</SmartLink>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </div>
-      </div>
-    </footer>
-  );
+    return (
+        <footer className="site-footer">
+            <div className="wrap">
+                <div className="footer-grid">
+                    <div className="footer-brand">
+                        <p className="footer-tagline">&ldquo;Building Intelligence for a Safer World&rdquo;</p>
+                        <p className="footer-mission">
+                            To harness data, science, and multisectoral partnerships to strengthen surveillance
+                            systems, accelerate early warning, and empower frontline responders.
+                        </p>
+                        <div className="footer-social" aria-label="CGP on social media">
+                            <a
+                                href="https://www.facebook.com/profile.php?id=61582543745887"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="CGP on Facebook"
+                                title="Facebook"
+                            >
+                                <i className="bi bi-facebook" aria-hidden="true"></i>
+                            </a>
+                            <a
+                                href="https://www.linkedin.com/company/center-for-global-health-and-pandemic-intelligence/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="CGP on LinkedIn"
+                                title="LinkedIn"
+                            >
+                                <i className="bi bi-linkedin" aria-hidden="true"></i>
+                            </a>
+                            <a
+                                href="https://x.com/cghpintel"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="CGP on X"
+                                title="X"
+                            >
+                                <i className="bi bi-twitter-x" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div>
+                        <h4>Navigate</h4>
+                        <ul>
+                            <li><a href="/about">About Us</a></li>
+                            <li><a href="/what-we-do">What We Do</a></li>
+                            <li><a href="/projects">Projects &amp; Impact</a></li>
+                            <li><a href="/initiatives">CGP Initiatives</a></li>
+                            <li><a href="/resources">Resources</a></li>
+                            <li><a href="/news">News &amp; Insights</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Involved</h4>
+                        <ul>
+                            <li><a href="/contact">Partner With Us</a></li>
+                            <li><a href="/careers">Careers</a></li>
+                            <li><a href="/privacy">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Contact</h4>
+                        <ul>
+                            <li>Westlands, Nairobi, Kenya</li>
+                            <li></li>
+                            <li><a href="mailto:info@pandemicintelcenter.org">info@pandemicintelcenter.org</a></li>
+                            <li>08:00 – 16:00, Mon – Fri</li>
+                        </ul>
+                    </div>
+                </div>
+                <div className="footer-bottom">
+                    <span>&copy; {new Date().getFullYear()} The Center for Global Health and Pandemic Intelligence. All rights reserved.</span>
+                    <span>Westlands, Nairobi, Kenya</span>
+                </div>
+            </div>
+        </footer>
+    );
 }

@@ -1,82 +1,26 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import Layout from '../components/Layout';
-import PageHeader from '../components/PageHeader';
-import Seo, { BASE_JSONLD, breadcrumbJsonLd, pageJsonLd } from '../components/Seo';
-import useApi from '../hooks/useApi';
-import { SkeletonCard } from '../components/Skeleton';
+import React, { useEffect, useState } from 'react';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import { API_BASE } from '../context/AuthContext';
-import { CONTACT } from '../config/site';
-import { PAGE_META } from '../content/navigation';
-
-const META = PAGE_META['/careers'];
 
 export default function Careers() {
-    const jobsApi = useApi('/api/jobs', []);
+    const [jobs, setJobs] = useState([]);
     const [openJobId, setOpenJobId] = useState(null);
     const [applyModal, setApplyModal] = useState(null);
-    const applyTriggerRef = useRef(null);
     const [submitting, setSubmitting] = useState(false);
 
-    const jobs = jobsApi.data ?? [];
-    const modalRef = useRef(null);
-
-    // Move focus into the dialog when it opens so keyboard and screen reader
-    // users are not left behind on the page behind the modal.
     useEffect(() => {
-        if (!applyModal) return undefined;
-        const node = modalRef.current;
-        if (!node) return undefined;
-        const focusTarget = node.querySelector('input:not([type="hidden"]), button, [href]');
-        focusTarget?.focus();
-        return undefined;
-    }, [applyModal]);
-
-    const closeApplyModal = () => {
-        setApplyModal(null);
-        applyTriggerRef.current?.focus();
-    };
-
-    const handleBackdropMouseDown = () => closeApplyModal();
-
-    const handleModalKeyDown = (event) => {
-        if (event.key === 'Escape') {
-            event.stopPropagation();
-            closeApplyModal();
-            return;
-        }
-        if (event.key !== 'Tab') return;
-
-        // Keep Tab inside the dialog while it is open.
-        const focusables = modalRef.current?.querySelectorAll(
-            'a[href], button:not([disabled]), input:not([type="hidden"]), select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        if (!focusables || focusables.length === 0) return;
-        const first = focusables[0];
-        const last = focusables[focusables.length - 1];
-        if (event.shiftKey && document.activeElement === first) {
-            event.preventDefault();
-            last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-            event.preventDefault();
-            first.focus();
-        }
-    };
-
-    const jsonLd = useMemo(
-        () => [
-            ...BASE_JSONLD,
-            pageJsonLd({ name: META.title, path: '/careers', description: META.description }),
-            breadcrumbJsonLd(META.breadcrumb),
-        ],
-        []
-    );
+        fetch(`${API_BASE}/api/jobs`)
+            .then(r => r.json())
+            .then(data => setJobs(Array.isArray(data) ? data : []))
+            .catch(console.error);
+    }, []);
 
     const toggleJob = (id) => {
         setOpenJobId(prev => (prev === id ? null : id));
     };
 
-    const openApplyModal = (job, trigger) => {
-        applyTriggerRef.current = trigger;
+    const openApplyModal = (job) => {
         setApplyModal({
             jobId: job.id,
             jobTitle: job.title,
@@ -195,132 +139,102 @@ export default function Careers() {
     };
 
     return (
-        <Layout navId="careers">
-            <Seo title={META.title} description={META.description} path="/careers" jsonLd={jsonLd} />
-
+        <>
             {/* Apply Modal */}
             {applyModal && !applyModal.success && (
-                <div className="modal-backdrop" onMouseDown={handleBackdropMouseDown}>
-                    <div
-                        className="apply-modal"
-                        onMouseDown={e => e.stopPropagation()}
-                        role="dialog"
-                        aria-modal="true"
-                        aria-labelledby="apply-modal-title"
-                        ref={modalRef}
-                        onKeyDown={handleModalKeyDown}
-                    >
+                <div className="modal-backdrop" onClick={() => setApplyModal(null)}>
+                    <div className="apply-modal" onClick={e => e.stopPropagation()}>
                         <div className="apply-modal-header">
-                            <h3 id="apply-modal-title">Apply for {applyModal.jobTitle}</h3>
-                            <button
-                                type="button"
-                                className="apply-modal-close"
-                                onClick={closeApplyModal}
-                                aria-label="Close application form"
-                            >
-                                <i className="bi bi-x-lg" aria-hidden="true" />
-                            </button>
+                            <h3>Apply for {applyModal.jobTitle}</h3>
+                            <button className="apply-modal-close" onClick={() => setApplyModal(null)}>&times;</button>
                         </div>
                         <div className="apply-modal-body">
                             <form onSubmit={handleApplySubmit}>
                                 <div className="form-group">
-                                    <label htmlFor="apply-name">Full Name <span className="required-star">*</span></label>
+                                    <label>Full Name <span className="required-star">*</span></label>
                                     <input
-                                        id="apply-name"
                                         type="text"
                                         required
                                         value={applyModal.name || ''}
                                         onChange={e => setApplyModal({ ...applyModal, name: e.target.value })}
-                                        autoComplete="name"
                                         placeholder="Your full name"
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="apply-email">Email Address <span className="required-star">*</span></label>
+                                    <label>Email Address <span className="required-star">*</span></label>
                                     <input
-                                        id="apply-email"
                                         type="email"
                                         required
                                         value={applyModal.email || ''}
                                         onChange={e => setApplyModal({ ...applyModal, email: e.target.value })}
-                                        autoComplete="email"
                                         placeholder="your@email.com"
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="apply-phone">Phone Number <span className="required-star">*</span></label>
+                                    <label>Phone Number <span className="required-star">*</span></label>
                                     <input
-                                        id="apply-phone"
                                         type="tel"
                                         required
                                         value={applyModal.phone || ''}
                                         onChange={e => setApplyModal({ ...applyModal, phone: e.target.value })}
-                                        autoComplete="tel"
                                         placeholder="+254 700 000 000"
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="apply-jobtitle">Job Title <span className="required-star">*</span></label>
+                                    <label>Job Title <span className="required-star">*</span></label>
                                     <input
-                                        id="apply-jobtitle"
                                         type="text"
+                                        required
                                         readOnly
-                                        tabIndex={-1}
                                         value={applyModal.jobTitle || ''}
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="apply-cover">Upload Cover Letter (PDF/DOC/DOCX) <span className="required-star">*</span></label>
+                                    <label>Upload Cover Letter (PDF/DOC/DOCX) <span className="required-star">*</span></label>
                                     <div className="file-upload-area">
                                         <input
-                                            id="apply-cover"
                                             type="file"
                                             accept=".pdf,.doc,.docx"
-                                            aria-describedby="coverLetterError"
                                             onChange={e => handleFileChange(e, 'coverLetter')}
                                             required
                                         />
                                         <div className="file-info">
-                                            <i className="bi bi-upload" aria-hidden="true"></i>
+                                            <i className="bi bi-upload"></i>
                                             <span>{applyModal.files?.coverLetter ? applyModal.files.coverLetter.name : 'Click to select cover letter'}</span>
                                         </div>
-                                        <div className="file-error" id="coverLetterError" role="alert"></div>
+                                        <div className="file-error" id="coverLetterError"></div>
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="apply-cv">Upload CV (PDF/DOC/DOCX) <span className="required-star">*</span></label>
+                                    <label>Upload CV (PDF/DOC/DOCX) <span className="required-star">*</span></label>
                                     <div className="file-upload-area">
                                         <input
-                                            id="apply-cv"
                                             type="file"
                                             accept=".pdf,.doc,.docx"
-                                            aria-describedby="cvError"
                                             onChange={e => handleFileChange(e, 'cv')}
                                             required
                                         />
                                         <div className="file-info">
-                                            <i className="bi bi-upload" aria-hidden="true"></i>
+                                            <i className="bi bi-upload"></i>
                                             <span>{applyModal.files?.cv ? applyModal.files.cv.name : 'Click to select CV'}</span>
                                         </div>
-                                        <div className="file-error" id="cvError" role="alert"></div>
+                                        <div className="file-error" id="cvError"></div>
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="apply-certs">Upload Certificates &amp; Testimonials (Optional, PDF/images)</label>
+                                    <label>Upload Certificates &amp; Testimonials (Optional, PDF/images)</label>
                                     <div className="file-upload-area">
                                         <input
-                                            id="apply-certs"
                                             type="file"
-                                            aria-describedby="certificatesError"
                                             accept=".pdf,.jpg,.jpeg,.png,.webp"
                                             multiple
                                             onChange={e => handleFileChange(e, 'certificates')}
                                         />
                                         <div className="file-info">
-                                            <i className="bi bi-upload" aria-hidden="true"></i>
+                                            <i className="bi bi-upload"></i>
                                             <span>{applyModal.files?.certificates?.length ? applyModal.files.certificates.length + ' files selected' : 'Click to select certificates (optional)'}</span>
                                         </div>
-                                        <div className="file-error" id="certificatesError" role="alert"></div>
+                                        <div className="file-error" id="certificatesError"></div>
                                     </div>
                                 </div>
                                 <button type="submit" className="submit-btn" disabled={submitting}>
@@ -340,32 +254,31 @@ export default function Careers() {
             )}
 
             {applyModal?.success && (
-                <div className="modal-backdrop" onMouseDown={closeApplyModal}>
-                    <div
-                        className="apply-modal"
-                        onMouseDown={e => e.stopPropagation()}
-                        role="dialog"
-                        aria-modal="true"
-                        aria-labelledby="apply-success-title"
-                        ref={modalRef}
-                    >
+                <div className="modal-backdrop" onClick={() => setApplyModal(null)}>
+                    <div className="apply-modal" onClick={e => e.stopPropagation()}>
                         <div className="apply-modal-body">
                             <div className="form-success">
-                                <i className="bi bi-check-circle-fill" aria-hidden="true"></i>
-                                <h4 id="apply-success-title">Application submitted successfully</h4>
+                                <i className="bi bi-check-circle-fill"></i>
+                                <h4>Application submitted successfully</h4>
                                 <p>Thank you, {applyModal.name}. We will review your application and get back to you within 2 weeks.</p>
-                                <button type="button" className="btn" onClick={closeApplyModal} style={{ marginTop: '16px' }}>Close</button>
+                                <button className="btn" onClick={() => setApplyModal(null)} style={{ marginTop: '16px' }}>Close</button>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
 
-            <PageHeader
-                trail={META.breadcrumb}
-                h1="Careers"
-                dek="CGP builds an expert network of public health and data professionals committed to transforming epidemic intelligence in Africa and beyond."
-            />
+            <Navbar activePage="careers" />
+
+            <main>
+                <div className="page-header">
+                    <div className="wrap">
+                        <nav className="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span>Careers</nav>
+                        <h1>Careers</h1>
+                        <p className="dek">CGP builds an expert network of public health and data professionals committed to transforming
+                            epidemic intelligence in Africa and beyond.</p>
+                    </div>
+                </div>
 
                 <section>
                     <div className="wrap">
@@ -374,21 +287,11 @@ export default function Careers() {
                             <h2 style={{ margin: 0 }}>Current Opportunities</h2>
                         </div>
 
-                        {jobsApi.loading ? (
-                            <div className="grid-3" aria-hidden="true">
-                                <SkeletonCard image={false} />
-                                <SkeletonCard image={false} />
-                                <SkeletonCard image={false} />
-                            </div>
-                        ) : jobs.length === 0 ? (
-                            <div className="empty-state">
-                                <i className="bi bi-briefcase" aria-hidden="true"></i>
-                                <h3>There are no open roles right now</h3>
-                                <p>
-                                    Please check back soon, or send a speculative application to{' '}
-                                    <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>.
-                                </p>
-                            </div>
+                        {jobs.length === 0 ? (
+                            <p style={{ color: 'var(--ink-muted)' }}>
+                                There are no open roles at this time. Please check back soon, or send a speculative
+                                application to <a href="mailto:info@pandemicintelcenter.org">info@pandemicintelcenter.org</a>.
+                            </p>
                         ) : (
                             <div className="grid-3" style={{ marginBottom: '56px' }}>
                                 {jobs.map(j => {
@@ -399,13 +302,13 @@ export default function Careers() {
                                                 <span className="job-dept">{j.department || 'General'}</span>
                                                 <h3 style={{ marginTop: '6px', marginBottom: '4px' }}>{j.title}</h3>
                                                 <div style={{ display: 'flex', gap: '12px', fontSize: '0.82rem', color: 'var(--ink-muted)', flexWrap: 'wrap' }}>
-                                                    {j.location && <span><i className="bi bi-geo-alt" aria-hidden="true"></i> {j.location}</span>}
-                                                    {j.employment_type && <span><i className="bi bi-clock" aria-hidden="true"></i> {j.employment_type}</span>}
+                                                    {j.location && <span><i className="bi bi-geo-alt"></i> {j.location}</span>}
+                                                    {j.employment_type && <span><i className="bi bi-clock"></i> {j.employment_type}</span>}
                                                 </div>
                                             </div>
 
                                             {isOpen && (
-                                                <div className="job-details-expanded" id={`job-details-${j.id}`}>
+                                                <div className="job-details-expanded">
                                                     {j.description}
                                                     {j.qualifications?.length > 0 && (
                                                         <>
@@ -430,19 +333,16 @@ export default function Careers() {
                                             <div className="job-card-actions">
                                                 <button
                                                     className="btn job-card-view-btn"
-                                                    type="button"
                                                     onClick={() => toggleJob(j.id)}
                                                     aria-expanded={isOpen}
-                                                    aria-controls={`job-details-${j.id}`}
                                                 >
                                                     {isOpen ? 'Hide Details' : 'View Details'}
                                                 </button>
                                                 <button
-                                                    type="button"
                                                     className="btn job-card-apply-btn"
-                                                    onClick={(e) => openApplyModal(j, e.currentTarget)}
+                                                    onClick={() => openApplyModal(j)}
                                                 >
-                                                    <i className="bi bi-paper-plane" aria-hidden="true" /> Apply Now
+                                                    <i className="bi bi-paper-plane"></i> Apply Now
                                                 </button>
                                             </div>
                                         </article>
@@ -546,6 +446,9 @@ export default function Careers() {
                         }
                     }
                 `}</style>
-        </Layout>
+            </main>
+
+            <Footer />
+        </>
     );
 }

@@ -7,10 +7,6 @@ const DB_DIR = path.join(__dirname, 'data');
 if (!fs.existsSync(DB_DIR)) {
   fs.mkdirSync(DB_DIR, { recursive: true });
 }
-// Filename deliberately keeps the legacy `cghi` spelling: on Render the data
-// directory is a persistent disk, so renaming this would silently start the
-// deployed API against an empty database and orphan every record already
-// managed through /admin. The name is internal and never user-facing.
 const DB_PATH = path.join(DB_DIR, 'cghi.db');
 const db = new Database(DB_PATH);
 
@@ -95,38 +91,7 @@ db.exec(`
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
   );
-
-  -- Enquiries submitted through the public contact form. Kept separate from
-  -- job_applications (which is defined in server.js alongside its upload
-  -- handling) because a contact message has no attachments and a different set
-  -- of fields: enquiry topic, organisation and an explicit consent flag.
-  CREATE TABLE IF NOT EXISTS contact_messages (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    phone TEXT,
-    organisation TEXT,
-    topic TEXT NOT NULL DEFAULT 'general',
-    subject TEXT,
-    message TEXT NOT NULL,
-    consent INTEGER NOT NULL DEFAULT 0,
-    status TEXT NOT NULL DEFAULT 'new',
-    notes TEXT,
-    ip_hash TEXT,
-    user_agent TEXT,
-    created_at TEXT DEFAULT (datetime('now')),
-    updated_at TEXT DEFAULT (datetime('now'))
-  );
 `);
-
-// Enquiry volume is small but the admin list needs to find unread messages
-// quickly and stay responsive as the table grows.
-try {
-  db.exec('CREATE INDEX IF NOT EXISTS idx_contact_messages_created ON contact_messages(created_at DESC)');
-  db.exec("CREATE INDEX IF NOT EXISTS idx_contact_messages_status ON contact_messages(status, created_at DESC)");
-} catch (err) {
-  console.error('[DB] contact_messages index creation failed:', err.message);
-}
 
 // Idempotent migration: databases created before document_url existed on
 // jobs need the column added; fresh databases already get it from the
@@ -141,45 +106,11 @@ try {
   console.error('[DB] jobs.document_url migration failed:', err.message);
 }
 
-/**
- * The seed password that used to be hard-coded in this file is also present in
- * the repository's .env.example, so it must be treated as compromised: warn at
- * boot if any admin still authenticates with it. Cheap enough to run once per
- * process start, and it turns a silent, invisible compromise into a log line
- * somebody will actually see.
- */
-function warnOnLegacySeedPassword() {
-    const LEGACY = 'Admin@CGHI2025!';
-    let admins;
-    try {
-        admins = db.prepare('SELECT id, email, password_hash FROM admins').all();
-    } catch (err) {
-        return;
-    }
-    for (const admin of admins) {
-        if (!bcrypt.compareSync(LEGACY, admin.password_hash)) continue;
-        console.warn(
-            `[DB] SECURITY: admin "${admin.email}" still uses the published seed password. ` +
-            'Change it now: set a new SEED_ADMIN_PASSWORD, then update the account in /admin, ' +
-            'and rotate JWT_SECRET.'
-        );
-    }
-}
-
 function seedIfEmpty() {
     const adminCount = db.prepare('SELECT COUNT(*) as c FROM admins').get().c;
     if (adminCount === 0) {
         const seedEmail = process.env.SEED_ADMIN_EMAIL || 'admin@pandemicintelcenter.org';
-        // No default password: a hard-coded fallback would ship a known admin
-        // credential to every deployment that forgets to set the env var.
-        const seedPassword = process.env.SEED_ADMIN_PASSWORD;
-        if (!seedPassword) {
-            console.error(
-                '[DB] SEED_ADMIN_PASSWORD is not set — skipping admin seed. ' +
-                'Set it in .env (and in the Render dashboard) and restart to create the first admin.'
-            );
-            return;
-        }
+        const seedPassword = process.env.SEED_ADMIN_PASSWORD || 'Admin@CGHI2025!';
         const hash = bcrypt.hashSync(seedPassword, 10);
         db.prepare("INSERT INTO admins (email, password_hash, name) VALUES (?, ?, ?)").run(
             seedEmail, hash, 'CGP Administrator'
@@ -360,6 +291,5 @@ function seedIfEmpty() {
 }
 
 seedIfEmpty();
-warnOnLegacySeedPassword();
 
 module.exports = db;

@@ -1,343 +1,232 @@
-/**
- * Primary navigation.
- *
- * Rewritten to match the audit's information architecture:
- *   Home · Who We Are · What We Do · Insights · Contact  + Partner With Us CTA
- *
- * Behavioural changes vs the previous implementation:
- *  - Menus open on click AND on hover-capable pointers, but hover is never the
- *    only way in — every menu is reachable with Enter/Space on the toggle.
- *  - Arrow keys move between items, Escape closes and returns focus to the
- *    toggle, Home/End jump to the first/last item.
- *  - The mobile panel traps nothing but does close on Escape, on route change
- *    and on backdrop tap, and restores focus to the hamburger when closed.
- *  - Toggle/panel state is driven purely by React. The legacy `public/site.js`
- *    second nav controller has been removed, so there is no longer a
- *    `body.nav-open` class that two modules can fight over.
- *  - Active state is derived from the route, not passed in by each page, so a
- *    new page cannot forget to highlight itself.
- */
-
-import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { BRAND } from '../config/site';
-import { PRIMARY_NAV, HEADER_CTA } from '../content/navigation';
 
-/** Nav item ids that light up a parent dropdown. */
-const PARENT_OF = {};
-PRIMARY_NAV.forEach((item) => {
-  if (item.children) item.children.forEach((c) => { PARENT_OF[c.id] = item.id; });
-});
-
-function useHoverCapable() {
-  const [capable, setCapable] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
-    const update = () => setCapable(mq.matches);
-    update();
-    mq.addEventListener('change', update);
-    return () => mq.removeEventListener('change', update);
-  }, []);
-  return capable;
-}
-
-function NavDropdown({ item, isActive, open, onToggle, onClose, onKeyDown, hoverCapable, panelId, buttonId }) {
-  return (
-    <div
-      className={[
-        'dropdown',
-        open ? 'open' : '',
-        isActive ? 'has-active' : '',
-      ].filter(Boolean).join(' ')}
-      onMouseEnter={hoverCapable ? () => onToggle(item.id, true) : undefined}
-      onMouseLeave={hoverCapable ? () => onToggle(item.id, false) : undefined}
-    >
-      <button
-        type="button"
-        className="dropbtn"
-        id={buttonId}
-        aria-haspopup="true"
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={() => onToggle(item.id)}
-        onKeyDown={onKeyDown}
-      >
-        {item.label}{' '}
-        <span aria-hidden="true">
-          <i className={`bi bi-chevron-down${open ? ' is-open' : ''}`} />
-        </span>
-      </button>
-
-      <div className="dropdown-content" id={panelId} aria-labelledby={buttonId}>
-        <ul className="dropdown-list">
-          {item.children.map((child) => (
-            <li key={child.id}>
-              <NavLink to={child.to} onClick={onClose} onKeyDown={onKeyDown}>
-                {child.label}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-}
+const WHO_PAGES = ['about', 'careers', 'contact', 'privacy'];
+const WHAT_PAGES = ['what-we-do', 'projects', 'initiatives', 'resources'];
 
 export default function Navbar({ activePage }) {
-  const { isAuthenticated, admin, logout } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
+    const { isAuthenticated, admin, logout } = useAuth();
+    const navigate = useNavigate();
 
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [openMenu, setOpenMenu] = useState(null);
+    const [profileOpen, setProfileOpen] = useState(false);
+    const [navOpen, setNavOpen] = useState(false);
+    const [openDropdown, setOpenDropdown] = useState(null); // 'who' | 'what' | null
 
-  const headerRef = useRef(null);
-  const toggleRef = useRef(null);
-  const hoverCapable = useHoverCapable();
-  const menuId = useId();
+    const dropRef = useRef(null);
+    const navRef = useRef(null);
+    const hoverCapable = useRef(false);
 
-  // Viewport changes must never leave a dropdown stranded in the desktop
-  // hover state, so the panel state resets when we cross into mobile.
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 900px)');
-    const update = () => {
-      if (mq.matches) {
-        setOpenMenu(null);
-        setProfileOpen(false);
-      }
-    };
-    update();
-    mq.addEventListener('change', update);
-    return () => mq.removeEventListener('change', update);
-  }, []);
+    // Detect hover capability once (desktop vs touch)
+    useEffect(() => {
+        hoverCapable.current =
+            typeof window !== 'undefined' &&
+            window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    }, []);
 
-  // Every navigation closes the whole header state.
-  useEffect(() => {
-    setMobileOpen(false);
-    setOpenMenu(null);
-    setProfileOpen(false);
-  }, [location.pathname]);
+    const whoActive = WHO_PAGES.includes(activePage);
+    const whatActive = WHAT_PAGES.includes(activePage);
 
-  // Escape closes the topmost layer and returns focus to its trigger.
-  useEffect(() => {
-    if (!mobileOpen && !openMenu && !profileOpen) return undefined;
-    function onKeyDown(event) {
-      if (event.key !== 'Escape') return;
-      if (openMenu || profileOpen) {
-        setOpenMenu(null);
-        setProfileOpen(false);
-        if (headerRef.current) {
-          const trigger = headerRef.current.querySelector('[data-escape-target="true"]');
-          if (trigger) trigger.focus();
+    // Outside click closes profile + any open dropdown
+    useEffect(() => {
+        function handle(e) {
+            if (dropRef.current && !dropRef.current.contains(e.target)) {
+                setProfileOpen(false);
+            }
+            if (navRef.current && !navRef.current.contains(e.target)) {
+                setOpenDropdown(null);
+            }
         }
-      } else if (mobileOpen) {
-        setMobileOpen(false);
-        if (toggleRef.current) toggleRef.current.focus();
-      }
-    }
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [mobileOpen, openMenu, profileOpen]);
+        document.addEventListener('mousedown', handle);
+        document.addEventListener('touchstart', handle);
+        return () => {
+            document.removeEventListener('mousedown', handle);
+            document.removeEventListener('touchstart', handle);
+        };
+    }, []);
 
-  // Background scroll lock while the mobile panel covers the page.
-  useEffect(() => {
-    if (!mobileOpen) return undefined;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = previous;
-    };
-  }, [mobileOpen]);
+    // Lock body scroll when mobile nav is open
+    useEffect(() => {
+        document.body.classList.toggle('nav-open', navOpen);
+        return () => document.body.classList.remove('nav-open');
+    }, [navOpen]);
 
-  // Close the mobile panel on outside tap / pointer-down.
-  useEffect(() => {
-    if (!mobileOpen) return undefined;
-    function onPointerDown(event) {
-      if (headerRef.current && !headerRef.current.contains(event.target)) {
-        setMobileOpen(false);
-      }
-    }
-    document.addEventListener('pointerdown', onPointerDown);
-    return () => document.removeEventListener('pointerdown', onPointerDown);
-  }, [mobileOpen]);
+    // Close everything on route change
+    useEffect(() => {
+        setNavOpen(false);
+        setOpenDropdown(null);
+        setProfileOpen(false);
+    }, [activePage]);
 
-  const handleToggle = useCallback((id, forced) => {
-    setOpenMenu((prev) => {
-      const next = forced === undefined ? (prev === id ? null : id) : forced ? id : null;
-      return next;
-    });
-  }, []);
-
-  const closeAll = useCallback(() => {
-    setMobileOpen(false);
-    setOpenMenu(null);
-    setProfileOpen(false);
-  }, []);
-
-  /**
-   * Roving keyboard support inside an open dropdown. Menus are plain link
-   * lists (not ARIA `menu`), so the correct keys are the disclosure pattern's:
-   * arrows to move, Escape to dismiss, Home/End to jump.
-   */
-  const onMenuKeyDown = useCallback((event) => {
-    const { key } = event;
-    if (!['ArrowDown', 'ArrowUp', 'Home', 'End', 'Escape'].includes(key)) return;
-    const panel = event.currentTarget.closest('.dropdown')?.querySelector('.dropdown-content');
-    if (!panel) return;
-    const links = Array.from(panel.querySelectorAll('a, button'));
-    if (links.length === 0) return;
-
-    if (key === 'Escape') {
-      event.preventDefault();
-      setOpenMenu(null);
-      const trigger = event.currentTarget.closest('.dropdown')?.querySelector('.dropbtn');
-      if (trigger) trigger.focus();
-      return;
+    function handleLogout() {
+        logout();
+        setProfileOpen(false);
+        setNavOpen(false);
+        setOpenDropdown(null);
+        navigate('/');
     }
 
-    event.preventDefault();
-    const current = links.indexOf(document.activeElement);
-    let next;
-    if (key === 'ArrowDown') next = current < 0 ? 0 : (current + 1) % links.length;
-    else if (key === 'ArrowUp') next = current <= 0 ? links.length - 1 : current - 1;
-    else if (key === 'Home') next = 0;
-    else next = links.length - 1;
-    links[next].focus();
-  }, []);
-
-  function handleLogout() {
-    logout();
-    closeAll();
-  }
-
-  function isItemActive(item) {
-    if (item.id === activePage) return true;
-    if (item.children) {
-      const childActive = item.children.some((c) => c.id === activePage);
-      // A project or article page should still light up its section.
-      const sectionActive = item.children.some(
-        (c) => location.pathname.startsWith(c.to) && c.to !== '/'
-      );
-      return childActive || sectionActive;
+    function closeNav() {
+        setNavOpen(false);
+        setOpenDropdown(null);
     }
-    return location.pathname === item.to;
-  }
 
-  return (
-    <header className="site-header" ref={headerRef}>
-      <div className="wrap">
-        <NavLink className="brand" to="/" aria-label={`${BRAND.abbr} home`} onClick={closeAll}>
-          <img
-            className="brand-logo"
-            src={BRAND.logo}
-            alt={BRAND.logoAlt}
-            width="220"
-            height="72"
-            fetchPriority="high"
-            decoding="async"
-          />
-        </NavLink>
+    // Click toggle (works on mobile + desktop)
+    function toggleDropdown(name) {
+        setOpenDropdown(prev => (prev === name ? null : name));
+    }
 
-        <button
-          type="button"
-          ref={toggleRef}
-          className="nav-toggle"
-          aria-label={mobileOpen ? 'Close main menu' : 'Open main menu'}
-          aria-expanded={mobileOpen}
-          aria-controls="primary-menu"
-          onClick={() => setMobileOpen((o) => !o)}
-        >
-          <span className="nav-toggle-box" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </span>
-        </button>
+    // Hover handlers — no-op on touch devices
+    function handleMouseEnter(name) {
+        if (!hoverCapable.current) return;
+        setOpenDropdown(name);
+    }
+    function handleMouseLeave(name) {
+        if (!hoverCapable.current) return;
+        setOpenDropdown(prev => (prev === name ? null : prev));
+    }
 
-        <nav
-          className={`primary-nav${mobileOpen ? ' is-open' : ''}`}
-          id="primary-menu"
-          aria-label="Primary"
-          data-open={mobileOpen ? 'true' : 'false'}
-        >
-          <ul className="primary-nav-list">
-            {PRIMARY_NAV.map((item) =>
-              item.children ? (
-                <li key={item.id} className="primary-nav-item">
-                  <NavDropdown
-                    item={item}
-                    isActive={isItemActive(item)}
-                    open={openMenu === item.id}
-                    onToggle={handleToggle}
-                    onClose={closeAll}
-                    onKeyDown={onMenuKeyDown}
-                    hoverCapable={hoverCapable}
-                    panelId={`${menuId}-${item.id}`}
-                    buttonId={`${menuId}-${item.id}-btn`}
-                  />
-                </li>
-              ) : (
-                <li key={item.id} className="primary-nav-item">
-                  <NavLink
-                    to={item.to}
-                    end={item.to === '/'}
-                    className={({ isActive }) => (isActive ? 'active' : '')}
-                    aria-current={isItemActive(item) ? 'page' : undefined}
-                    onClick={closeAll}
-                  >
-                    {item.label}
-                  </NavLink>
-                </li>
-              )
-            )}
+    const dropdownClass = (name, isActive) =>
+        [
+            'dropdown',
+            openDropdown === name ? 'open' : '',
+            isActive ? 'has-active' : '',
+        ]
+            .filter(Boolean)
+            .join(' ');
 
-            <li className="primary-nav-item nav-cta-item">
-              <NavLink className="nav-cta" to={HEADER_CTA.to} onClick={closeAll}>
-                {HEADER_CTA.label}
-              </NavLink>
-            </li>
+    return (
+        <header className="site-header">
+            <div className="wrap">
+                <Link className="brand" to="/" aria-label="CGP Home" onClick={closeNav}>
+                    <img
+                        className="brand-logo"
+                        src="/Assets/logo.png"
+                        alt="Center for Global Health & Pandemic Intelligence"
+                    />
+                </Link>
 
-            <li className="primary-nav-item nav-profile-item">
-              <button
-                type="button"
-                className="nav-profile-btn"
-                data-escape-target="true"
-                aria-label={isAuthenticated ? `Signed in as ${admin?.name || 'administrator'}. Open account menu` : 'Staff sign in'}
-                aria-haspopup="true"
-                aria-expanded={profileOpen}
-                onClick={() =>
-                  isAuthenticated
-                    ? setProfileOpen((o) => !o)
-                    : navigate('/admin/login')
-                }
-              >
-                <i
-                  className={`bi ${
-                    isAuthenticated ? 'bi-person-fill-check' : 'bi-person-circle'
-                  }`}
-                  aria-hidden="true"
-                />
-                <span className="nav-profile-label">
-                  {isAuthenticated ? admin?.name?.split(' ')[0] || 'Admin' : 'Staff'}
-                </span>
-              </button>
+                <button
+                    type="button"
+                    className="nav-toggle"
+                    aria-label="Toggle menu"
+                    aria-expanded={navOpen}
+                    onClick={() => setNavOpen(o => !o)}
+                >
+                    <span />
+                    <span />
+                    <span />
+                </button>
 
-              {isAuthenticated && profileOpen && (
-                <div className="profile-menu" role="group" aria-label="Account">
-                  <NavLink to="/admin" onClick={closeAll}>
-                    <i className="bi bi-speedometer2" aria-hidden="true" /> Dashboard
-                  </NavLink>
-                  <button type="button" onClick={handleLogout}>
-                    <i className="bi bi-box-arrow-right" aria-hidden="true" /> Sign Out
-                  </button>
-                </div>
-              )}
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-  );
+                <nav className="primary-nav" aria-label="Primary" ref={navRef}>
+                    <NavLink
+                        to="/"
+                        end
+                        className={({ isActive }) => (isActive ? 'active' : '')}
+                        onClick={closeNav}
+                    >
+                        Home
+                    </NavLink>
+
+                    {/* ---------- Who We Are ---------- */}
+                    <div
+                        className={dropdownClass('who', whoActive)}
+                        onMouseEnter={() => handleMouseEnter('who')}
+                        onMouseLeave={() => handleMouseLeave('who')}
+                    >
+                        <button
+                            type="button"
+                            className="dropbtn"
+                            aria-haspopup="true"
+                            aria-expanded={openDropdown === 'who'}
+                            onClick={() => toggleDropdown('who')}
+                        >
+                            Who We Are{' '}
+                            <span aria-hidden="true">
+                                <i className="bi bi-chevron-down" />
+                            </span>
+                        </button>
+                        <div className="dropdown-content">
+                            <NavLink to="/about" onClick={closeNav}>About Us</NavLink>
+                            <NavLink to="/careers" onClick={closeNav}>Careers</NavLink>
+                            <NavLink to="/contact" onClick={closeNav}>Contact</NavLink>
+                            <NavLink to="/privacy" onClick={closeNav}>Privacy Policy</NavLink>
+                        </div>
+                    </div>
+
+                    {/* ---------- What We Do ---------- */}
+                    <div
+                        className={dropdownClass('what', whatActive)}
+                        onMouseEnter={() => handleMouseEnter('what')}
+                        onMouseLeave={() => handleMouseLeave('what')}
+                    >
+                        <button
+                            type="button"
+                            className="dropbtn"
+                            aria-haspopup="true"
+                            aria-expanded={openDropdown === 'what'}
+                            onClick={() => toggleDropdown('what')}
+                        >
+                            What We Do{' '}
+                            <span aria-hidden="true">
+                                <i className="bi bi-chevron-down" />
+                            </span>
+                        </button>
+                        <div className="dropdown-content">
+                            <NavLink to="/what-we-do" onClick={closeNav}>Overview</NavLink>
+                            <NavLink to="/projects" onClick={closeNav}>Projects &amp; Impact</NavLink>
+                            <NavLink to="/initiatives" onClick={closeNav}>CGP Initiatives</NavLink>
+                            <NavLink to="/resources" onClick={closeNav}>Resources</NavLink>
+                        </div>
+                    </div>
+
+                    <NavLink
+                        to="/news"
+                        className={({ isActive }) => (isActive ? 'active' : '')}
+                        onClick={closeNav}
+                    >
+                        News &amp; Insights
+                    </NavLink>
+
+                    {/* ---------- Profile / Staff ---------- */}
+                    <div className="nav-profile-wrap" ref={dropRef}>
+                        <button
+                            className="nav-search-btn"
+                            type="button"
+                            aria-label={isAuthenticated ? 'Admin menu' : 'Staff login'}
+                            onClick={() =>
+                                isAuthenticated
+                                    ? setProfileOpen(o => !o)
+                                    : navigate('/admin/login')
+                            }
+                        >
+                            <i
+                                className={`bi ${
+                                    isAuthenticated
+                                        ? 'bi-person-fill-check'
+                                        : 'bi-person-circle'
+                                }`}
+                            />
+                            {isAuthenticated
+                                ? admin?.name?.split(' ')[0] || 'Admin'
+                                : 'Staff'}
+                        </button>
+
+                        {isAuthenticated && profileOpen && (
+                            <div className="profile-menu">
+                                <Link to="/admin" onClick={closeNav}>
+                                    <i className="bi bi-speedometer2" />
+                                    Dashboard
+                                </Link>
+                                <button onClick={handleLogout} type="button">
+                                    <i className="bi bi-box-arrow-right" />
+                                    Sign Out
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </nav>
+            </div>
+        </header>
+    );
 }

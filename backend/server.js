@@ -7,7 +7,7 @@ const fs = require('fs');
 
 if (!process.env.JWT_SECRET) {
     console.error(
-        '[CGP API] WARNING: JWT_SECRET is not set. ' +
+        '[CGHI API] WARNING: JWT_SECRET is not set. ' +
         `Looked for .env at ${path.join(__dirname, '.env')}. ` +
         'Authenticated endpoints will refuse requests until this is fixed.'
     );
@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 4000;
 const uploadsDir = path.join(__dirname, 'data', 'uploads');
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
-    console.log(`[CGP API] Created uploads directory: ${uploadsDir}`);
+    console.log(`[CGHI API] Created uploads directory: ${uploadsDir}`);
 }
 
 const ALLOWED_ORIGINS = [
@@ -42,7 +42,7 @@ const corsOptions = {
         if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) {
             return callback(null, true);
         }
-        console.warn(`[CGP API] CORS blocked origin: ${origin}`);
+        console.warn(`[CGHI API] CORS blocked origin: ${origin}`);
         return callback(new Error(`Origin ${origin} not allowed by CORS`));
     },
     credentials: true
@@ -103,7 +103,6 @@ app.use('/api/partners', require('./routes/partners'));
 app.use('/api/jobs', require('./routes/jobs'));
 app.use('/api/resources', require('./routes/resources'));
 app.use('/api/receipts', require('./routes/receipts'));
-app.use('/api/contact', require('./routes/contact'));
 
 app.get('/api/admin/stats', authMiddleware, (req, res) => {
     const stat = (table) => {
@@ -112,7 +111,7 @@ app.get('/api/admin/stats', authMiddleware, (req, res) => {
             const published = db.prepare(`SELECT COUNT(*) as c FROM ${table} WHERE published=1`).get().c;
             return { total, published, unpublished: total - published };
         } catch (err) {
-            console.error(`[CGP API] Error getting stats for ${table}:`, err.message);
+            console.error(`[CGHI API] Error getting stats for ${table}:`, err.message);
             return { total: 0, published: 0, unpublished: 0 };
         }
     };
@@ -127,7 +126,7 @@ app.get('/api/admin/stats', authMiddleware, (req, res) => {
         };
         res.json(payload);
     } catch (err) {
-        console.error('[CGP API] /api/admin/stats failed:', err);
+        console.error('[CGHI API] /api/admin/stats failed:', err);
         res.status(500).json({ error: 'Failed to compute dashboard statistics.' });
     }
 });
@@ -139,7 +138,7 @@ const applicationsDir = path.join(__dirname, 'data', 'uploads');
 // (missing directory would crash/500 on Render's ephemeral filesystem).
 if (!fs.existsSync(applicationsDir)) {
     fs.mkdirSync(applicationsDir, { recursive: true });
-    console.log(`[CGP API] Created applications directory: ${applicationsDir}`);
+    console.log(`[CGHI API] Created applications directory: ${applicationsDir}`);
 }
 
 const jobApplicationsStorage = multer.diskStorage({
@@ -240,7 +239,7 @@ app.post('/api/job-applications', applicationsUpload.fields([
             }
         });
     } catch (err) {
-        console.error('[CGP API] Error creating job application:', err);
+        console.error('[CGHI API] Error creating job application:', err);
         res.status(500).json({ error: 'Failed to submit application. Please try again.' });
     }
 });
@@ -255,7 +254,7 @@ app.get('/api/job-applications', authMiddleware, (req, res) => {
         }));
         res.json(result);
     } catch (err) {
-        console.error('[CGP API] Error fetching job applications:', err);
+        console.error('[CGHI API] Error fetching job applications:', err);
         res.status(500).json({ error: 'Failed to fetch applications.' });
     }
 });
@@ -286,13 +285,13 @@ app.delete('/api/job-applications/:id', authMiddleware, (req, res) => {
         if (result.changes === 0) return res.status(404).json({ error: 'Application not found.' });
         res.json({ ok: true });
     } catch (err) {
-        console.error('[CGP API] Error deleting job application:', err);
+        console.error('[CGHI API] Error deleting job application:', err);
         res.status(500).json({ error: 'Failed to delete application.' });
     }
 });
 
 app.use((err, req, res, next) => {
-    console.error('[CGP API] Error:', err.message);
+    console.error('[CGHI API] Error:', err.message);
     if (err instanceof multer.MulterError) {
         if (err.code === 'LIMIT_FILE_SIZE') {
             return res.status(400).json({ error: 'File too large. Maximum 5MB.' });
@@ -306,7 +305,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`[CGP API] Running on http://localhost:${PORT}`);
-    console.log(`[CGP API] Uploads served from ${uploadsDir}`);
-    console.log(`[CGP API] CORS allowed origins: ${ALLOWED_ORIGINS.join(', ')} + LAN IPs on :5173/:3000/:8080`);
+    console.log(`[CGHI API] Running on http://localhost:${PORT}`);
+    console.log(`[CGHI API] Uploads served from ${uploadsDir}`);
+    console.log(`[CGHI API] CORS allowed origins: ${ALLOWED_ORIGINS.join(', ')} + LAN IPs on :5173/:3000/:8080`);
 });

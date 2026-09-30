@@ -1,313 +1,169 @@
-/**
- * About / "Who We Are".
- *
- * Structured to the audit spec: Who We Are → Mission → Vision → Approach →
- * Expertise → Leadership → Partners, each as a named <section> with a single
- * <h2> so the heading hierarchy is h1 → h2 → h3 with no skips.
- */
-
-import React, { useMemo } from 'react';
-import Layout from '../components/Layout';
-import PageHeader from '../components/PageHeader';
-import Seo, {
-  BASE_JSONLD,
-  breadcrumbJsonLd,
-  itemListJsonLd,
-  pageJsonLd,
-} from '../components/Seo';
-import SmartLink from '../components/SmartLink';
-import SmartImage from '../components/SmartImage';
-import { CtaStrip, PartnerGrid, SectionHeader } from '../components/cards';
-import { AsyncSection } from '../components/Skeleton';
-import useApi from '../hooks/useApi';
-import { BRAND } from '../config/site';
-import { PAGE_META } from '../content/navigation';
-import { CAPABILITIES } from '../content/capabilities';
-import { EXPERTISE_AREAS } from '../content/leadership';
-import { FALLBACK_PARTNERS, HOMEPAGE_PARTNER_COUNT } from '../content/partners';
-
-const META = PAGE_META['/about'];
-
-const VISION =
-  'A world safeguarded from epidemics through integrated intelligence and rapid action.';
-
-const MISSION =
-  'To harness data, science, and multisectoral partnerships to strengthen surveillance systems, accelerate early warning, and empower frontline responders.';
-
-const VALUE_PILLARS = [
-  {
-    id: 'multidisciplinary',
-    icon: 'bi-people-fill',
-    title: 'Multidisciplinary Expertise',
-    body: 'A team with deep experience in epidemiology, data science, emergency management, veterinary public health, and health systems — providing integrated solutions across all dimensions of global health security.',
-  },
-  {
-    id: 'locally-anchored',
-    icon: 'bi-geo-alt-fill',
-    title: 'Locally Anchored, Globally Aligned',
-    body: 'Based in Kenya with partnerships across Africa and global health institutions — CGP understands the local context while applying global standards, frameworks, and best practices.',
-  },
-  {
-    id: 'evidence-driven',
-    icon: 'bi-lightbulb-fill',
-    title: 'Evidence-Driven Innovation',
-    body: 'Bridging research and practice to drive contextually relevant and scalable solutions — ensuring that policy, tools, and training are grounded in evidence and practical field experience.',
-  },
-  {
-    id: 'partnerships',
-    icon: 'bi-link-45deg',
-    title: 'Strategic Partnerships',
-    body: 'A proven collaborator with ministries of health, universities, national public health institutes, multilateral agencies, global financing mechanisms, implementing partners and non-state actors.',
-  },
-];
-
-const APPROACH = [
-  {
-    id: 'assess',
-    icon: 'bi-clipboard-data',
-    title: 'Assess',
-    body: 'Baseline the capacities, data flows and gaps that determine whether a threat is detected early and acted on coherently — through IHR core-capacity assessment, SPAR, JEE, and risk mapping.',
-  },
-  {
-    id: 'integrate',
-    icon: 'bi-diagram-3-fill',
-    title: 'Integrate',
-    body: 'Join human, animal, environmental and community data into a single operational picture, using One Health framing and interoperable surveillance systems.',
-  },
-  {
-    id: 'build',
-    icon: 'bi-tools',
-    title: 'Build',
-    body: 'Develop the tools, guidelines and plans responders need — decision-support frameworks, GIS risk models, dashboards and emergency response plans.',
-  },
-  {
-    id: 'enable',
-    icon: 'bi-mortarboard-fill',
-    title: 'Enable',
-    body: 'Train and equip frontline health workers, community structures and decision-makers so the intelligence reaches the people who can act on it.',
-  },
-  {
-    id: 'measure',
-    icon: 'bi-graph-up',
-    title: 'Measure',
-    body: 'Track performance against the WHO-endorsed 7-1-7 targets and publish results so improvements are visible, comparable and scalable.',
-  },
-];
+import React, { useEffect } from 'react';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 export default function About() {
-  const partners = useApi('/api/partners', FALLBACK_PARTNERS);
-  const selected = (partners.data?.length ? partners.data : FALLBACK_PARTNERS).slice(
-    0,
-    HOMEPAGE_PARTNER_COUNT
-  );
-
-  const jsonLd = useMemo(
-    () => [
-      ...BASE_JSONLD,
-      pageJsonLd({ name: META.title, path: '/about', description: META.description }),
-      breadcrumbJsonLd(META.breadcrumb),
-      itemListJsonLd('Areas of expertise', EXPERTISE_AREAS.map((e) => ({ name: e.label, to: '/what-we-do' }))),
-    ],
-    []
-  );
+  useEffect(() => {
+    if (window.initSiteLogic) window.initSiteLogic();
+  }, []);
 
   return (
-    <Layout navId="about">
-      <Seo title={META.title} description={META.description} path="/about" jsonLd={jsonLd} />
+    <>
+      <Navbar activePage="about" />
 
-      <PageHeader
-        trail={META.breadcrumb}
-        eyebrow="Who We Are"
-        h1="About CGP"
-        dek={`${BRAND.abbr} is a multidisciplinary policy, research and implementation hub dedicated to strengthening global and regional health security.`}
-      />
-
-      {/* ---------------- Who We Are ---------------- */}
-      <section aria-labelledby="who-we-are">
-        <div className="wrap">
-          <div className="grid-2 grid-2--center">
-            <div>
-              <span className="section-label">Who We Are</span>
-              <h2 id="who-we-are">A multidisciplinary hub for global health security</h2>
-              <p className="lead">
-                The <SmartLink to="/">Center for Global Health &amp; Pandemic Intelligence (CGP)</SmartLink>{' '}
-                is a multidisciplinary policy, research, and implementation hub dedicated to
-                strengthening global and regional health security.
-              </p>
-              <p>
-                CGP operates at the intersection of epidemic and pandemic intelligence, One Health,
-                and community-centred preparedness, providing strategic solutions to prevent, detect,
-                and respond to public health threats — especially in vulnerable and high-risk
-                settings across the world.
-              </p>
-              <p>
-                We leverage science, data, and multisectoral partnerships to inform decision-making
-                and enhance the resilience of health systems in alignment with national, regional
-                and Global Health Security frameworks.
-              </p>
-            </div>
-
-            <figure className="frame-figure">
-              <SmartImage
-                className="frame-figure-img"
-                src="https://pandemicintelcenter.org/wp-content/uploads/2025/07/paper-style-earth-globe-with-hands-scaled.jpg"
-                alt="Illustration of hands holding a globe, representing global health collaboration"
-                width="1024"
-                height="683"
-              />
-            </figure>
+      <main>
+        <div className="page-header">
+          <div className="wrap">
+            <nav className="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span>About Us</nav>
+            <h1>About Us</h1>
+            <p className="dek">The Center for Global Health and Pandemic Intelligence (CGP)</p>
           </div>
         </div>
-      </section>
 
-      {/* ---------------- Mission & Vision ---------------- */}
-      <section className="section-dark" aria-labelledby="mission-vision">
-        <div className="wrap">
-          <h2 id="mission-vision" className="sr-only">
-            Our mission and vision
-          </h2>
-          <div className="grid-2 grid-2--flush">
-            <div className="vm-card">
-              <span className="vm-icon" aria-hidden="true">
-                <i className="bi bi-bullseye" />
-              </span>
-              <h3>Mission</h3>
-              <p>{MISSION}</p>
-            </div>
-            <div className="vm-card">
-              <span className="vm-icon" aria-hidden="true">
-                <i className="bi bi-eye" />
-              </span>
-              <h3>Vision</h3>
-              <p>{VISION}</p>
+        <section>
+          <div className="wrap">
+            <div className="grid-2" style={{ alignItems: 'center', gap: '64px' }}>
+              <div>
+                <span className="section-label">Who We Are</span>
+                <h2 style={{ marginBottom: '20px' }}>A Multidisciplinary Hub for Global Health Security</h2>
+                <p style={{ marginBottom: '14px' }}>
+                  The <a href="/">Center for Global Health and Pandemic Intelligence (CGP)</a> is a multidisciplinary policy,
+                  research, and implementation hub dedicated to strengthening global and regional health security. CGP operates
+                  at the intersection of Epidemic and Pandemic Intelligence, One Health, and community-centered preparedness,
+                  providing strategic solutions to prevent, detect, and respond to public health threats — especially in
+                  vulnerable and high-risk settings across the world.
+                </p>
+                <p>
+                  We leverage science, data, and multisectoral partnerships to inform decision-making and enhance the
+                  resilience of health systems in alignment with national, regional and Global Health Security frameworks.
+                </p>
+              </div>
+              <figure style={{ border: '4px solid var(--sky)', overflow: 'hidden', margin: 0, borderRadius: '0 60px 0 60px' }}>
+                <img
+                  src="https://pandemicintelcenter.org/wp-content/uploads/2025/07/paper-style-earth-globe-with-hands-scaled.jpg"
+                  alt="Paper-style illustration of hands holding a globe"
+                  loading="lazy"
+                  style={{ width: '100%', display: 'block' }}
+                />
+              </figure>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ---------------- Approach ---------------- */}
-      <section aria-labelledby="approach-heading">
-        <div className="wrap">
-          <SectionHeader
-            id="approach-heading"
-            eyebrow="Approach"
-            title="How CGP works"
-            lede="A five-step cycle that turns evidence into operational capability — repeated at subnational, national and regional level."
-          />
-          <ol className="approach-grid">
-            {APPROACH.map((step, index) => (
-              <li key={step.id} className="approach-card">
-                <span className="approach-index" aria-hidden="true">
-                  {String(index + 1).padStart(2, '0')}
-                </span>
-                <span className="approach-icon" aria-hidden="true">
-                  <i className={`bi ${step.icon}`} />
-                </span>
-                <h3>{step.title}</h3>
-                <p>{step.body}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      {/* ---------------- Expertise ---------------- */}
-      <section className="section-surface" aria-labelledby="expertise-heading">
-        <div className="wrap">
-          <SectionHeader
-            id="expertise-heading"
-            eyebrow="Expertise"
-            title="What Makes CGP Different"
-            lede="Our value proposition, and the technical disciplines behind it."
-          />
-
-          <div className="pillar-grid">
-            {VALUE_PILLARS.map((pillar) => (
-              <article key={pillar.id} className="value-card">
-                <span className="value-card-icon" aria-hidden="true">
-                  <i className={`bi ${pillar.icon}`} />
-                </span>
-                <h3>{pillar.title}</h3>
-                <p>{pillar.body}</p>
-              </article>
-            ))}
+        <section className="section-dark" style={{ padding: '64px 0' }}>
+          <div className="wrap">
+            <div className="grid-2" style={{ gap: '0' }}>
+              <div className="vm-card" style={{ borderRight: '1px solid rgba(255,255,255,0.1)' }}>
+                <h2>Vision</h2>
+                <p>A world safeguarded from epidemics through integrated intelligence and rapid action.</p>
+              </div>
+              <div className="vm-card" style={{ paddingLeft: '52px' }}>
+                <h2>Mission</h2>
+                <p>
+                  To harness data, science, and multisectoral partnerships to strengthen surveillance systems, accelerate
+                  early warning, and empower frontline responders.
+                </p>
+              </div>
+            </div>
           </div>
+        </section>
 
-          <h3 className="subheading">Areas of work</h3>
-          <div className="grid-auto">
-            {CAPABILITIES.map((capability) => (
-              <article key={capability.id} className="icon-card icon-card--compact">
-                <div className="card-icon" aria-hidden="true">
-                  <i className={`bi ${capability.icon}`} />
-                </div>
-                <h4>
-                  <SmartLink to={`/what-we-do#${capability.id}`}>{capability.title}</SmartLink>
-                </h4>
-              </article>
-            ))}
+        <section className="section-surface">
+          <div className="wrap">
+            <div className="section-header" style={{ marginBottom: '40px' }}>
+              <span className="section-label">What Makes CGP Different</span>
+              <h2>Our Value Proposition</h2>
+            </div>
+            <div className="pillar-grid">
+              <div className="value-card">
+                <h3>Multidisciplinary Expertise</h3>
+                <p>
+                  A team with deep experience in epidemiology, data science, emergency management, veterinary public
+                  health, and health systems — providing integrated solutions across all dimensions of global health
+                  security.
+                </p>
+              </div>
+              <div className="value-card">
+                <h3>Locally Anchored, Globally Aligned</h3>
+                <p>
+                  Based in Kenya with partnerships across Africa and global health institutions — CGP understands the local
+                  context while applying global standards, frameworks, and best practices.
+                </p>
+              </div>
+              <div className="value-card">
+                <h3>Evidence-Driven Innovation</h3>
+                <p>
+                  Bridging research and practice to drive contextually relevant and scalable solutions — ensuring that
+                  policy, tools, and training are grounded in evidence and practical field experience.
+                </p>
+              </div>
+              <div className="value-card">
+                <h3>Strategic Partnerships</h3>
+                <p>
+                  A proven collaborator with Ministries of Health, Universities, NPHIs, IOM, Palladium, KRCS, Africa CDC,
+                  AU-IBAR, WHO, FAO, UNICEF, MSF, Global Fund, UNEP, GIZ, USAID, Taskforce for Global Health, and non-state
+                  actors.
+                </p>
+              </div>
+            </div>
           </div>
+        </section>
 
-          <h3 className="subheading">Disciplines</h3>
-          <ul className="chip-list chip-list--static">
-            {EXPERTISE_AREAS.map((area) => (
-              <li key={area.id}>{area.label}</li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* ---------------- Leadership ---------------- */}
-      <section aria-labelledby="leadership-heading">
-        <div className="wrap">
-          <div className="split-panel">
-            <div>
-              <span className="section-label">Leadership</span>
-              <h2 id="leadership-heading">Leadership &amp; team</h2>
-              <p>
-                CGP is led by a multidisciplinary team spanning epidemiology, data science, One
-                Health, health systems and community engagement.
-              </p>
-              <div className="button-row">
-                <SmartLink className="btn" to="/leadership">
-                  Meet Our Team <i className="bi bi-arrow-right" aria-hidden="true" />
-                </SmartLink>
-                <SmartLink className="btn btn-outline" to="/careers">
-                  Careers at CGP
-                </SmartLink>
+        {/* ============================================================
+            CTA STRIP — "Work With CGP"
+            Buttons use .btn-outline-black-hover: white outline by default,
+            solid black background + white text on hover.
+            ============================================================ */}
+        <div className="cta-strip">
+          <div className="wrap">
+            <div className="cta-strip-inner">
+              <div>
+                <h2>Work With CGP</h2>
+                <p>
+                  Explore how we can collaborate to strengthen health security and pandemic intelligence in your region.
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', flexShrink: '0' }}>
+                <a className="btn-outline-black-hover" href="/contact">Get In Touch</a>
+                <a className="btn-outline-black-hover" href="/careers">Careers</a>
               </div>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* ---------------- Partners ---------------- */}
-      <section className="section-surface" aria-labelledby="about-partners-heading">
-        <div className="wrap">
-          <SectionHeader
-            id="about-partners-heading"
-            align="center"
-            eyebrow="Our Partners & Collaborators"
-            title="We do not work alone"
-            action={{ label: 'See all partners', to: '/partners' }}
-          />
-          <AsyncSection
-            loading={partners.loading}
-            label="Loading partners"
-            skeleton={<div className="partner-grid partner-grid--md" aria-hidden="true" />}
-          >
-            <PartnerGrid partners={selected} />
-          </AsyncSection>
-        </div>
-      </section>
+        {/* Local CSS for the CTA buttons — scoped to .cta-strip only */}
+        <style>{`
+          .cta-strip .btn-outline-black-hover {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 26px;
+            border: 2px solid #ffffff;
+            background: transparent;
+            color: #ffffff;
+            font-family: var(--sans);
+            font-weight: 700;
+            font-size: 0.88rem;
+            letter-spacing: 0.02em;
+            text-decoration: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.18s ease, color 0.18s ease,
+                        border-color 0.18s ease, transform 0.15s ease;
+          }
+          .cta-strip .btn-outline-black-hover:hover {
+            background: #000000;
+            border-color: #000000;
+            color: #ffffff;
+            opacity: 1;
+            transform: translateY(-2px);
+          }
+        `}</style>
+      </main>
 
-      <CtaStrip
-        title="Work with CGP"
-        body="Explore how we can collaborate to strengthen health security and pandemic intelligence in your region."
-        actions={[
-          { label: 'Partner With Us', to: '/contact#contact-form', variant: 'white' },
-          { label: 'Contact Our Team', to: '/contact', variant: 'white' },
-        ]}
-      />
-    </Layout>
+      <Footer />
+    </>
   );
 }

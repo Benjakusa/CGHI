@@ -1,460 +1,598 @@
-/**
- * Homepage.
- *
- * Structure follows the audit's IA and its explicit content requirements:
- *
- *   1. Hero         — headline, value proposition, "Explore Our Work" +
- *                     "Partner With Us" CTAs
- *   2. Welcome       — what CGP is, with a link into the story
- *   3. What We Do    — the five capability cards
- *   4. CGP at a Glance — verified impact figures (placeholders marked)
- *   5. Projects      — outcome-led cards, not activity lists
- *   6. Initiatives   — the six active programmes
- *   7. Insights      — latest research and news
- *   8. Partners      — selected key partners + link to the full list
- *   9. CTA           — Partner With Us
- *
- * All copy is drawn from `src/content/*`; the only live data is the hero,
- * partner and article sets served by the API, each of which falls back to
- * bundled content so the page is never empty.
- */
+import React, { useEffect, useState } from 'react';
+import { API_BASE, resolveAssetUrl } from '../context/AuthContext';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
-import React, { useCallback, useMemo, useState } from 'react';
-import Layout from '../components/Layout';
-import Seo, {
-  BASE_JSONLD,
-  itemListJsonLd,
-  pageJsonLd,
-} from '../components/Seo';
-import SmartLink from '../components/SmartLink';
-import SmartImage from '../components/SmartImage';
-import {
-  CapabilityCard,
-  CtaStrip,
-  InsightCard,
-  InitiativeCard,
-  PartnerGrid,
-  ProjectCard,
-  SectionHeader,
-} from '../components/cards';
-import { AsyncSection, SkeletonCard } from '../components/Skeleton';
-import useApi from '../hooks/useApi';
-import useCountUp from '../hooks/useCountUp';
-import { resolveAssetUrl } from '../context/AuthContext';
-import { BRAND, DEK, SITE_DESCRIPTION } from '../config/site';
-import { PAGE_META } from '../content/navigation';
-import { CAPABILITIES } from '../content/capabilities';
-import { FEATURED_PROJECTS } from '../content/projects';
-import { INITIATIVES } from '../content/initiatives';
-import { GLANCE } from '../content/impact';
-import { FALLBACK_ARTICLES } from '../content/insights';
-import { FALLBACK_PARTNERS, HOMEPAGE_PARTNER_COUNT } from '../content/partners';
+export default function Home() {
+  const [heroes, setHeroes] = useState([]);
+  const [partners, setPartners] = useState([]);
+  const [news, setNews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-/** Used when the heroes endpoint returns nothing. */
-const DEFAULT_HERO = {
-  id: 'default',
-  title: 'Building Intelligence for a Safer World',
-  topic: 'Epidemic & Pandemic Intelligence',
-  description:
-    'CGP combines epidemic intelligence, One Health and community engagement with data science to help countries prevent, detect and respond to health threats earlier.',
-  btn1_text: 'Explore Our Work',
-  btn1_link: '/projects',
-  btn2_text: 'Partner With Us',
-  btn2_link: '/contact#contact-form',
-  image_url: null,
-};
+  useEffect(() => {
+    Promise.all([
+      fetch(`${API_BASE}/api/heroes`).then(r => r.json()).catch(() => []),
+      fetch(`${API_BASE}/api/partners`).then(r => r.json()).catch(() => []),
+      fetch(`${API_BASE}/api/news`).then(r => r.json()).catch(() => [])
+    ])
+    .then(([heroData, partnerData, newsData]) => {
+      setHeroes(Array.isArray(heroData) ? heroData : []);
+      setPartners(Array.isArray(partnerData) ? partnerData : []);
+      setNews(Array.isArray(newsData) ? newsData : []);
+      setLoading(false);
+    })
+    .catch(() => {
+      setLoading(false);
+    });
+  }, []);
 
-/* ------------------------------------------------------------------ */
-/* Hero                                                                */
-/* ------------------------------------------------------------------ */
+  useEffect(() => {
+    if (heroes.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroes.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [heroes.length]);
 
-function HeroSlide({ slide, isActive, priority }) {
-  return (
-    <div
-      className={`hero-slide${isActive ? ' active' : ''}`}
-      role="group"
-      aria-roledescription="slide"
-      aria-label={slide.topic}
-      hidden={!isActive}
-    >
-      {slide.image_url && (
-        <SmartImage
-          className="hero-slide-img"
-          src={resolveAssetUrl(slide.image_url)}
-          alt=""
-          width="1920"
-          height="1080"
-          priority={priority}
-        />
-      )}
-      <div className="hero-slide-overlay" aria-hidden="true" />
-
-      <div className="wrap">
-        <div className="hero-slide-panel">
-          <span className="hero-slide-eyebrow">{slide.topic}</span>
-          <h1>{slide.title}</h1>
-          <p>{slide.description}</p>
-          <div className="hero-ctas">
-            <SmartLink className="btn btn-white" to={slide.btn1_link || '/projects'}>
-              {slide.btn1_text || 'Explore Our Work'}
-            </SmartLink>
-            <SmartLink className="btn btn-outline-light" to={slide.btn2_link || '/contact#contact-form'}>
-              {slide.btn2_text || 'Partner With Us'}
-            </SmartLink>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function HeroCarousel({ slides, loading }) {
-  const [current, setCurrent] = useState(0);
-  const [paused, setPaused] = useState(false);
-
-  const slidesToRender = slides.length > 0 ? slides : [DEFAULT_HERO];
-
-  // Never index past the end if the slide set shrinks.
-  const index = Math.min(current, slidesToRender.length - 1);
-
-  React.useEffect(() => {
-    if (paused || slidesToRender.length <= 1) return undefined;
-    // Respect reduced-motion: do not auto-rotate at all.
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
-    const timer = window.setInterval(
-      () => setCurrent((c) => (c + 1) % slidesToRender.length),
-      7000
-    );
-    return () => window.clearInterval(timer);
-  }, [paused, slidesToRender.length]);
+  const goToSlide = (index) => {
+    setCurrentSlide(index);
+  };
 
   if (loading) {
     return (
-      <section className="hero-carousel hero-carousel--loading" aria-busy="true">
-        <span className="sr-only">Loading featured content…</span>
-      </section>
+      <>
+        <Navbar activePage="home" />
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+          <div>Loading...</div>
+        </div>
+      </>
     );
   }
 
-  return (
-    <section
-      className="hero-carousel"
-      aria-label="Featured"
-      aria-roledescription="carousel"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocusCapture={() => setPaused(true)}
-      onBlurCapture={() => setPaused(false)}
-    >
-      {slidesToRender.map((slide, i) => (
-        <HeroSlide
-          key={slide.id}
-          slide={slide}
-          isActive={i === index}
-          priority={i === 0}
-        />
-      ))}
+  const defaultHero = {
+    id: 'default',
+    title: 'Building Intelligence for a Safer World',
+    topic: 'Epidemic & Pandemic Intelligence',
+    description: 'The Center for Global Health and Pandemic Intelligence (CGP) is a multidisciplinary policy, research, and implementation hub dedicated to strengthening global and regional health security through evidence-driven action.',
+    btn1_text: 'About CGP',
+    btn1_link: '/about',
+    btn2_text: 'What We Do',
+    btn2_link: '/what-we-do',
+    image_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/pexels-franco30-8488619-1024x683.jpg'
+  };
 
-      {slidesToRender.length > 1 && (
-        <div className="carousel-dots">
-          {slidesToRender.map((slide, i) => (
-            <button
-              key={slide.id}
-              type="button"
-              className="carousel-dot"
-              aria-label={`Show slide ${i + 1} of ${slidesToRender.length}: ${slide.title}`}
-              aria-current={i === index}
-              onClick={() => setCurrent(i)}
-            />
-          ))}
-        </div>
-      )}
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* CGP at a Glance                                                      */
-/* ------------------------------------------------------------------ */
-
-function GlanceFigure({ figure }) {
-  const hasValue = figure.value != null;
-  const [ref, counted] = useCountUp(hasValue ? figure.value : 0);
-
-  let display;
-  if (!hasValue) {
-    display = '—';
-  } else if (figure.display && !/^\d+$/.test(String(figure.display))) {
-    // Prefixed/suffixed values (e.g. "$145M", "30%") are shown verbatim so no
-    // figure is ever re-derived from an animated integer.
-    display = figure.display;
-  } else {
-    display = String(counted);
-  }
+  const displayHeroes = heroes.length > 0 ? heroes : [defaultHero];
+  const latestNews = news.slice(0, 3);
 
   return (
-    <div className="stat-cell" ref={ref}>
-      <span className="stat-num">{display}</span>
-      <span className="stat-lbl">{figure.label}</span>
-      {!hasValue && (
-        <span className="pill pill--pending">
-          <i className="bi bi-hourglass-split" aria-hidden="true" /> Figure pending
-        </span>
-      )}
-    </div>
-  );
-}
+    <React.Fragment>
+      <Navbar activePage="home" />
 
-function GlanceGrid() {
-  return (
-    <div className="stats-single-card">
-      <div className="stats-single-card-grid">
-        {GLANCE.map((figure) => (
-          <GlanceFigure key={figure.id} figure={figure} />
-        ))}
-      </div>
-    </div>
-  );
-}
+      <main>
+        {/* ============================================================
+            HERO CAROUSEL
+            - Dark overlay applied via an absolutely-positioned div
+              (no more reliance on the image's CSS background trick)
+            - Arrows removed; only dots remain
+            ============================================================ */}
+        <section className="hero-carousel" aria-label="Featured content carousel" role="region">
+          {displayHeroes.map((h, index) => (
+            <div
+              key={h.id}
+              className={`hero-slide ${index === currentSlide ? 'active' : ''}`}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={h.topic}
+              style={{ display: index === currentSlide ? 'block' : 'none' }}
+            >
+              <img
+                className="hero-slide-img"
+                src={resolveAssetUrl(h.image_url)}
+                alt={h.title}
+                loading="lazy"
+              />
 
-/* ------------------------------------------------------------------ */
-/* Page                                                                */
-/* ------------------------------------------------------------------ */
+              {/* Dark overlay so text stays legible on any image */}
+              <div
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'rgba(0, 0, 0, 0.65)',
+                  zIndex: 1,
+                  pointerEvents: 'none',
+                }}
+              />
 
-export default function Home() {
-  const heroes = useApi('/api/heroes', []);
-  const partners = useApi('/api/partners', FALLBACK_PARTNERS);
-  const news = useApi('/api/news', FALLBACK_ARTICLES);
-
-  const latestNews = useMemo(() => {
-    const list = news.data && news.data.length > 0 ? news.data : FALLBACK_ARTICLES;
-    return list.slice(0, 3);
-  }, [news.data]);
-
-  const selectedPartners = useMemo(() => {
-    const list = partners.data && partners.data.length > 0 ? partners.data : FALLBACK_PARTNERS;
-    return list.slice(0, HOMEPAGE_PARTNER_COUNT);
-  }, [partners.data]);
-
-  const jsonLd = useMemo(
-    () => [
-      ...BASE_JSONLD,
-      pageJsonLd({ name: PAGE_META['/'].title, path: '/', description: SITE_DESCRIPTION }),
-      itemListJsonLd('What We Do', CAPABILITIES.map((c) => ({ name: c.title, to: '/what-we-do' }))),
-      itemListJsonLd(
-        'Featured projects',
-        FEATURED_PROJECTS.map((p) => ({ name: p.title, to: `/projects/${p.slug}` }))
-      ),
-    ],
-    []
-  );
-
-  const reloadPartners = useCallback(() => partners.retry(), [partners]);
-  const reloadNews = useCallback(() => news.retry(), [news]);
-
-  return (
-    <Layout navId="home">
-      <Seo
-        title={PAGE_META['/'].title}
-        description={SITE_DESCRIPTION}
-        path="/"
-        imageAlt={`${BRAND.abbr} — ${BRAND.tagline}`}
-        jsonLd={jsonLd}
-      />
-
-      <HeroCarousel slides={heroes.data} loading={heroes.loading} />
-
-      {/* ---------------- Welcome ---------------- */}
-      <section>
-        <div className="wrap">
-          <div className="grid-2 grid-2--center">
-            <div>
-              <span className="section-label">Welcome to CGP</span>
-              <h2>{BRAND.tagline}</h2>
-              <p className="lead">{DEK.home}</p>
-              <p>
-                CGP operates at the intersection of epidemic and pandemic intelligence, One Health,
-                and community-centred preparedness — providing strategic solutions to prevent,
-                detect and respond to public health threats, especially in vulnerable and high-risk
-                settings.
-              </p>
-              <div className="button-row">
-                <SmartLink className="btn" to="/about">
-                  Meet Our Team <i className="bi bi-arrow-right" aria-hidden="true" />
-                </SmartLink>
-                <SmartLink className="btn btn-outline" to="/what-we-do">
-                  What We Do
-                </SmartLink>
+              <div className="hero-slide-panel">
+                <span className="hero-slide-eyebrow">{h.topic}</span>
+                <h1>{h.title}</h1>
+                <p>{h.description}</p>
+                <div className="hero-ctas">
+                  <a className="btn-primary" href={h.btn1_link || '/about'}>{h.btn1_text || 'About CGP'}</a>
+                  <a className="btn-outline" href={h.btn2_link || '/what-we-do'}>{h.btn2_text || 'What We Do'}</a>
+                </div>
               </div>
             </div>
+          ))}
 
-            <figure className="frame-figure">
-              <div className="frame-figure-media">
-                <iframe
-                  src="https://www.youtube-nocookie.com/embed/SxFaJhnb4Qw"
-                  title="Decision Making Tool for Public Health Emergencies (DMT-PHE) in Kenya"
-                  loading="lazy"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
+          {/* Carousel dots (arrows removed per request) */}
+          {displayHeroes.length > 1 && (
+            <div
+              role="group"
+              aria-label="Carousel navigation"
+              style={{
+                position: 'absolute',
+                bottom: '20px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                display: 'flex',
+                gap: '10px',
+                zIndex: 10,
+              }}
+            >
+              {displayHeroes.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  aria-label={`Go to slide ${index + 1}`}
+                  aria-current={index === currentSlide}
+                  style={{
+                    width: '12px',
+                    height: '12px',
+                    borderRadius: '50%',
+                    border: 'none',
+                    background: index === currentSlide ? '#01abed' : 'rgba(255,255,255,0.5)',
+                    cursor: 'pointer',
+                    transition: 'background 0.3s',
+                    padding: 0,
+                  }}
                 />
-              </div>
-              <figcaption>
-                Kenya’s Decision-Making Tool for Public Health Emergencies (DMT-PHE), validated
-                October 2025.
-              </figcaption>
-            </figure>
-          </div>
-        </div>
-      </section>
-
-      {/* ---------------- What We Do ---------------- */}
-      <section className="section-surface" aria-labelledby="what-we-do-heading">
-        <div className="wrap">
-          <SectionHeader
-            id="what-we-do-heading"
-            align="center"
-            eyebrow="What We Do"
-            title="Five interconnected areas of expertise"
-            lede="CGP works across five areas of global health expertise to strengthen surveillance, preparedness and response."
-          />
-          <div className="grid-auto">
-            {CAPABILITIES.map((capability) => (
-              <CapabilityCard key={capability.id} capability={capability} />
-            ))}
-          </div>
-          <p className="section-trailing-link">
-            <SmartLink className="text-link" to="/what-we-do">
-              Explore all technical capabilities <i className="bi bi-arrow-right" aria-hidden="true" />
-            </SmartLink>
-          </p>
-        </div>
-      </section>
-
-      {/* ---------------- CGP at a Glance ---------------- */}
-      <section className="section-dark" aria-labelledby="glance-heading">
-        <div className="wrap">
-          <SectionHeader
-            id="glance-heading"
-            eyebrow="CGP at a Glance"
-            title="Our impact in numbers"
-            lede="Figures below are taken from CGP’s published project record. Items still awaiting an approved source are marked as pending rather than estimated."
-          />
-          <GlanceGrid />
-          <p className="section-trailing-link">
-            <SmartLink className="text-link text-link--light" to="/projects">
-              Explore Our Projects <i className="bi bi-arrow-right" aria-hidden="true" />
-            </SmartLink>
-          </p>
-        </div>
-      </section>
-
-      {/* ---------------- Projects ---------------- */}
-      <section aria-labelledby="projects-heading">
-        <div className="wrap">
-          <SectionHeader
-            id="projects-heading"
-            eyebrow="Selected Work"
-            title="Flagship projects & impact"
-            action={{ label: 'Explore Our Projects', to: '/projects' }}
-          />
-          <div className="grid-auto">
-            {FEATURED_PROJECTS.slice(0, 3).map((project) => (
-              <ProjectCard key={project.slug} project={project} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ---------------- Initiatives ---------------- */}
-      <section className="section-surface-alt" aria-labelledby="initiatives-heading">
-        <div className="wrap">
-          <SectionHeader
-            id="initiatives-heading"
-            eyebrow="Active Programmes"
-            title="CGP Initiatives"
-            action={{ label: 'All initiatives', to: '/initiatives' }}
-          />
-          <div className="grid-auto">
-            {INITIATIVES.slice(0, 3).map((initiative) => (
-              <InitiativeCard key={initiative.id} initiative={initiative} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ---------------- Insights ---------------- */}
-      <section aria-labelledby="insights-heading">
-        <div className="wrap">
-          <SectionHeader
-            id="insights-heading"
-            eyebrow="Updates"
-            title="Latest insights & research"
-            action={{ label: 'Read the Research', to: '/insights' }}
-          />
-          <AsyncSection
-            loading={news.loading}
-            skeleton={
-              <div className="grid-3">
-                <SkeletonCard />
-                <SkeletonCard />
-                <SkeletonCard />
-              </div>
-            }
-            onRetry={reloadNews}
-          >
-            <div className="grid-3">
-              {latestNews.map((article) => (
-                <InsightCard key={article.id} article={article} />
               ))}
             </div>
-          </AsyncSection>
-        </div>
-      </section>
+          )}
+        </section>
 
-      {/* ---------------- Partners ---------------- */}
-      <section className="section-surface" aria-labelledby="partners-heading">
-        <div className="wrap">
-          <SectionHeader
-            id="partners-heading"
-            align="center"
-            eyebrow="Our Partners & Collaborators"
-            title="Working with institutions across global health security"
-            action={{ label: 'See all partners', to: '/partners' }}
-          />
-          <AsyncSection
-            loading={partners.loading}
-            label="Loading partners"
-            skeleton={
-              <div className="partner-grid partner-grid--md">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <div className="partner-tile" key={i} aria-hidden="true">
-                    <span className="skeleton" style={{ width: '70%', height: '2.4rem' }} />
+        {/* ============================================================
+            STATISTICS — single card containing all four stats
+            ============================================================ */}
+        <section className="section-dark">
+          <div className="wrap">
+            <div
+              className="stats-single-card"
+              style={{
+                background: 'rgba(255, 255, 255, 0.04)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                borderRadius: '0 60px 0 60px',
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(4, 1fr)',
+                  gap: 0,
+                }}
+                className="stats-single-card-grid"
+              >
+                <div className="stat-cell">
+                  <span className="stat-num" data-count="145" data-suffix="M">$145M</span>
+                  <span className="stat-lbl">Requested Pandemic Fund financing coordinated for Kenya, 2023–2025</span>
+                </div>
+                <div className="stat-cell">
+                  <span className="stat-num" data-count="30" data-suffix="%">30%</span>
+                  <span className="stat-lbl">Reduction in detection-to-response time across 4 Kenyan counties</span>
+                </div>
+                <div className="stat-cell">
+                  <span className="stat-num" style={{ fontSize: '2.2rem' }}>7-1-7</span>
+                  <span className="stat-lbl">WHO-endorsed readiness targets applied in Migori &amp; national Mpox reviews</span>
+                </div>
+                <div className="stat-cell">
+                  <span className="stat-num" data-count="10" data-suffix="">10</span>
+                  <span className="stat-lbl">High-risk counties piloting the DMT-PHE decision tool</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Local responsive + cell styling */}
+          <style>{`
+            .stats-single-card .stat-cell {
+              padding: 32px 24px;
+              text-align: center;
+              border-right: 1px solid rgba(255, 255, 255, 0.12);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+            }
+            .stats-single-card .stat-cell:last-child {
+              border-right: none;
+            }
+            .stats-single-card .stat-num {
+              font-size: clamp(2rem, 4vw, 3rem);
+              font-weight: 800;
+              color: #01abed;
+              display: block;
+              line-height: 1;
+              margin-bottom: 12px;
+            }
+            .stats-single-card .stat-lbl {
+              font-size: 0.88rem;
+              color: rgba(255, 255, 255, 0.72);
+              line-height: 1.45;
+            }
+            @media (max-width: 900px) {
+              .stats-single-card-grid {
+                grid-template-columns: 1fr 1fr !important;
+              }
+              .stats-single-card .stat-cell:nth-child(2) {
+                border-right: none;
+              }
+              .stats-single-card .stat-cell:nth-child(1),
+              .stats-single-card .stat-cell:nth-child(2) {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+              }
+            }
+            @media (max-width: 560px) {
+              .stats-single-card-grid {
+                grid-template-columns: 1fr !important;
+              }
+              .stats-single-card .stat-cell {
+                border-right: none !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+              }
+              .stats-single-card .stat-cell:last-child {
+                border-bottom: none;
+              }
+            }
+          `}</style>
+        </section>
+
+        <section>
+          <div className="wrap">
+            <div className="grid-2" style={{ alignItems: 'center', gap: '64px' }}>
+              <div>
+                <span className="section-label">Welcome to CGP</span>
+                <h2 style={{ marginBottom: '20px' }}>Building Intelligence for a Safer World</h2>
+                <p style={{ fontSize: '1.05rem', marginBottom: '16px' }}>
+                  The Center for Global Health and Pandemic Intelligence (CGP) is a multidisciplinary policy,
+                  research, and implementation hub dedicated to strengthening global and regional health security. CGP operates at the intersection of Epidemic and Pandemic Intelligence,
+                  One Health, and community-centered preparedness,
+                  providing strategic solutions to prevent, detect, and respond to public health threats especially in vulnerable and high-risk settings across the World.
+                </p>
+                <a className="btn" href="/about">Read More About CGP <i className="bi bi-arrow-right"></i></a>
+              </div>
+              <figure style={{ border: '4px solid var(--sky)', overflow: 'hidden', margin: 0, borderRadius: '0 60px 0 60px' }}>
+                <div style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9' }}>
+                  <iframe
+                    src="https://www.youtube.com/embed/SxFaJhnb4Qw"
+                    title="Decision Making Tool for Public Health Emergencies (DMT-PHE) in Kenya"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      width: '100%',
+                      height: '100%',
+                      border: 'none',
+                      display: 'block',
+                    }}
+                  />
+                </div>
+              </figure>
+            </div>
+          </div>
+        </section>
+
+        <section className="section-surface">
+          <div className="wrap">
+            <div className="section-header text-center">
+              <span
+                className="section-label"
+                style={{ display: 'inline-block', margin: '0 auto 14px', borderLeft: 'none', paddingLeft: '0' }}
+              >
+                Technical Capabilities
+              </span>
+              <h2>What We Do</h2>
+              <p style={{ margin: '0 auto' }}>
+                CGP operates across five interconnected areas of global health expertise to strengthen surveillance, preparedness and response.
+              </p>
+            </div>
+            <div className="grid-auto">
+              <div className="icon-card">
+                <div className="card-icon" aria-hidden="true"><i className="bi bi-bar-chart-fill"></i></div>
+                <h3>Epidemic &amp; Pandemic Intelligence</h3>
+                <p>Integrating AI-powered forecasting, 7-1-7 response monitoring, and multi-source surveillance data to accelerate outbreak detection and response.</p>
+              </div>
+              <div className="icon-card">
+                <div className="card-icon" aria-hidden="true"><i className="bi bi-tools"></i></div>
+                <h3>Public Health Emergency Preparedness &amp; Response</h3>
+                <p>IHR/JEE facilitation, simulation exercises, NAPHS development, and emergency guideline creation for Marburg, Mpox and other priority hazards.</p>
+              </div>
+              <div className="icon-card">
+                <div className="card-icon" aria-hidden="true"><i className="bi bi-tree-fill"></i></div>
+                <h3>One Health &amp; Climate-Sensitive Disease Control</h3>
+                <p>Bridging human, animal, and environmental health data streams to build early warning and response systems for zoonotic and climate-sensitive diseases.</p>
+              </div>
+              <div className="icon-card">
+                <div className="card-icon" aria-hidden="true"><i className="bi bi-people-fill"></i></div>
+                <h3>Community Engagement &amp; Resilience Building</h3>
+                <p>Community-led risk communication, rumour tracking, CBS/EBS training, and trust-building approaches in marginalized and high-risk areas.</p>
+              </div>
+              <div className="icon-card">
+                <div className="card-icon" aria-hidden="true"><i className="bi bi-laptop"></i></div>
+                <h3>Data Science &amp; Digital Health Innovation</h3>
+                <p>AI/ML model development, geospatial intelligence, real-time dashboards, digital surveillance tools, and decision-support platforms for frontline responders.</p>
+              </div>
+            </div>
+            <p style={{ marginTop: '36px' }}>
+              <a className="text-link" href="/what-we-do">Explore all technical capabilities <i className="bi bi-arrow-right"></i></a>
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <div className="wrap">
+            <div
+              className="section-header"
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-end',
+                borderBottom: '1px solid var(--border)',
+                paddingBottom: '18px',
+                marginBottom: '40px',
+              }}
+            >
+              <div>
+                <span className="section-label">Selected Work</span>
+                <h2 style={{ margin: '0' }}>Flagship Projects &amp; Impact</h2>
+              </div>
+              <a className="text-link" href="/projects" style={{ whiteSpace: 'nowrap' }}>All projects <i className="bi bi-arrow-right"></i></a>
+            </div>
+            <div className="grid-3">
+              <div className="project-card">
+                <span className="project-card-tag">Pandemic Fund 2023 2025</span>
+                <h3>Pandemic Preparedness</h3>
+                <p>Coordinated development of National, Multi-country and Regional proposals to the Pandemic Fund. Requested funding: <strong>$145 million</strong>.</p>
+              </div>
+              <div className="project-card">
+                <span className="project-card-tag">7-1-7 Readiness Kenya</span>
+                <h3>7-1-7 Readiness Initiative</h3>
+                <p>Facilitated the Intra-Action Review of Kenya's Cholera outbreak in Migori and Mpox outbreak (2024) reducing detection-to-response time by <strong>30%</strong> across 4 counties.</p>
+              </div>
+              <div className="project-card">
+                <span className="project-card-tag">Emergency Guidelines Kenya 2024</span>
+                <h3>Emergency Guidelines</h3>
+                <p>Supported development of the Marburg Preparedness and 72-Hour Response Plans, and the Mpox Response Plans for Kenya (2024).</p>
+              </div>
+              <div className="project-card">
+                <span className="project-card-tag">IHR JEE 2024</span>
+                <h3>International Health Regulations MEF</h3>
+                <p>Supporting Kenya's Joint External Evaluation (JEE 2024), SPAR, NAPHS 2.0, and simulation exercises including COHESION a One Health cross-border simulation with Kenya, Somalia and Ethiopia.</p>
+              </div>
+              <div className="project-card">
+                <span className="project-card-tag">Precision Public Health 2025</span>
+                <h3>Precision Public Health</h3>
+                <p>Supporting KNPHI on a Standardized Decision-Making Tool for Public Health Emergencies in Kenya (DMT-PHE) now piloted in <strong>10 high-risk counties</strong>.</p>
+              </div>
+              <div className="project-card">
+                <span className="project-card-tag">Event-Based Surveillance</span>
+                <h3>Event-Based Surveillance (EBS)</h3>
+                <p>Training health workers and communities, integrating Community-Based Surveillance (CBS), deploying digital tools for real-time alerts aligned with IDSR and 7-1-7 targets.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="section-surface-alt">
+          <div className="wrap">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px' }}>
+              <div>
+                <span className="section-label">Five Active Programmes</span>
+                <h2 style={{ margin: '0' }}>CGP Initiatives</h2>
+              </div>
+              <a className="text-link" href="/initiatives" style={{ whiteSpace: 'nowrap' }}>All initiatives <i className="bi bi-arrow-right"></i></a>
+            </div>
+            <div className="grid-auto">
+              <div className="initiative-card">
+                <span className="initiative-label">EWIN Flagship</span>
+                <h3>Early Warning &amp; Intelligence Node</h3>
+                <p style={{ fontSize: '0.93rem', marginTop: '8px', color: 'var(--ink-muted)' }}>
+                  CGP's flagship model for subnational epidemic intelligence integrating AI-powered forecasting, 7-1-7 response monitoring, and community-based early warning in the One Health approach.
+                </p>
+                <a className="text-link" href="/initiatives" style={{ display: 'block', marginTop: '14px', fontSize: '0.88rem' }}>Explore initiative <i className="bi bi-arrow-right"></i></a>
+              </div>
+              <div className="initiative-card">
+                <span className="initiative-label">Performance Improvement</span>
+                <h3>7-1-7 Performance Improvement Pilot</h3>
+                <p style={{ fontSize: '0.93rem', marginTop: '8px', color: 'var(--ink-muted)' }}>
+                  Pilot implementation of the WHO-endorsed 7-1-7 model in five counties in Kenya using digital tools and quality improvement (QI) methods to track and enhance outbreak response timelines.
+                </p>
+                <a className="text-link" href="/initiatives" style={{ display: 'block', marginTop: '14px', fontSize: '0.88rem' }}>Explore initiative <i className="bi bi-arrow-right"></i></a>
+              </div>
+              <div className="initiative-card">
+                <span className="initiative-label">AI &amp; Machine Learning</span>
+                <h3>AI-Powered Epidemic Forecasting</h3>
+                <p style={{ fontSize: '0.93rem', marginTop: '8px', color: 'var(--ink-muted)' }}>
+                  Pilot an AI-powered epidemic forecasting platform using IDSR, CBS, and climatic signals to anticipate outbreaks and generate risk alerts targeting 7 14 day improved lead time.
+                </p>
+                <a className="text-link" href="/initiatives" style={{ display: 'block', marginTop: '14px', fontSize: '0.88rem' }}>Explore initiative <i className="bi bi-arrow-right"></i></a>
+              </div>
+              <div className="initiative-card">
+                <span className="initiative-label">Community Risk Comm.</span>
+                <h3>Community-Led Risk Communication</h3>
+                <p style={{ fontSize: '0.93rem', marginTop: '8px', color: 'var(--ink-muted)' }}>
+                  A community-driven risk communication model for marginalized areas leveraging trusted local structures, WhatsApp/SMS rumour-tracking, and CHV networks to strengthen early warning.
+                </p>
+                <a className="text-link" href="/initiatives" style={{ display: 'block', marginTop: '14px', fontSize: '0.88rem' }}>Explore initiative <i className="bi bi-arrow-right"></i></a>
+              </div>
+              <div className="initiative-card">
+                <span className="initiative-label">Climate &amp; Health</span>
+                <h3>Climate-Sensitive Disease Surveillance</h3>
+                <p style={{ fontSize: '0.93rem', marginTop: '8px', color: 'var(--ink-muted)' }}>
+                  Integrating meteorological, environmental, and health data to build GIS-based early warning and response systems for climate-sensitive outbreaks including cholera and Rift Valley fever.
+                </p>
+                <a className="text-link" href="/initiatives" style={{ display: 'block', marginTop: '14px', fontSize: '0.88rem' }}>Explore initiative <i className="bi bi-arrow-right"></i></a>
+              </div>
+              <div className="initiative-card">
+                <span className="initiative-label">One Health Urban</span>
+                <h3>One Health Surveillance in Informal Settlements</h3>
+                <p style={{ fontSize: '0.93rem', marginTop: '8px', color: 'var(--ink-muted)' }}>
+                  A One Health surveillance model for urban informal settlements integrating community reporting, animal health indicators, and environmental risk factors for improved early detection.
+                </p>
+                <a className="text-link" href="/initiatives" style={{ display: 'block', marginTop: '14px', fontSize: '0.88rem' }}>Explore initiative <i className="bi bi-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div className="wrap">
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-end',
+                borderBottom: '1px solid var(--border)',
+                paddingBottom: '18px',
+                marginBottom: '40px',
+              }}
+            >
+              <div>
+                <span className="section-label">Updates</span>
+                <h2 style={{ margin: '0' }}>Latest News &amp; Insights</h2>
+              </div>
+              <a className="text-link" href="/news" style={{ whiteSpace: 'nowrap' }}>All news <i className="bi bi-arrow-right"></i></a>
+            </div>
+
+            {latestNews.length > 0 ? (
+              <div className="grid-3">
+                {latestNews.map(n => (
+                  <article className="article-card" key={n.id}>
+                    <img
+                      className="article-card-img"
+                      src={resolveAssetUrl(n.image_url)}
+                      alt={n.title}
+                      loading="lazy"
+                    />
+                    <div className="article-card-body">
+                      <div className="article-meta">{n.published_at}</div>
+                      <h3>{n.title}</h3>
+                      <p>{n.excerpt}</p>
+                      <a className="text-link" href={`/news?article=${n.id}`} style={{ display: 'block', marginTop: '16px' }}>
+                        Read More <i className="bi bi-arrow-right"></i>
+                      </a>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="grid-3">
+                <article className="article-card">
+                  <img
+                    className="article-card-img"
+                    src="https://pandemicintelcenter.org/wp-content/uploads/2025/10/WhatsApp-Image-2025-10-22-at-12.17.44-1-1024x683.jpeg"
+                    alt="DMT-PHE validation workshop participants, October 2025"
+                    loading="lazy"
+                  />
+                  <div className="article-card-body">
+                    <div className="article-meta">October 2025 Kenya</div>
+                    <h3>Kenya Validates Groundbreaking Decision-Making Tool for Public Health Emergencies (DMT-PHE)</h3>
+                    <p>
+                      Kenya has unveiled the Decision-Making Tool for Public Health Emergencies (DMT-PHE), a first-of-its-kind
+                      framework validated under KNPHI leadership, with support from Palladium's TDDAP2 and technical
+                      facilitation by CGP. The tool will be piloted in ten high-risk counties before national rollout.
+                    </p>
+                    <a className="text-link" href="/news" style={{ display: 'block', marginTop: '16px' }}>
+                      Read More <i className="bi bi-arrow-right"></i>
+                    </a>
+                  </div>
+                </article>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="section-surface">
+          <div className="wrap">
+            <div className="section-header text-center" style={{ marginBottom: '32px' }}>
+              <span className="section-label" style={{ display: 'inline-block', borderLeft: 'none', paddingLeft: '0' }}>Collaborators</span>
+              <h2>Strategic Partnerships</h2>
+            </div>
+            <div className="partners-carousel">
+              <div className="partners-carousel-track">
+                {[...partners, ...partners].map((p, i) => (
+                  <div className="partner-card" key={p.id + '_' + i}>
+                    <img src={resolveAssetUrl(p.logo_url)} alt={p.name} loading="lazy" />
+                    <h4>{p.name}</h4>
                   </div>
                 ))}
               </div>
-            }
-            onRetry={reloadPartners}
-          >
-            <PartnerGrid partners={selectedPartners} />
-          </AsyncSection>
-          <p className="section-trailing-link">
-            <SmartLink className="text-link" to="/partners">
-              Meet our partners and collaborators{' '}
-              <i className="bi bi-arrow-right" aria-hidden="true" />
-            </SmartLink>
-          </p>
-        </div>
-      </section>
+            </div>
+          </div>
+        </section>
 
-      <CtaStrip
-        title="Ready to build resilience together?"
-        body="Explore our projects, join our expert network, or get in touch to discuss partnership opportunities."
-        actions={[
-          { label: 'Explore Our Work', to: '/projects', variant: 'white' },
-          { label: 'Partner With Us', to: '/contact#contact-form', variant: 'white' },
-        ]}
-      />
-    </Layout>
+        {/* ============================================================
+            CTA STRIP
+            - Buttons use .btn-outline with white border
+            - New .btn-outline-black-hover class overrides hover to black
+            ============================================================ */}
+        <div className="cta-strip">
+          <div className="wrap">
+            <div className="cta-strip-inner">
+              <div>
+                <h2>Ready to Build Resilience Together?</h2>
+                <p style={{ marginBottom: '0' }}>
+                  Explore our projects, join our expert network, or get in touch to discuss partnership opportunities.
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', flexShrink: '0' }}>
+                <a className="btn-outline-black-hover" href="/projects">View Projects</a>
+                <a className="btn-outline-black-hover" href="/careers">Careers</a>
+                <a className="btn-outline-black-hover" href="/contact">Contact</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Local CSS for the CTA buttons — white outline by default, black on hover */}
+        <style>{`
+          .cta-strip .btn-outline-black-hover {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 26px;
+            border: 2px solid #ffffff;
+            background: transparent;
+            color: #ffffff;
+            font-family: var(--sans);
+            font-weight: 700;
+            font-size: 0.88rem;
+            letter-spacing: 0.02em;
+            text-decoration: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.18s ease, color 0.18s ease,
+                        border-color 0.18s ease, transform 0.15s ease;
+          }
+          .cta-strip .btn-outline-black-hover:hover {
+            background: #000000;
+            color: #ffffff;
+            border-color: #000000;
+            opacity: 1;
+            transform: translateY(-2px);
+          }
+        `}</style>
+
+      </main>
+
+      <Footer />
+    </React.Fragment>
   );
 }
