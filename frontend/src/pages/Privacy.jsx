@@ -1,24 +1,36 @@
-import React, { useEffect } from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import React, { useMemo } from 'react';
+import Layout from '../components/Layout';
+import PageHeader from '../components/PageHeader';
+import Seo, {
+  BASE_JSONLD,
+  breadcrumbJsonLd,
+  pageJsonLd,
+} from '../components/Seo';
+import { PAGE_META } from '../content/navigation';
+
+const META = PAGE_META['/privacy'];
 
 export default function Privacy() {
-  useEffect(() => {
-    if (window.initSiteLogic) window.initSiteLogic();
-  }, []);
+  const jsonLd = useMemo(
+    () => [
+      ...BASE_JSONLD,
+      pageJsonLd({ name: META.title, path: '/privacy', description: META.description }),
+      breadcrumbJsonLd(META.breadcrumb),
+    ],
+    []
+  );
 
   return (
-    <>
-      <Navbar activePage="privacy" />
+    <Layout navId="privacy">
+      <Seo title={META.title} description={META.description} path="/privacy" jsonLd={jsonLd} />
 
-      <main>
-        <div className="page-header">
-          <div className="wrap">
-            <nav className="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span>Privacy Policy</nav>
-            <h1>Privacy Policy</h1>
-            <p className="dek">How CGP collects, uses, and protects information on this website.</p>
-          </div>
-        </div>
+      <PageHeader
+        trail={META.breadcrumb}
+        h1="Privacy Policy"
+        dek="How CGP collects, uses, and protects information on this website."
+      />
+
+      <div className="page-body">
 
         <section className="privacy-section">
           <div className="wrap">
@@ -351,10 +363,7 @@ export default function Privacy() {
             </div>
           </div>
         </section>
-      </main>
-
-      <Footer />
-
-    </>
+      </div>
+    </Layout>
   );
 }

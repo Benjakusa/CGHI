@@ -1,172 +1,193 @@
-import React, { useEffect } from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+/**
+ * What We Do.
+ *
+ * Renders the same five capability definitions the homepage uses, in full,
+ * as a list of addressable sections. Each capability links to the projects and
+ * initiatives that demonstrate it, so the page is a hub rather than a wall of
+ * prose — that was the audit's "text-heavy sections" finding.
+ */
+
+import React, { useMemo } from 'react';
+import Layout from '../components/Layout';
+import PageHeader from '../components/PageHeader';
+import Seo, {
+  BASE_JSONLD,
+  breadcrumbJsonLd,
+  itemListJsonLd,
+  pageJsonLd,
+} from '../components/Seo';
+import SmartLink from '../components/SmartLink';
+import {
+  CtaStrip,
+  InitiativeChips,
+  ProjectChips,
+  SectionHeader,
+} from '../components/cards';
+import { GLANCE } from '../content/impact';
+import { PAGE_META } from '../content/navigation';
+import { CAPABILITIES } from '../content/capabilities';
+
+const META = PAGE_META['/what-we-do'];
+
+/** Headline counters. Only verified figures are shown. */
+const HEADLINE = GLANCE.filter((f) =>
+  ['capabilities', 'financing', 'response-time', 'initiatives'].includes(f.id)
+);
 
 export default function WhatWeDo() {
-  useEffect(() => {
-    if (window.initSiteLogic) window.initSiteLogic();
-  }, []);
+  const jsonLd = useMemo(
+    () => [
+      ...BASE_JSONLD,
+      pageJsonLd({ name: META.title, path: '/what-we-do', description: META.description }),
+      breadcrumbJsonLd(META.breadcrumb),
+      itemListJsonLd('Areas of expertise', CAPABILITIES.map((c) => ({ name: c.title, to: '/what-we-do' }))),
+    ],
+    []
+  );
 
   return (
-    <>
-      <Navbar activePage="what-we-do" />
+    <Layout navId="what-we-do">
+      <Seo title={META.title} description={META.description} path="/what-we-do" jsonLd={jsonLd} />
 
-      <main>
-        <div className="page-header">
-          <div className="wrap">
-            <nav className="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span>What We Do</nav>
-            <h1>What We Do</h1>
-            <p className="dek">Strengthen global health security and IHR compliance. Integrate One Health data streams for early
-              warning. Build AI-driven outbreak forecasting platforms. Equip frontline responders through real-time tools
-              and training.</p>
+      <PageHeader
+        trail={META.breadcrumb}
+        h1="What We Do"
+        dek="CGP strengthens global health security and IHR compliance, integrates One Health data streams for early warning, builds AI-driven outbreak forecasting, and equips frontline responders with real-time tools and training."
+        kickers={CAPABILITIES.map((c) => c.short)}
+      />
+
+      {/* ---------------- Headline figures ---------------- */}
+      <section className="section-tight section-surface" aria-label="CGP at a glance">
+        <div className="wrap">
+          <div className="stat-strip">
+            {HEADLINE.map((figure) => (
+              <div className="stat-strip-cell" key={figure.id}>
+                <span className="stat-strip-num">{figure.display}</span>
+                <span className="stat-strip-lbl">{figure.label}</span>
+              </div>
+            ))}
           </div>
         </div>
+      </section>
 
-        <section>
-          <div className="wrap">
-            <div className="grid-4" style={{gap: '0', border: '1px solid var(--border)', marginBottom: '56px'}}>
-              <div style={{padding: '28px 24px', borderRight: '1px solid var(--border)'}}>
-                <div style={{fontSize: '2rem', fontWeight: '800', color: 'var(--sky-dark)', marginBottom: '8px'}}>5</div>
-                <div style={{fontSize: '0.88rem', color: 'var(--ink-muted)'}}>Technical capability areas</div>
-              </div>
-              <div style={{padding: '28px 24px', borderRight: '1px solid var(--border)'}}>
-                <div style={{fontSize: '2rem', fontWeight: '800', color: 'var(--sky-dark)', marginBottom: '8px'}}>$145M</div>
-                <div style={{fontSize: '0.88rem', color: 'var(--ink-muted)'}}>Pandemic Fund financing coordinated</div>
-              </div>
-              <div style={{padding: '28px 24px', borderRight: '1px solid var(--border)'}}>
-                <div style={{fontSize: '2rem', fontWeight: '800', color: 'var(--sky-dark)', marginBottom: '8px'}}>7-1-7</div>
-                <div style={{fontSize: '0.88rem', color: 'var(--ink-muted)'}}>WHO readiness targets applied</div>
-              </div>
-              <div style={{padding: '28px 24px'}}>
-                <div style={{fontSize: '2rem', fontWeight: '800', color: 'var(--sky-dark)', marginBottom: '8px'}}>6</div>
-                <div style={{fontSize: '0.88rem', color: 'var(--ink-muted)'}}>Active subnational initiatives</div>
-              </div>
-            </div>
+      {/* ---------------- Five capabilities ---------------- */}
+      <section aria-labelledby="capabilities-heading">
+        <div className="wrap">
+          <SectionHeader
+            id="capabilities-heading"
+            eyebrow="Five Areas"
+            title="Technical capabilities"
+            lede="Five interconnected areas of expertise, each linked to the projects and initiatives that put it into practice."
+          />
 
-            <span className="section-label">5 Areas</span>
-            <h2 style={{marginBottom: '32px'}}>Technical Capabilities</h2>
-
-            <div role="list">
-              <details className="accordion-item" open>
-                <summary>
-                  <h3>Epidemic and Pandemic Intelligence</h3>
-                  <span className="accordion-tag">EPI</span>
-                  <span className="accordion-plus" aria-hidden="true">+</span>
-                </summary>
-                <div className="accordion-body" role="listitem">
-                  <p>CGP builds and applies epidemic intelligence systems that integrate AI-powered forecasting, 7-1-7
-                    response monitoring, and multi-source surveillance data   including IDSR, community-based surveillance
-                    (CBS), and environmental signals   to accelerate detection and response to disease threats. Our epidemic
-                    intelligence work supports subnational, national and regional decision-makers with timely, actionable
-                    information.</p>
-                  <p style={{marginTop: '12px'}}>Key activities include outbreak risk assessment, risk modeling, early warning
-                    system design, and scenario planning for priority diseases across Kenya and the broader East Africa
-                    region.</p>
-                  <p style={{marginTop: '12px'}}><a className="text-link" href="/initiatives">See the EWIN initiative
-                      <i className="bi bi-arrow-right"></i></a></p>
+          <div className="capability-list">
+            {CAPABILITIES.map((capability, index) => (
+              <article
+                key={capability.id}
+                className="capability-block"
+                id={capability.id}
+                aria-labelledby={`${capability.id}-title`}
+              >
+                <div className="capability-block-head">
+                  <span className="capability-block-index" aria-hidden="true">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <div>
+                    <span className="pill">{capability.tag}</span>
+                    <h3 id={`${capability.id}-title`}>{capability.title}</h3>
+                  </div>
+                  <span className="capability-block-icon" aria-hidden="true">
+                    <i className={`bi ${capability.icon}`} />
+                  </span>
                 </div>
-              </details>
 
-              <details className="accordion-item">
-                <summary>
-                  <h3>Public Health Emergency Preparedness &amp; Response</h3>
-                  <span className="accordion-tag">PHEPR</span>
-                  <span className="accordion-plus" aria-hidden="true">+</span>
-                </summary>
-                <div className="accordion-body" role="listitem">
-                  <p>CGP provides technical leadership for public health emergency preparedness and response systems at
-                    national and county level. This includes IHR 2005 compliance support, JEE and SPAR facilitation, NAPHS
-                    development, and Intra-Action Reviews (IARs) and After Action Reviews (AARs) for priority outbreak
-                    responses.</p>
-                  <p style={{marginTop: '12px'}}>CGP has supported the development of the Marburg Preparedness and 72-Hour
-                    Response Plans, and the Mpox Response Plans for Kenya (2024). CGP also designs and facilitates
-                    simulation exercises   including Rift Valley fever, Ebola, and COHESION, a One Health cross-border
-                    simulation with Kenya, Somalia, and Ethiopia.</p>
-                  <p style={{marginTop: '12px'}}><a className="text-link" href="/projects">See emergency preparedness projects
-                      <i className="bi bi-arrow-right"></i></a></p>
+                <p className="lead">{capability.summary}</p>
+                {capability.body.map((paragraph) => (
+                  <p key={paragraph.slice(0, 40)}>{paragraph}</p>
+                ))}
+
+                <div className="capability-block-links">
+                  {capability.cta && (
+                    <SmartLink className="text-link" to={capability.cta.to}>
+                      {capability.cta.label}{' '}
+                      <i className="bi bi-arrow-right" aria-hidden="true" />
+                    </SmartLink>
+                  )}
                 </div>
-              </details>
 
-              <details className="accordion-item">
-                <summary>
-                  <h3>One Health &amp; Climate-Sensitive Disease Control</h3>
-                  <span className="accordion-tag">OCD</span>
-                  <span className="accordion-plus" aria-hidden="true">+</span>
-                </summary>
-                <div className="accordion-body" role="listitem">
-                  <p>CGP operates at the intersection of human, animal, and environmental health   applying a One Health
-                    framework to disease surveillance, early warning, and response. This approach is especially important in
-                    East Africa, where zoonotic diseases, climate variability, and informal human-animal contact contribute
-                    to recurring outbreaks.</p>
-                  <p style={{marginTop: '12px'}}>CGP's climate-sensitive disease work integrates meteorological, environmental,
-                    and health data to build GIS-based risk models and early warning dashboards. CGP's One Health work
-                    extends into urban informal settlements, where high population density, poor sanitation, and
-                    human-animal proximity create unique surveillance challenges.</p>
-                  <p style={{marginTop: '12px'}}><a className="text-link" href="/initiatives">See climate and One Health
-                      initiatives <i className="bi bi-arrow-right"></i></a></p>
+                <div className="capability-block-refs">
+                  <ProjectChips ids={capability.relatedProjects} />
+                  <InitiativeChips ids={capability.relatedInitiatives} />
                 </div>
-              </details>
-
-              <details className="accordion-item">
-                <summary>
-                  <h3>Community Engagement and Resilience Building</h3>
-                  <span className="accordion-tag">CER</span>
-                  <span className="accordion-plus" aria-hidden="true">+</span>
-                </summary>
-                <div className="accordion-body" role="listitem">
-                  <p>CGP builds community-centered preparedness and risk communication systems that leverage trusted local
-                    structures   including Community Health Volunteers (CHVs), youth leaders, and community influencers   to
-                    strengthen early warning and response in marginalized areas.</p>
-                  <p style={{marginTop: '12px'}}>Activities include developing culturally contextualized IEC tools,
-                    establishing WhatsApp- and SMS-based rumor-tracking channels, and integrating grassroots reporting with
-                    county surveillance and RCCE platforms. CGP also provides capacity building through training of
-                    community health workers on CBS, EBS, and community-led preparedness approaches.</p>
-                  <p style={{marginTop: '12px'}}><a className="text-link" href="/initiatives">See community risk communication
-                      initiative <i className="bi bi-arrow-right"></i></a></p>
-                </div>
-              </details>
-
-              <details className="accordion-item">
-                <summary>
-                  <h3>Data Science &amp; Digital Health Innovation</h3>
-                  <span className="accordion-tag">DSH</span>
-                  <span className="accordion-plus" aria-hidden="true">+</span>
-                </summary>
-                <div className="accordion-body" role="listitem">
-                  <p>CGP leverages AI, machine learning, geospatial intelligence, and digital health tools to transform
-                    disease surveillance and outbreak response. Our data science work includes building machine
-                    learning-based early warning models, real-time visualization dashboards, decision-support tools, and
-                    mobile-enabled alert systems accessible to county and national actors.</p>
-                  <p style={{marginTop: '12px'}}>CGP's precision public health work supports KNPHI on the Standardized
-                    Decision-Making Tool for Public Health Emergencies (DMT-PHE)   a first-of-its-kind framework now
-                    validated and piloted across 10 high-risk counties in Kenya. AI/ML models are being developed and
-                    back-tested for priority diseases including cholera, mpox, kala-azar, and dengue.</p>
-                  <p style={{marginTop: '12px'}}><a className="text-link" href="/initiatives">See AI epidemic forecasting
-                      initiative <i className="bi bi-arrow-right"></i></a></p>
-                </div>
-              </details>
-            </div>
-          </div>
-        </section>
-
-        <div className="cta-strip">
-          <div className="wrap">
-            <div className="cta-strip-inner">
-              <div>
-                <h2>Explore CGP's Projects &amp; Initiatives</h2>
-                <p>See CGP's capabilities in action through our project record and subnational programmes.</p>
-              </div>
-              <div style={{display: 'flex', gap: '14px', flexWrap: 'wrap', flexShrink: '0'}}>
-                <a className="btn" href="/projects">Projects &amp; Impact</a>
-                <a className="btn" href="/initiatives">CGP Initiatives</a>
-              </div>
-            </div>
+              </article>
+            ))}
           </div>
         </div>
-      </main>
+      </section>
 
-      <Footer />
+      {/* ---------------- Approach summary ---------------- */}
+      <section className="section-surface-alt" aria-labelledby="related-heading">
+        <div className="wrap">
+          <SectionHeader
+            id="related-heading"
+            align="center"
+            eyebrow="See it in practice"
+            title="Explore CGP’s work"
+            lede="Capabilities only matter when they change outcomes. See where each one is applied."
+          />
+          <div className="grid-auto">
+            <article className="icon-card">
+              <div className="card-icon" aria-hidden="true">
+                <i className="bi bi-kanban-fill" />
+              </div>
+              <h3>Projects &amp; Impact</h3>
+              <p>Outcome-led summaries of CGP’s project record across Kenya and the region.</p>
+              <SmartLink className="text-link card-link" to="/projects">
+                Explore Our Projects <i className="bi bi-arrow-right" aria-hidden="true" />
+              </SmartLink>
+            </article>
+            <article className="icon-card">
+              <div className="card-icon" aria-hidden="true">
+                <i className="bi bi-broadcast-pin" />
+              </div>
+              <h3>CGP Initiatives</h3>
+              <p>Six active programmes putting epidemic intelligence into practice subnationally.</p>
+              <SmartLink className="text-link card-link" to="/initiatives">
+                View initiatives <i className="bi bi-arrow-right" aria-hidden="true" />
+              </SmartLink>
+            </article>
+            <article className="icon-card">
+              <div className="card-icon" aria-hidden="true">
+                <i className="bi bi-journal-richtext" />
+              </div>
+              <h3>Insights &amp; Research</h3>
+              <p>Research, policy and field updates from the CGP team and its partners.</p>
+              <SmartLink className="text-link card-link" to="/insights">
+                Read the Research <i className="bi bi-arrow-right" aria-hidden="true" />
+              </SmartLink>
+            </article>
+            <article className="icon-card">
+              <div className="card-icon" aria-hidden="true">
+                <i className="bi bi-people-fill" />
+              </div>
+              <h3>Partners</h3>
+              <p>The ministries, institutes and agencies CGP delivers this work with.</p>
+              <SmartLink className="text-link card-link" to="/partners">
+                Meet our partners <i className="bi bi-arrow-right" aria-hidden="true" />
+              </SmartLink>
+            </article>
+          </div>
+        </div>
+      </section>
 
-    </>
+      <CtaStrip
+        title="Explore CGP's projects & initiatives"
+        body="See CGP's capabilities in action through our project record and subnational programmes."
+        actions={[
+          { label: 'Explore Our Projects', to: '/projects', variant: 'white' },
+          { label: 'CGP Initiatives', to: '/initiatives', variant: 'white' },
+        ]}
+      />
+    </Layout>
   );
 }
