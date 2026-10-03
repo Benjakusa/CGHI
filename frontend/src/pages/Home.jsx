@@ -331,6 +331,45 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ---------------- Get Involved ---------------- */}
+      <section aria-labelledby="get-involved-heading">
+        <div className="wrap">
+          <SectionHeader
+            id="get-involved-heading"
+            align="center"
+            eyebrow="Get Involved"
+            title="Work with CGP"
+            lede="Join our expert network, or get in touch to discuss partnership opportunities."
+          />
+          <div className="grid-2 get-involved-grid">
+            <article className="icon-card">
+              <div className="card-icon" aria-hidden="true">
+                <i className="bi bi-people" />
+              </div>
+              <h3>
+                <SmartLink to="/careers">Careers</SmartLink>
+              </h3>
+              <p>Join our expert network.</p>
+              <SmartLink className="text-link card-link" to="/careers">
+                View careers <i className="bi bi-arrow-right" aria-hidden="true" />
+              </SmartLink>
+            </article>
+            <article className="icon-card">
+              <div className="card-icon" aria-hidden="true">
+                <i className="bi bi-chat-left-text" />
+              </div>
+              <h3>
+                <SmartLink to="/contact#contact-form">Partner With Us</SmartLink>
+              </h3>
+              <p>Get in touch to discuss partnership opportunities.</p>
+              <SmartLink className="text-link card-link" to="/contact#contact-form">
+                Start a conversation <i className="bi bi-arrow-right" aria-hidden="true" />
+              </SmartLink>
+            </article>
+          </div>
+        </div>
+      </section>
+
       {/* ---------------- CGP at a Glance ---------------- */}
       <section className="section-dark" aria-labelledby="glance-heading">
         <div className="wrap">
@@ -383,35 +422,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------------- Insights ---------------- */}
-      <section aria-labelledby="insights-heading">
-        <div className="wrap">
-          <SectionHeader
-            id="insights-heading"
-            eyebrow="Updates"
-            title="Latest insights & research"
-            action={{ label: 'Read the Research', to: '/insights' }}
-          />
-          <AsyncSection
-            loading={news.loading}
-            skeleton={
-              <div className="grid-3">
-                <SkeletonCard />
-                <SkeletonCard />
-                <SkeletonCard />
-              </div>
-            }
-            onRetry={reloadNews}
-          >
-            <div className="grid-3">
-              {latestNews.map((article) => (
-                <InsightCard key={article.id} article={article} />
-              ))}
-            </div>
-          </AsyncSection>
-        </div>
-      </section>
-
       {/* ---------------- Partners ---------------- */}
       <section className="section-surface" aria-labelledby="partners-heading">
         <div className="wrap">
@@ -444,6 +454,35 @@ export default function Home() {
               <i className="bi bi-arrow-right" aria-hidden="true" />
             </SmartLink>
           </p>
+        </div>
+      </section>
+
+      {/* ---------------- Insights ---------------- */}
+      <section aria-labelledby="insights-heading">
+        <div className="wrap">
+          <SectionHeader
+            id="insights-heading"
+            eyebrow="Updates"
+            title="Latest insights & research"
+            action={{ label: 'Read the Research', to: '/insights' }}
+          />
+          <AsyncSection
+            loading={news.loading}
+            skeleton={
+              <div className="grid-3">
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
+              </div>
+            }
+            onRetry={reloadNews}
+          >
+            <div className="grid-3">
+              {latestNews.map((article) => (
+                <InsightCard key={article.id} article={article} />
+              ))}
+            </div>
+          </AsyncSection>
         </div>
       </section>
 

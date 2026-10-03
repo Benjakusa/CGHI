@@ -21,7 +21,7 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { BRAND } from '../config/site';
+import { BRAND, CONTACT, SOCIAL } from '../config/site';
 import { PRIMARY_NAV, HEADER_CTA } from '../content/navigation';
 
 /** Nav item ids that light up a parent dropdown. */
@@ -227,7 +227,30 @@ export default function Navbar({ activePage }) {
 
   return (
     <header className="site-header" ref={headerRef}>
-      <div className="wrap">
+      <div className="utility-bar">
+        <div className="wrap utility-bar-inner">
+          <ul className="utility-bar-info">
+            <li>
+              <a href={`mailto:${CONTACT.email}`}>
+                <i className="bi bi-envelope" aria-hidden="true" /> {CONTACT.email}
+              </a>
+            </li>
+            <li>
+              <i className="bi bi-geo-alt" aria-hidden="true" /> {CONTACT.address.formatted}
+            </li>
+          </ul>
+          <ul className="utility-bar-social" aria-label={`${BRAND.abbr} on social media`}>
+            {SOCIAL.map((s) => (
+              <li key={s.label}>
+                <a href={s.href} target="_blank" rel="noopener noreferrer" aria-label={`${BRAND.abbr} on ${s.label}`}>
+                  <i className={`bi ${s.icon}`} aria-hidden="true" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div className="wrap site-header-main">
         <NavLink className="brand" to="/" aria-label={`${BRAND.abbr} home`} onClick={closeAll}>
           <img
             className="brand-logo"

@@ -27,11 +27,11 @@ CGHI/
 │   │   ├── config/         # site.js — brand, domain, contact, social (single source)
 │   │   ├── content/        # navigation, capabilities, projects, initiatives, insights…
 │   │   ├── context/        # AuthContext (token + API base)
-│   │   ├── hooks/          # useApi, useCountUp
+│   │   ├── hooks/          # useApi, useCountUp, useScrollAnimations
 │   │   ├── pages/          # Public pages + /admin/* admin pages
 │   │   ├── index.css       # Base reset
 │   │   ├── style.css       # Brand/legacy component styles
-│   │   └── site.css        # Public-site design system
+│   │   └── styles/site.css # Public-site design system
 │   ├── public/             # Icons, OG image, robots.txt, sitemap.xml, manifest
 │   ├── scripts/            # generate-sitemap.mjs (runs before every build)
 │   └── vercel.json         # Vercel deployment config

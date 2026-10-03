@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap');
+
 /**
  * site.css — design system for the rebuilt public site.
  *
@@ -3158,4 +3160,1087 @@ select.input {
   .privacy-doc {
     max-width: none;
   }
+}
+
+
+/* ==========================================================================
+   Red Cross Kenya-inspired layer (formerly new-site.css). Loaded last in the
+   same file so it overrides the base rules above on equal specificity.
+   ========================================================================== */
+
+/**
+ * new-site.css — Red Cross Kenya-inspired layer for the CGP public site.
+ *
+ * Loaded AFTER style.css (see App.jsx), so it wins on equal
+ * specificity without needing !important. It only uses the existing CGP
+ * tokens (--sky, --sky-dark, --sky-deep, tints, ink, surface) — no new brand
+ * colours. Cards are rectangular (2px radius), sections are spacious, and
+ * motion is driven by GSAP (src/hooks/useScrollAnimations.js) with a pure-CSS
+ * fallback for reduced-motion users.
+ *
+ *   1. Tokens and type
+ *   2. Layout and rhythm
+ *   3. Buttons
+ *   4. Sticky navbar
+ *   5. Hero
+ *   6. Cards
+ *   7. Stats band
+ *   8. CTA strip
+ *   9. Footer + newsletter
+ *  10. Motion helpers
+ *  11. Responsive
+ */
+
+
+/* 1. Tokens and type ------------------------------------------------------ */
+:root {
+  /* Semantic aliases over the CGP brand tokens defined in section 1 of this
+     file's predecessor (--sky*, --ink*, --surface*). Nothing new is introduced. */
+  --color-primary: var(--sky);
+  --color-primary-hover: var(--sky-dark);
+  --color-secondary: var(--sky-deep);
+  --color-accent: var(--sky-tint-strong);
+  --color-surface: var(--surface);
+  --color-background: var(--white);
+  --color-text: var(--ink);
+  --color-text-muted: var(--ink-muted);
+  --color-border: var(--border);
+  --color-success: #1a7f4b;
+  --color-warning: #8a5a00;
+  --color-error: #b3261e;
+
+  --font-display: 'Poppins', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --radius-sm: 2px;
+  --radius: 2px;
+  --radius-lg: 2px;
+
+  --shadow-sm: 0 1px 3px rgba(1, 74, 115, 0.08);
+  --shadow: 0 4px 16px rgba(1, 74, 115, 0.1);
+  --shadow-lg: 0 16px 40px rgba(1, 74, 115, 0.18);
+
+  --section-y: clamp(4rem, 3rem + 5vw, 7.5rem);
+  --wrap: 1240px;
+  --header-h: 4.75rem;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+h2 {
+  font-size: var(--step-4);
+  line-height: 1.12;
+  font-weight: 700;
+}
+
+h3 {
+  font-weight: 600;
+}
+
+/* 2. Layout and rhythm ---------------------------------------------------- */
+section {
+  padding-block: var(--section-y);
+}
+
+.hero-carousel,
+.cta-strip {
+  padding-block: 0;
+}
+
+.section-surface {
+  background: var(--surface);
+}
+
+.section-surface-alt {
+  background: var(--sky-tint);
+}
+
+.section-header {
+  margin-bottom: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+}
+
+.section-header--center {
+  text-align: center;
+}
+
+.section-header--center .section-header-text {
+  margin-inline: auto;
+  max-width: 46rem;
+}
+
+/* The label is a short rule + text, not a tracked uppercase eyebrow. */
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+  font-family: var(--font-sans);
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--sky-deep);
+}
+
+.section-label::before {
+  content: '';
+  width: 2.25rem;
+  height: 3px;
+  background: var(--sky);
+}
+
+.section-header--center .section-label::after {
+  content: '';
+  width: 2.25rem;
+  height: 3px;
+  background: var(--sky);
+}
+
+.section-lede {
+  color: var(--ink-muted);
+}
+
+/* 3. Buttons -------------------------------------------------------------- */
+.btn,
+.nav-cta,
+.btn-white,
+.btn-outline,
+.btn-outline-light {
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.btn {
+  padding: 0.75rem 1.75rem;
+  background: var(--sky);
+  color: var(--black);
+}
+
+.btn:hover {
+  background: var(--sky-deep);
+  color: var(--white);
+  transform: none;
+  box-shadow: var(--shadow);
+}
+
+.btn-outline {
+  background: transparent;
+  border-color: var(--sky-deep);
+  color: var(--sky-deep);
+}
+
+.btn-outline:hover {
+  background: var(--sky-deep);
+  color: var(--white);
+}
+
+.text-link {
+  font-weight: 600;
+}
+
+.text-link .bi {
+  display: inline-block;
+  transition: transform 0.2s var(--ease);
+}
+
+.text-link:hover .bi {
+  transform: translateX(4px);
+}
+
+/* 4. Sticky navbar -------------------------------------------------------- */
+.site-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 14px rgba(1, 74, 115, 0.08);
+  transition: box-shadow 0.25s var(--ease);
+}
+
+.site-header.is-scrolled {
+  box-shadow: 0 6px 24px rgba(1, 74, 115, 0.16);
+}
+
+.site-header .wrap {
+  min-height: var(--header-h);
+  max-width: var(--wrap);
+}
+
+.primary-nav {
+  margin-left: auto;
+}
+
+.primary-nav-item > a,
+.primary-nav-item > .dropbtn {
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+.nav-cta {
+  padding: 0.65rem 1.5rem;
+  background: var(--sky-deep);
+  color: var(--white) !important;
+}
+
+.nav-cta:hover {
+  background: var(--sky);
+  color: var(--black) !important;
+}
+
+.dropdown-content {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  border-top: 3px solid var(--sky);
+}
+
+/* 5. Hero ----------------------------------------------------------------- */
+.hero-carousel {
+  min-height: clamp(30rem, 78vh, 46rem);
+}
+
+.hero-slide-img {
+  /* Oversized so the GSAP parallax never exposes the container edge. */
+  height: 118%;
+  top: -9%;
+  will-change: transform;
+}
+
+.hero-slide-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(1, 40, 62, 0.55) 0%,
+    rgba(1, 40, 62, 0.72) 100%
+  );
+}
+
+.hero-slide-panel {
+  justify-content: center;
+  min-height: clamp(30rem, 78vh, 46rem);
+  padding-block: clamp(3rem, 2rem + 4vw, 6rem);
+}
+
+.hero-slide-eyebrow {
+  align-self: flex-start;
+  padding: 0.4rem 0.9rem;
+  border-left: 4px solid var(--sky);
+  background: rgba(255, 255, 255, 0.1);
+  font-family: var(--font-sans);
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--white);
+}
+
+.hero-slide h1 {
+  max-width: 20ch;
+  margin-top: 1.25rem;
+  font-size: clamp(2.4rem, 1.7rem + 3.4vw, 4.6rem);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+}
+
+.hero-slide p {
+  max-width: 56ch;
+  margin-top: 1.25rem;
+}
+
+.hero-ctas {
+  margin-top: 2.25rem;
+}
+
+.hero-ctas .btn-white {
+  background: var(--sky);
+  color: var(--black);
+  border-color: var(--sky);
+}
+
+.hero-ctas .btn-white:hover {
+  background: var(--white);
+  border-color: var(--white);
+}
+
+/* 6. Cards ---------------------------------------------------------------- */
+.icon-card,
+.project-card,
+.initiative-card,
+.article-card,
+.partner-card,
+.leader-card,
+.approach-card,
+.resource-card,
+.value-card,
+.stat-card,
+.partner-tile,
+.contact-info-item,
+.frame-figure,
+.notice-panel {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.28s var(--ease), box-shadow 0.28s var(--ease),
+    border-color 0.28s var(--ease);
+}
+
+/* Consistent height in grids, with the action pinned to the bottom. */
+.grid-auto > *,
+.grid-3 > * {
+  height: 100%;
+}
+
+.icon-card,
+.project-card,
+.initiative-card,
+.resource-card,
+.value-card,
+.approach-card {
+  position: relative;
+  padding: clamp(1.5rem, 1.2rem + 1vw, 2.25rem);
+  border-top: 3px solid var(--sky);
+}
+
+.icon-card .card-link,
+.project-card .text-link,
+.initiative-card .text-link,
+.resource-card .text-link {
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.icon-card:hover,
+.project-card:hover,
+.initiative-card:hover,
+.article-card:hover,
+.partner-card:hover,
+.leader-card:hover,
+.resource-card:hover,
+.value-card:hover,
+.approach-card:hover,
+.partner-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--sky);
+}
+
+/* Square icon tiles to match the rectangular cards. */
+.card-icon,
+.approach-icon,
+.vm-icon,
+.value-card-icon,
+.initiative-icon,
+.capability-block-icon {
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: var(--radius);
+  background: var(--sky-tint);
+  color: var(--sky-deep);
+  transition: background 0.25s var(--ease), color 0.25s var(--ease);
+}
+
+.icon-card:hover .card-icon,
+.initiative-card:hover .initiative-icon,
+.value-card:hover .value-card-icon {
+  background: var(--sky);
+  color: var(--black);
+}
+
+.article-card {
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+}
+
+.article-card-media,
+.article-card-img {
+  overflow: hidden;
+  border-radius: 0;
+}
+
+.article-card-img {
+  transition: transform 0.6s var(--ease);
+}
+
+.article-card:hover .article-card-img {
+  transform: scale(1.05);
+}
+
+.article-card-body {
+  padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+}
+
+.leader-card-photo,
+.leader-card-media,
+.frame-figure-media,
+.frame-figure-img,
+.article-hero-img,
+.map-embed {
+  border-radius: var(--radius);
+}
+
+.pill,
+.chip-list li,
+.filter-chip,
+.project-card-tag,
+.dash-badge {
+  border-radius: var(--radius);
+}
+
+.field input,
+.field select,
+.field textarea,
+.input {
+  border-radius: var(--radius);
+}
+
+/* 7. Stats band ----------------------------------------------------------- */
+.section-dark {
+  background: var(--sky-deep);
+}
+
+.stats-single-card {
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.stat-num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--white);
+}
+
+/* 8. CTA strip ------------------------------------------------------------ */
+.cta-strip {
+  background: var(--sky-deep);
+  color: var(--white);
+}
+
+.cta-strip-inner {
+  padding-block: var(--section-y);
+}
+
+.cta-strip h2,
+.cta-strip p {
+  color: var(--white);
+}
+
+.cta-strip .btn-white {
+  border-radius: var(--radius);
+  background: var(--sky);
+  color: var(--black);
+}
+
+.cta-strip .btn-white:hover {
+  background: var(--white);
+}
+
+/* 9. Footer + newsletter -------------------------------------------------- */
+.site-footer {
+  background: var(--sky-deep);
+  padding-block: clamp(3.5rem, 3rem + 3vw, 6rem) 1.5rem;
+  border-top: 4px solid var(--sky);
+}
+
+.footer-grid {
+  grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr));
+}
+
+.footer-heading {
+  font-family: var(--font-display);
+  font-size: var(--step-0);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.footer-social a {
+  border-radius: var(--radius);
+}
+
+.footer-social a:hover {
+  background: var(--sky);
+  border-color: var(--sky);
+  color: var(--black);
+}
+
+.footer-newsletter {
+  margin-top: clamp(2.5rem, 2rem + 2vw, 4rem);
+  padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 1.5rem 3rem;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.footer-newsletter h2 {
+  margin: 0;
+  color: var(--white);
+  font-size: var(--step-2);
+}
+
+.footer-newsletter p {
+  margin: 0.4rem 0 0;
+  font-size: var(--step--1);
+}
+
+.footer-newsletter-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.footer-newsletter-form input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: var(--tap);
+  padding: 0.6rem 1rem;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--ink);
+}
+
+.footer-newsletter-form input:focus-visible {
+  outline: 3px solid var(--sky);
+  outline-offset: 2px;
+}
+
+.footer-newsletter-form .btn {
+  flex: none;
+}
+
+/* 10. Motion helpers ------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .icon-card:hover,
+  .project-card:hover,
+  .initiative-card:hover,
+  .article-card:hover,
+  .partner-card:hover,
+  .leader-card:hover,
+  .resource-card:hover,
+  .value-card:hover,
+  .approach-card:hover,
+  .partner-tile:hover,
+  .article-card:hover .article-card-img {
+    transform: none;
+  }
+}
+
+/* 11. Responsive ---------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .grid-auto {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1023px) {
+  .footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .footer-newsletter {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .grid-3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hero-slide h1 {
+    max-width: none;
+  }
+}
+
+@media (max-width: 599px) {
+  .footer-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .footer-newsletter-form {
+    flex-direction: column;
+  }
+  .hero-ctas .btn {
+    width: 100%;
+  }
+}
+
+
+/* 12. Red Cross structure additions --------------------------------------- */
+
+/* Utility bar: contact + social strip above the nav. Collapses on scroll. */
+.utility-bar {
+  background: var(--sky-deep);
+  color: var(--white);
+  font-size: var(--step--1);
+  max-height: 3rem;
+  overflow: hidden;
+  transition: max-height 0.3s var(--ease);
+}
+
+.site-header.is-scrolled .utility-bar {
+  max-height: 0;
+}
+
+.utility-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2.5rem;
+}
+
+.utility-bar ul {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.utility-bar a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding-inline: 0.25rem;
+  color: var(--white);
+  text-decoration: none;
+}
+
+.utility-bar a:hover {
+  color: var(--sky-tint-strong);
+}
+
+.utility-bar-info li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Link underline slide */
+.text-link,
+.dropdown-list a,
+.footer-column a {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0 2px;
+  transition: background-size 0.3s var(--ease), color 0.2s var(--ease);
+}
+
+.text-link:hover,
+.footer-column a:hover {
+  background-size: 100% 2px;
+  text-decoration: none;
+}
+
+/* Transparent navbar over the home hero, solid once scrolled */
+.site-header {
+  transition: background-color 0.3s var(--ease), box-shadow 0.3s var(--ease),
+    border-color 0.3s var(--ease);
+}
+
+.site-shell[data-hero] .site-header {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+}
+
+.site-shell[data-hero] .hero-slide-panel {
+  padding-top: calc(var(--header-h) + 3.5rem);
+}
+
+@media (min-width: 901px) {
+  .site-shell[data-hero] .site-header:not(.is-scrolled) {
+    background: transparent;
+    border-bottom-color: rgba(255, 255, 255, 0.25);
+    box-shadow: none;
+  }
+
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .brand {
+    padding: 0.2rem 0.6rem;
+    background: var(--white);
+  }
+
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .primary-nav-item > a,
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .dropbtn,
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .nav-profile-btn {
+    color: var(--white);
+  }
+}
+
+/* Get Involved split */
+.get-involved-grid {
+  max-width: 56rem;
+  margin-inline: auto;
+}
+
+/* Inner-page banner: solid brand band with breadcrumb, like the RC page titles */
+.page-header {
+  background: var(--sky-deep);
+  color: var(--white);
+  padding-block: clamp(2.5rem, 2rem + 3vw, 5rem);
+}
+
+.page-header h1,
+.page-header .dek,
+.page-header .breadcrumb a,
+.page-header .breadcrumb-sep,
+.page-header .breadcrumb [aria-current],
+.page-header .section-label {
+  color: var(--white);
+}
+
+.page-header .section-label::before {
+  background: var(--sky);
+}
+
+/* Footer: five columns (brand + CTA, three link columns, contact) */
+.footer-grid {
+  grid-template-columns: minmax(0, 1.4fr) repeat(4, minmax(0, 1fr));
+}
+
+.footer-brand .btn {
+  margin-top: 0.5rem;
+}
+
+.footer-brand .footer-heading {
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 1100px) {
+  .footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 900px) {
+  .utility-bar-info li:nth-child(2) {
+    display: none;
+  }
+}
+
+@media (max-width: 599px) {
+  .utility-bar-info {
+    display: none;
+  }
+  .utility-bar-inner {
+    justify-content: flex-end;
+  }
+  .footer-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .utility-bar,
+  .site-header,
+  .text-link,
+  .footer-column a {
+    transition: none;
+  }
+}
+
+/* 13. Fixes from the first render pass ------------------------------------ */
+
+/* One consistent nav-item style: style.css gave .dropbtn uppercase/bold. */
+.primary-nav-item > a,
+.primary-nav-item > .dropbtn,
+.primary-nav-item > .dropdown > .dropbtn {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.primary-nav-item > a.active,
+.primary-nav-item > .dropdown > .dropbtn[aria-expanded='true'] {
+  font-weight: 600;
+}
+
+/* Hero copy is left-aligned, as on redcross.or.ke. */
+.hero-slide-panel,
+.hero-slide-panel h1,
+.hero-slide-panel p,
+.hero-slide h1,
+.hero-slide p {
+  text-align: left;
+  margin-inline: 0;
+}
+
+.hero-slide h1 {
+  margin-top: 1.25rem;
+}
+
+.hero-slide p {
+  margin-top: 1.25rem;
+}
+
+.hero-ctas {
+  justify-content: flex-start;
+}
+
+.utility-bar li,
+.utility-bar i {
+  color: var(--white);
+}
+
+@media (min-width: 901px) {
+  /* Active item over the transparent header: keep white text readable. */
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .primary-nav-item > a.active,
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .dropbtn[aria-expanded='true'] {
+    background: rgba(255, 255, 255, 0.18);
+    color: var(--white);
+  }
+
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .primary-nav-item > a:hover,
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .dropbtn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--white);
+  }
+
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .nav-cta {
+    background: var(--sky);
+    color: var(--black) !important;
+  }
+}
+
+.hero-slide-panel {
+  align-items: flex-start;
+}
+
+.hero-slide-panel > * {
+  align-self: flex-start;
+}
+
+/* 14. Neutralise legacy style.css ----------------------------------------- *
+ * style.css forces an asymmetric 60px card shape with !important and styles
+ * the dropdown for a dark header. These rules replace those decisions; they
+ * live here (not in style.css) so the admin screens keep working untouched.
+ * ------------------------------------------------------------------------ */
+
+.card,
+.icon-card,
+.project-card,
+.initiative-card,
+.article-card,
+.partner-card,
+.stat-card,
+.value-card,
+.vm-card,
+.job-card,
+.resource-card,
+.leader-card,
+.approach-card,
+.privacy-right,
+.apply-doc,
+.apply-card,
+.privacy-contact-card,
+.privacy-table,
+.contact-info-grid,
+.contact-info-item,
+.seven-one-seven,
+.placeholder-note,
+.partner-block,
+.job-card-toggle,
+.resource-card-link,
+.breadcrumb,
+.news-gallery img,
+.map-embed iframe,
+.stats-single-card {
+  border-radius: 2px !important;
+}
+
+.card,
+.icon-card,
+.project-card,
+.initiative-card,
+.article-card,
+.partner-card,
+.value-card,
+.resource-card,
+.leader-card,
+.approach-card {
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.card:hover,
+.icon-card:hover,
+.project-card:hover,
+.initiative-card:hover,
+.article-card:hover,
+.partner-card:hover,
+.value-card:hover,
+.resource-card:hover,
+.leader-card:hover,
+.approach-card:hover {
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.article-card-img {
+  border-radius: 0 !important;
+}
+
+.kicker-list li,
+.privacy-updated,
+.file-badge {
+  border-radius: 2px !important;
+}
+
+.carousel-dot {
+  border-radius: 2px !important;
+}
+
+/* Left-aligned card content with the action pinned to the bottom. */
+.icon-card {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.icon-card .card-icon {
+  margin: 0 0 0.5rem;
+}
+
+.icon-card h3 a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.icon-card h3 a:hover {
+  color: var(--sky-deep);
+}
+
+/* Nav: the legacy .dropbtn is white-on-blue; the header is now light. */
+.primary-nav .dropdown .dropbtn {
+  height: auto;
+  min-height: var(--tap);
+  padding: 0.5rem 0.8rem;
+  border-bottom: 0;
+  border-radius: var(--radius);
+  color: var(--ink);
+  background: transparent;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: var(--font-display);
+}
+
+.primary-nav .dropdown:hover .dropbtn,
+.primary-nav .dropdown:focus-within .dropbtn,
+.primary-nav .dropdown.open .dropbtn,
+.primary-nav .dropdown.active .dropbtn,
+.primary-nav .dropdown.has-active .dropbtn {
+  color: var(--sky-deep);
+  background: var(--sky-tint);
+  border-bottom: 0;
+}
+
+.primary-nav .dropdown.dismissed:hover .dropbtn {
+  color: var(--ink);
+  background: transparent;
+}
+
+.primary-nav-item > .nav-cta {
+  padding: 0.65rem 1.5rem;
+  border-radius: var(--radius);
+  background: var(--sky-deep);
+  color: var(--white) !important;
+}
+
+.primary-nav-item > .nav-cta:hover {
+  background: var(--sky);
+  color: var(--black) !important;
+}
+
+.dropdown-content {
+  border-top: 3px solid var(--sky);
+}
+
+@media (min-width: 901px) {
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .primary-nav .dropdown .dropbtn {
+    color: var(--white);
+  }
+
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .primary-nav .dropdown:hover .dropbtn,
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .primary-nav .dropdown.open .dropbtn,
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .primary-nav .dropdown.has-active .dropbtn {
+    color: var(--white);
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .primary-nav-item > .nav-cta {
+    background: var(--sky);
+    color: var(--black) !important;
+  }
+}
+
+/* 15. Inner-page banner + labels (legacy overrides) ------------------------ */
+.page-header,
+.page-header .wrap {
+  text-align: left;
+}
+
+.page-header .dek {
+  margin-inline: 0;
+  max-width: 52rem;
+}
+
+.page-header .breadcrumb {
+  display: block;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--font-sans);
+  font-size: var(--step--1);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.page-header .breadcrumb-list {
+  justify-content: flex-start;
+  margin: 0;
+  padding: 0;
+}
+
+.page-header .breadcrumb a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.section-label {
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.page-header .wrap {
+  display: block;
+}
+
+.page-header,
+.page-header * {
+  text-align: left !important;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.page-header .dek,
+.page-header h1 {
+  margin-inline: 0 !important;
 }

@@ -8,10 +8,48 @@
  * router does not serve.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import SmartLink from './SmartLink';
 import { BRAND, CONTACT, SOCIAL } from '../config/site';
 import { FOOTER_NAV, FOOTER_LEGAL } from '../content/navigation';
+
+/** Opens the visitor's mail client with a pre-filled subscription request. */
+function NewsletterSignup() {
+  const [email, setEmail] = useState('');
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    const subject = encodeURIComponent('Newsletter subscription');
+    const body = encodeURIComponent(`Please add ${email} to the ${BRAND.abbr} mailing list.`);
+    window.location.href = `mailto:${CONTACT.email}?subject=${subject}&body=${body}`;
+  }
+
+  return (
+    <div className="footer-newsletter">
+      <div>
+        <h2>Get {BRAND.abbr} updates</h2>
+        <p>Research, projects and news from {BRAND.abbr}, sent to your inbox.</p>
+      </div>
+      <form className="footer-newsletter-form" onSubmit={handleSubmit}>
+        <label className="sr-only" htmlFor="footer-newsletter-email">
+          Email address
+        </label>
+        <input
+          id="footer-newsletter-email"
+          type="email"
+          required
+          autoComplete="email"
+          placeholder="Your email address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <button type="submit" className="btn">
+          Subscribe
+        </button>
+      </form>
+    </div>
+  );
+}
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -27,6 +65,11 @@ export default function Footer() {
               regional health security through evidence-driven action — preventing, detecting and
               responding to public health threats in vulnerable and high-risk settings.
             </p>
+
+            <h2 className="footer-heading">Work with us</h2>
+            <SmartLink className="btn" to="/contact#contact-form">
+              Partner With Us
+            </SmartLink>
 
             <ul className="footer-social" aria-label={`${BRAND.abbr} on social media`}>
               {SOCIAL.map((s) => (
@@ -68,6 +111,8 @@ export default function Footer() {
             </address>
           </div>
         </div>
+
+        <NewsletterSignup />
 
         <div className="footer-bottom">
           <p className="footer-copyright">

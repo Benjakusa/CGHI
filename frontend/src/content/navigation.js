@@ -24,7 +24,6 @@ export const PRIMARY_NAV = [
       { label: 'About CGP', to: '/about', id: 'about' },
       { label: 'Leadership & Team', to: '/leadership', id: 'leadership' },
       { label: 'Partners & Collaborators', to: '/partners', id: 'partners' },
-      { label: 'Careers', to: '/careers', id: 'careers' },
     ],
   },
   {
@@ -34,11 +33,26 @@ export const PRIMARY_NAV = [
       { label: 'Overview', to: '/what-we-do', id: 'what-we-do' },
       { label: 'Projects & Impact', to: '/projects', id: 'projects' },
       { label: 'CGP Initiatives', to: '/initiatives', id: 'initiatives' },
-      { label: 'Resources', to: '/resources', id: 'resources' },
     ],
   },
-  { label: 'Insights', to: '/insights', id: 'insights' },
-  { label: 'Contact', to: '/contact', id: 'contact' },
+  {
+    label: 'Get Involved',
+    id: 'get-involved',
+    children: [
+      { label: 'Partner With Us', to: '/contact#contact-form', id: 'partner-with-us' },
+      { label: 'Careers', to: '/careers', id: 'careers' },
+    ],
+  },
+  {
+    label: 'Media Center',
+    id: 'media',
+    children: [
+      { label: 'Insights & Research', to: '/insights', id: 'insights' },
+      { label: 'Resource Library', to: '/resources', id: 'resources' },
+      { label: 'Media & Press', to: '/contact#contact-details', id: 'media-press' },
+    ],
+  },
+  { label: 'Contact Us', to: '/contact', id: 'contact' },
 ];
 
 /** Persistent header call to action. */
@@ -51,32 +65,33 @@ export const NAV_IDS = [
   ),
 ];
 
-/** Footer columns. */
+/** Footer columns (Red Cross pattern: quick links, then section columns). */
 export const FOOTER_NAV = [
   {
-    title: 'Explore',
+    title: 'Quick Links',
     links: [
-      { label: 'Who We Are', to: '/about' },
+      { label: 'Careers', to: '/careers' },
+      { label: 'Resource Library', to: '/resources' },
+      { label: 'Insights & Research', to: '/insights' },
+      { label: 'Partners & Collaborators', to: '/partners' },
+      { label: 'Contact Our Team', to: '/contact' },
+    ],
+  },
+  {
+    title: 'Who We Are',
+    links: [
+      { label: 'About CGP', to: '/about' },
+      { label: 'Leadership & Team', to: '/leadership' },
       { label: 'What We Do', to: '/what-we-do' },
       { label: 'Projects & Impact', to: '/projects' },
       { label: 'CGP Initiatives', to: '/initiatives' },
-      { label: 'Partners & Collaborators', to: '/partners' },
     ],
   },
   {
-    title: 'Resources',
+    title: 'Media Center',
     links: [
-      { label: 'Insights & Research', to: '/insights' },
-      { label: 'Resource Library', to: '/resources' },
-      { label: 'Careers', to: '/careers' },
-    ],
-  },
-  {
-    title: 'Contact',
-    links: [
-      { label: 'Contact Our Team', to: '/contact' },
-      { label: 'Partner With Us', to: '/contact#contact-form' },
       { label: 'Media & Press', to: '/contact#contact-details' },
+      { label: 'Partner With Us', to: '/contact#contact-form' },
     ],
   },
 ];

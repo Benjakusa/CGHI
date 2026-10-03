@@ -27,7 +27,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { Skeleton, SkeletonCard } from './components/Skeleton';
 import { normaliseArticle } from './content/insights';
 import './style.css';
-import './site.css';
+import './styles/site.css';
 
 const Home = lazy(() => import('./pages/Home'));
 const About = lazy(() => import('./pages/About'));
