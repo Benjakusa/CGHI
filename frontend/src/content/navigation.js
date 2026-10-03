@@ -52,7 +52,6 @@ export const PRIMARY_NAV = [
       { label: 'Media & Press', to: '/partner-with-us#contact-details', id: 'media-press' },
     ],
   },
-  { label: 'Contact Us', to: '/partner-with-us', id: 'contact' },
 ];
 
 /** Persistent header call to action. */

@@ -31,29 +31,30 @@
    -------------------------------------------------------------------------- */
 
 :root {
-  /* STRICT PALETTE. The site uses exactly three colours — brand blue, black and
-     white — plus rgba() variants of black and white for borders, shadows,
-     muted text and hover states. No other hex, rgb, hsl or named colour is
-     permitted anywhere, and no gradients are used at all.
+  /* STRICT PALETTE. The public site uses the brand blue and white, plus black
+     for body text and the footer, and rgba() variants of black/white for
+     borders, shadows and muted text. No other hue is permitted and no gradients
+     are used.
 
-     The `--sky-dark`, `--sky-deep`, `--sky-tint` and `--sky-tint-strong`
-     aliases are retained so existing rules keep resolving, but every one of
-     them now maps back onto the three permitted colours: blue text on white
-     fails WCAG AA (~2.4:1), so the "blue" aliases collapse to black, and the
-     pale blue tints collapse to white. */
+     Black is never a section or button background: the only large black surface
+     on the site is the footer. Feature bands (the stats band, the CTA strip, the
+     inner-page banner and the utility bar) use the darkened brand blue below,
+     which keeps white text readable (~8:1) where the bright #01abed would not
+     (~2.4:1). The pale tints are light blue accents, not white. */
   --sky: #01abed;
-  --sky-dark: #000000;
-  --sky-deep: #000000;
-  --sky-tint: #ffffff;
-  --sky-tint-strong: #ffffff;
+  --sky-dark: #014a73;
+  --sky-deep: #014a73;
+  --sky-tint: #e8f6fe;
+  --sky-tint-strong: #cbeefe;
 
   --ink: #000000;
   --ink-soft: #000000;
   --ink-muted: rgba(0, 0, 0, 0.6);
 
-  /* Section banding uses black at low opacity rather than a second hue. */
-  --surface: rgba(0, 0, 0, 0.04);
-  --surface-alt: rgba(0, 0, 0, 0.08);
+  /* Plain sections are white — no black banding — and the only tinted surface
+     uses the brand blue. */
+  --surface: #ffffff;
+  --surface-alt: #e8f6fe;
   --border: rgba(0, 0, 0, 0.12);
   --border-ink: rgba(0, 0, 0, 0.35);
 
@@ -515,8 +516,8 @@ section {
 }
 
 .btn-white:hover {
-  background: var(--black);
-  border-color: var(--white);
+  background: var(--sky-deep);
+  border-color: var(--sky-deep);
   color: var(--white);
   transform: translateY(-2px);
 }
@@ -590,8 +591,8 @@ section {
 }
 
 .link-button:hover {
-  background: var(--black);
-  border-color: var(--black);
+  background: var(--sky-deep);
+  border-color: var(--sky-deep);
   color: var(--white);
 }
 
@@ -614,8 +615,8 @@ section {
 }
 
 .pill--pending {
-  background: rgba(0, 0, 0, 0.06);
-  color: #000000;
+  background: var(--sky-tint);
+  color: var(--ink);
 }
 
 .chip-list {
@@ -846,7 +847,7 @@ section {
 
 .nav-cta {
   padding-inline: 1.1rem;
-  border: 2px solid var(--black);
+  border: 2px solid var(--sky);
   background: var(--sky);
   color: var(--black) !important;
   font-weight: 600;
@@ -1060,7 +1061,7 @@ section {
 .hero-carousel {
   position: relative;
   min-height: clamp(26rem, 60vh, 40rem);
-  background: var(--black);
+  background: var(--sky-deep);
   color: var(--white);
   overflow: hidden;
 }
@@ -1629,7 +1630,7 @@ section {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
   padding: clamp(1.25rem, 1rem + 1vw, 2rem);
   border-radius: var(--radius-lg);
-  background: var(--black);
+  background: var(--sky-deep);
   color: var(--white);
 }
 
@@ -1861,9 +1862,9 @@ select.input {
 }
 
 .form-alert[role='alert'] {
-  border-left-color: #000000;
-  background: rgba(0, 0, 0, 0.06);
-  color: #000000;
+  border-left-color: var(--sky-deep);
+  background: var(--sky-tint);
+  color: var(--ink);
 }
 
 .form-alert p {
@@ -2021,7 +2022,7 @@ select.input {
 .skeleton {
   border-radius: var(--radius-sm);
   /* Flat fill, no gradient sheen: opacity pulse only. */
-  background: rgba(0, 0, 0, 0.08);
+  background: var(--sky-tint);
   animation: skeleton-pulse 1.4s ease-in-out infinite;
 }
 
@@ -3165,8 +3166,8 @@ select.input {
 }
 
 .dash-manage-btn:hover {
-  border-color: var(--black);
-  background: var(--black);
+  border-color: var(--sky-deep);
+  background: var(--sky-deep);
   color: var(--white);
 }
 
@@ -3310,11 +3311,11 @@ section {
 }
 
 .section-surface {
-  background: var(--surface);
+  background: var(--white);
 }
 
 .section-surface-alt {
-  background: var(--sky-tint);
+  background: var(--white);
 }
 
 .section-header {
@@ -3440,7 +3441,7 @@ section {
 
 .nav-cta {
   padding: 0.65rem 1.5rem;
-  border: 2px solid var(--black);
+  border: 2px solid var(--sky-deep);
   background: var(--sky-deep);
   color: var(--white) !important;
 }
@@ -3480,7 +3481,7 @@ section {
 }
 
 .hero-slide-eyebrow {
-  align-self: flex-start;
+  align-self: center;
   padding: 0.4rem 0.9rem;
   border-left: 4px solid var(--sky);
   background: rgba(255, 255, 255, 0.1);
@@ -3698,7 +3699,8 @@ section {
 
 /* 9. Footer + newsletter -------------------------------------------------- */
 .site-footer {
-  background: var(--sky-deep);
+  /* The footer is the site's only black surface. */
+  background: var(--black);
   padding-block: clamp(3.5rem, 3rem + 3vw, 6rem) 1.5rem;
   border-top: 4px solid var(--sky);
 }
@@ -3870,7 +3872,7 @@ section {
 }
 
 .utility-bar a:hover {
-  color: var(--sky-tint-strong);
+  color: var(--white);
 }
 
 .utility-bar-info li {
@@ -4024,14 +4026,18 @@ section {
   font-weight: 600;
 }
 
-/* Hero copy is left-aligned, as on redcross.or.ke. */
+/* Hero copy is centred. */
 .hero-slide-panel,
 .hero-slide-panel h1,
 .hero-slide-panel p,
 .hero-slide h1,
 .hero-slide p {
-  text-align: left;
-  margin-inline: 0;
+  text-align: center;
+}
+
+.hero-slide h1,
+.hero-slide p {
+  margin-inline: auto;
 }
 
 .hero-slide h1 {
@@ -4043,7 +4049,7 @@ section {
 }
 
 .hero-ctas {
-  justify-content: flex-start;
+  justify-content: center;
 }
 
 .utility-bar li,
@@ -4072,11 +4078,11 @@ section {
 }
 
 .hero-slide-panel {
-  align-items: flex-start;
+  align-items: center;
 }
 
 .hero-slide-panel > * {
-  align-self: flex-start;
+  align-self: center;
 }
 
 /* 14. Neutralise legacy style.css ----------------------------------------- *
@@ -4296,4 +4302,23 @@ section {
 .page-header .dek,
 .page-header h1 {
   margin-inline: 0 !important;
+}
+
+/* 16. Mission / vision cards ---------------------------------------------- *
+ * style.css paints .vm-card black for the old dark theme. They sit on the
+ * darkened-blue band now, so they are white cards with dark text instead. */
+.vm-card {
+  background: var(--white);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--sky);
+}
+
+.vm-card h2,
+.vm-card h3 {
+  color: var(--ink);
+}
+
+.vm-card p {
+  color: var(--ink-muted);
 }
