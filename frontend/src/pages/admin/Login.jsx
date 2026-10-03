@@ -54,6 +54,8 @@ export default function Login() {
                             <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.92rem', fontWeight: 600 }}>Email Address</label>
                             <input
                                 type="email"
+                                name="email"
+                                autoComplete="username"
                                 required
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
@@ -66,6 +68,8 @@ export default function Login() {
                             <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.92rem', fontWeight: 600 }}>Password</label>
                             <input
                                 type="password"
+                                name="password"
+                                autoComplete="current-password"
                                 required
                                 value={password}
                                 onChange={e => setPassword(e.target.value)}

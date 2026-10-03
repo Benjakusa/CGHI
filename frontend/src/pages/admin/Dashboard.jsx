@@ -22,7 +22,8 @@ export default function DashboardLayout({ children, title }) {
         { to: '/admin/partners', icon: 'bi-building', label: 'Partners' },
         { to: '/admin/careers', icon: 'bi-briefcase', label: 'Careers' },
         { to: '/admin/resources', icon: 'bi-file-earmark-text', label: 'Resources' },
-        { to: '/admin/job-applications', icon: 'bi-inbox', label: 'Job Applications' }
+        { to: '/admin/job-applications', icon: 'bi-inbox', label: 'Job Applications' },
+        { to: '/admin/enquiries', icon: 'bi-envelope-paper', label: 'Enquiries' }
     ];
 
     return (
