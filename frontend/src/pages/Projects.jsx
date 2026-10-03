@@ -121,7 +121,7 @@ export default function Projects() {
           )}
 
           <p className="section-trailing-link">
-            <SmartLink className="text-link" to="/contact#contact-form">
+            <SmartLink className="text-link" to="/partner-with-us#contact-form">
               Ask us about a project <i className="bi bi-arrow-right" aria-hidden="true" />
             </SmartLink>
           </p>
@@ -133,7 +133,7 @@ export default function Projects() {
         body="Explore the subnational initiatives that put these projects into practice."
         actions={[
           { label: 'CGP Initiatives', to: '/initiatives', variant: 'white' },
-          { label: 'Partner With Us', to: '/contact#contact-form', variant: 'white' },
+          { label: 'Partner With Us', to: '/partner-with-us#contact-form', variant: 'white' },
         ]}
       />
     </Layout>

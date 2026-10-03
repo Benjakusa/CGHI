@@ -67,7 +67,7 @@ export default function Footer() {
             </p>
 
             <h2 className="footer-heading">Work with us</h2>
-            <SmartLink className="btn" to="/contact#contact-form">
+            <SmartLink className="btn" to="/partner-with-us#contact-form">
               Partner With Us
             </SmartLink>
 

@@ -304,8 +304,8 @@ export default function About() {
         title="Work with CGP"
         body="Explore how we can collaborate to strengthen health security and pandemic intelligence in your region."
         actions={[
-          { label: 'Partner With Us', to: '/contact#contact-form', variant: 'white' },
-          { label: 'Contact Our Team', to: '/contact', variant: 'white' },
+          { label: 'Partner With Us', to: '/partner-with-us#contact-form', variant: 'white' },
+          { label: 'Contact Our Team', to: '/partner-with-us', variant: 'white' },
         ]}
       />
     </Layout>

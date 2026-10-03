@@ -7,7 +7,7 @@
  *        → What We Do (/what-we-do, /projects, /projects/:slug,
  *                      /initiatives, /resources)
  *        → Insights & Research (/insights, /insights/:slug)
- *        → Contact (/contact)
+ *        → Partner With Us (/partner-with-us)
  *
  * Additions vs the previous router:
  *  - `React.lazy` on every page, so the initial bundle is the shell plus the
@@ -40,7 +40,7 @@ const InsightDetail = lazy(() => import('./pages/InsightDetail'));
 const Partners = lazy(() => import('./pages/Partners'));
 const Leadership = lazy(() => import('./pages/Leadership'));
 const Resources = lazy(() => import('./pages/Resources'));
-const Contact = lazy(() => import('./pages/Contact'));
+const PartnerWithUs = lazy(() => import('./pages/PartnerWithUs'));
 const Careers = lazy(() => import('./pages/Careers'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
@@ -139,6 +139,17 @@ function NewsRedirect() {
   return <Navigate to={target} replace />;
 }
 
+/**
+ * `/contact` was renamed to `/partner-with-us`. Redirect permanently, but keep
+ * the fragment so the deep links the header, footer and CTAs used to publish
+ * (`/contact#contact-form`, `/contact#contact-details`) still land on the right
+ * section of the new page.
+ */
+function ContactRedirect() {
+  const { hash } = useLocation();
+  return <Navigate to={`/partner-with-us${hash}`} replace />;
+}
+
 function AppRoutes() {
   return (
     <Suspense fallback={<RouteFallback />}>
@@ -156,7 +167,7 @@ function AppRoutes() {
         <Route path="/insights/:slug" element={<InsightDetail />} />
         <Route path="/partners" element={<Partners />} />
         <Route path="/resources" element={<Resources />} />
-        <Route path="/contact" element={<Contact />} />
+        <Route path="/partner-with-us" element={<PartnerWithUs />} />
         <Route path="/careers" element={<Careers />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
@@ -165,6 +176,10 @@ function AppRoutes() {
         {/* Legacy news URLs, permanently redirected */}
         <Route path="/news" element={<NewsRedirect />} />
         <Route path="/news/*" element={<NewsRedirect />} />
+
+        {/* The old Contact page became Partner With Us; keep the URL alive and
+            preserve any #contact-form / #contact-details deep link. */}
+        <Route path="/contact" element={<ContactRedirect />} />
 
         {/* ---------- Admin ---------- */}
         <Route path="/admin/login" element={<Login />} />

@@ -166,7 +166,7 @@ export default function Leadership() {
         title="Want to work with our team?"
         body="We welcome collaborations with researchers, practitioners and institutions."
         actions={[
-          { label: 'Partner With Us', to: '/contact#contact-form', variant: 'white' },
+          { label: 'Partner With Us', to: '/partner-with-us#contact-form', variant: 'white' },
           { label: 'Careers', to: '/careers', variant: 'white' },
         ]}
       />

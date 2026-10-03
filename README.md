@@ -52,7 +52,7 @@ CGHI/
 ### Public Pages
 
 The information architecture: **Home → Who We Are → What We Do → Projects →
-Initiatives → Insights & Research → Partners → Contact**.
+Initiatives → Insights & Research → Partners → Partner With Us**.
 
 - **Home** — Hero, five capability cards, "CGP at a Glance", featured projects, initiatives, latest insights, selected partners
 - **About** — Who we are, mission, vision, approach, expertise, leadership status, partners
@@ -64,7 +64,7 @@ Initiatives → Insights & Research → Partners → Contact**.
 - **Partners** — Full partner and collaborator directory
 - **Resources** — Document/resource library
 - **Careers** — Open roles with an application form
-- **Contact** — Contact details, map and validated enquiry form
+- **Partner With Us** — Contact details, map and validated enquiry form (the legacy `/contact` URL permanently redirects here, preserving the `#contact-form` / `#contact-details` anchors)
 - **Privacy / Terms / Accessibility** — Policy pages, plus a branded 404 page
 
 ### Admin Dashboard (`/admin/*`, requires auth)

@@ -164,7 +164,7 @@ function ArticleBody({ article, all }) {
         body="Learn more about the projects behind the DMT-PHE and other CGP initiatives."
         actions={[
           { label: 'Explore Our Projects', to: '/projects', variant: 'white' },
-          { label: 'Partner With Us', to: '/contact#contact-form', variant: 'white' },
+          { label: 'Partner With Us', to: '/partner-with-us#contact-form', variant: 'white' },
         ]}
       />
     </Layout>

@@ -1,8 +1,12 @@
 /**
- * Contact.
+ * Partner With Us.
  *
- * Two-column layout as specified: contact details and map on one side, a
- * structured enquiry form on the other.
+ * The single home for "work with CGP" on the public site. It replaces the old
+ * /contact page: the enquiry form and the contact details now live here, and
+ * every legacy contact URL permanently redirects to this route.
+ *
+ * Two-column layout: contact details and map on one side, a structured enquiry
+ * form on the other.
  *
  * The form implements everything the audit asked for:
  *   - client-side validation with per-field, announced error messages
@@ -13,8 +17,8 @@
  *   - full keyboard and screen-reader support (real <label>s, aria-describedby,
  *     aria-invalid, role="alert" on the summary)
  *
- * Submission goes to `POST /api/contact`, which the audit's infrastructure work
- * added to the Express backend.
+ * Submission goes to `POST /api/contact` (an API endpoint, not a page), which
+ * the audit's infrastructure work added to the Express backend.
  */
 
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
@@ -31,7 +35,7 @@ import { API_BASE } from '../context/AuthContext';
 import { BRAND, CONTACT, SOCIAL } from '../config/site';
 import { PAGE_META } from '../content/navigation';
 
-const META = PAGE_META['/contact'];
+const META = PAGE_META['/partner-with-us'];
 
 // Values must stay in sync with TOPICS in backend/routes/contact.js — the
 // server normalises an unrecognised topic to "general", so a drift here would
@@ -502,17 +506,17 @@ function ContactForm() {
   );
 }
 
-export default function Contact() {
+export default function PartnerWithUs() {
   const jsonLd = useMemo(
     () => [
       ...BASE_JSONLD,
-      pageJsonLd({ name: META.title, path: '/contact', description: META.description }),
+      pageJsonLd({ name: META.title, path: '/partner-with-us', description: META.description }),
       breadcrumbJsonLd(META.breadcrumb),
       {
         '@context': 'https://schema.org',
         '@type': 'ContactPage',
         name: META.title,
-        url: `/contact`,
+        url: `/partner-with-us`,
         mainEntity: { '@id': '/#organisation' },
       },
     ],
@@ -520,12 +524,12 @@ export default function Contact() {
   );
 
   return (
-    <Layout navId="contact">
-      <Seo title={META.title} description={META.description} path="/contact" jsonLd={jsonLd} />
+    <Layout navId="partner-with-us">
+      <Seo title={META.title} description={META.description} path="/partner-with-us" jsonLd={jsonLd} />
 
       <PageHeader
         trail={META.breadcrumb}
-        h1="Contact Us"
+        h1="Partner With Us"
         dek="Reach out to discuss partnerships, technical collaboration, research enquiries, or to learn more about CGP's work."
       />
 
@@ -534,7 +538,7 @@ export default function Contact() {
           <div className="contact-layout">
             {/* ---------------- Left: details ---------------- */}
             <div className="contact-details" id="contact-details">
-              <h2>Contact details</h2>
+              <h2>Contact information</h2>
 
               <ul className="contact-info-grid contact-info-grid--stack">
                 <li className="contact-info-item">

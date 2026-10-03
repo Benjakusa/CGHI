@@ -235,7 +235,7 @@ function seedIfEmpty() {
                 topic: 'Emergency Preparedness & Response',
                 description: 'From IHR/JEE technical facilitation to Marburg and Mpox response planning CGP equips frontline responders with decision tools, simulation exercises, and 7-1-1 readiness frameworks.',
                 btn1_text: 'View Projects', btn1_link: '/projects',
-                btn2_text: 'Partner With Us', btn2_link: '/contact',
+                btn2_text: 'Partner With Us', btn2_link: '/partner-with-us#contact-form',
                 image_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/10/WhatsApp-Image-2025-10-22-at-12.17.43-1024x683.jpeg',
                 sort: 5
             }

@@ -15,9 +15,9 @@ import { getToken, API_BASE } from '../../context/AuthContext';
 
 const STATUSES = [
     { value: 'new', label: 'New', color: '#01abed' },
-    { value: 'in_progress', label: 'In progress', color: '#e67e22' },
-    { value: 'closed', label: 'Closed', color: '#2ecc71' },
-    { value: 'spam', label: 'Spam', color: '#a4231c' },
+    { value: 'in_progress', label: 'In progress', color: '#000000' },
+    { value: 'closed', label: 'Closed', color: '#000000' },
+    { value: 'spam', label: 'Spam', color: '#000000' },
 ];
 
 const FILTERS = [{ value: 'all', label: 'All' }, ...STATUSES];
@@ -34,7 +34,7 @@ const TOPIC_LABELS = {
 };
 
 function statusMeta(value) {
-    return STATUSES.find((s) => s.value === value) || { label: value, color: '#6b6375' };
+    return STATUSES.find((s) => s.value === value) || { label: value, color: 'rgba(0, 0, 0, 0.6)' };
 }
 
 export default function ContactAdmin() {
@@ -201,8 +201,8 @@ export default function ContactAdmin() {
                                 padding: '8px 14px',
                                 borderRadius: '999px',
                                 border: `1px solid ${active ? 'var(--sky-dark)' : 'var(--border)'}`,
-                                background: active ? 'var(--sky-dark)' : '#fff',
-                                color: active ? '#fff' : 'var(--ink)',
+                                background: active ? 'var(--sky-dark)' : '#ffffff',
+                                color: active ? '#ffffff' : 'var(--ink)',
                                 fontWeight: 600,
                                 fontSize: '0.85rem',
                                 cursor: 'pointer',
@@ -274,7 +274,7 @@ export default function ContactAdmin() {
                                             <td>{TOPIC_LABELS[item.topic] || item.topic}</td>
                                             <td>{item.subject || <span style={{ color: 'var(--ink-muted)' }}>—</span>}</td>
                                             <td>
-                                                <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: 700, color: '#fff', background: meta.color, marginBottom: '6px' }}>
+                                                <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: 700, color: '#ffffff', background: meta.color, marginBottom: '6px' }}>
                                                     {meta.label}
                                                 </span>
                                                 <select

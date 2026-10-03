@@ -89,7 +89,7 @@ export default function DashboardLayout({ children, title }) {
                 .admin-sidebar {
                     width: 260px;
                     flex-shrink: 0;
-                    background: #fff;
+                    background: #ffffff;
                     border-right: 1px solid var(--border);
                     padding: 32px 0;
                 }
@@ -121,13 +121,13 @@ export default function DashboardLayout({ children, title }) {
                     transition: background 0.15s, color 0.15s;
                 }
                 .admin-sidebar-nav a:hover {
-                    background: rgba(0, 142, 204, 0.06);
+                    background: rgba(0, 0, 0, 0.06);
                     color: var(--sky-dark);
                     opacity: 1;
                 }
                 .admin-sidebar-nav a.active {
                     color: var(--sky-dark);
-                    background: rgba(0, 142, 204, 0.08);
+                    background: rgba(0, 0, 0, 0.08);
                     border-right-color: var(--sky);
                     font-weight: 600;
                 }
@@ -154,7 +154,7 @@ export default function DashboardLayout({ children, title }) {
                 .dash-card {
                     display: flex;
                     flex-direction: column;
-                    background: #fff;
+                    background: #ffffff;
                     border-radius: 8px;
                     padding: 24px;
                     border: 1px solid var(--border);
@@ -173,7 +173,7 @@ export default function DashboardLayout({ children, title }) {
                     font-size: 1.25rem;
                 }
                 .dash-badge {
-                    color: #fff;
+                    color: #ffffff;
                     padding: 4px 12px;
                     border-radius: 100px;
                     font-size: 0.85rem;
@@ -187,7 +187,7 @@ export default function DashboardLayout({ children, title }) {
                 }
                 .dash-stat {
                     flex: 1;
-                    background: #f8f9fa;
+                    background: #ffffff;
                     padding: 16px;
                     border-radius: 6px;
                     text-align: center;
@@ -241,7 +241,7 @@ export default function DashboardLayout({ children, title }) {
                         width: 44px;
                         height: 44px;
                         background: var(--brand);
-                        color: #fff;
+                        color: #ffffff;
                         border: none;
                         border-radius: 6px;
                         cursor: pointer;
@@ -353,7 +353,7 @@ export function Dashboard() {
     if (error || !stats) {
         return (
             <DashboardLayout title="Overview">
-                <div style={{ textAlign: 'center', padding: '40px', color: '#c0392b' }}>
+                <div style={{ textAlign: 'center', padding: '40px', color: '#000000' }}>
                     <i className="bi bi-exclamation-triangle-fill" style={{ fontSize: '2rem' }}></i>
                     <p style={{ marginTop: '16px' }}>Error loading dashboard: {error || 'No data available'}</p>
                 </div>
@@ -363,10 +363,10 @@ export function Dashboard() {
 
     const cards = [
         { title: 'Homepage Heroes', data: stats.heroes, link: '/admin/heroes', color: '#01abed' },
-        { title: 'News & Insights', data: stats.news, link: '/admin/news', color: '#9b59b6' },
-        { title: 'Partners', data: stats.partners, link: '/admin/partners', color: '#e67e22' },
-        { title: 'Careers / Jobs', data: stats.jobs, link: '/admin/careers', color: '#2ecc71' },
-        { title: 'Resources', data: stats.resources, link: '/admin/resources', color: '#0189be' }
+        { title: 'News & Insights', data: stats.news, link: '/admin/news', color: '#000000' },
+        { title: 'Partners', data: stats.partners, link: '/admin/partners', color: '#000000' },
+        { title: 'Careers / Jobs', data: stats.jobs, link: '/admin/careers', color: '#000000' },
+        { title: 'Resources', data: stats.resources, link: '/admin/resources', color: '#000000' }
     ];
 
     return (

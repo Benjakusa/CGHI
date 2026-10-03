@@ -20,7 +20,7 @@ const DESTINATIONS = [
   { to: '/projects', icon: 'bi-kanban-fill', label: 'Projects & Impact', note: 'Our project record' },
   { to: '/insights', icon: 'bi-journal-richtext', label: 'Insights & Research', note: 'Publications and updates' },
   { to: '/partners', icon: 'bi-people-fill', label: 'Partners', note: 'Who we work with' },
-  { to: '/contact', icon: 'bi-envelope-fill', label: 'Contact', note: 'Talk to our team' },
+  { to: '/partner-with-us', icon: 'bi-envelope-fill', label: 'Contact', note: 'Talk to our team' },
 ];
 
 export default function NotFound() {
@@ -92,7 +92,7 @@ export default function NotFound() {
 
           <p className="error-help">
             Think something is broken?{' '}
-            <SmartLink to="/contact#contact-form">Let our team know</SmartLink> and include the
+            <SmartLink to="/partner-with-us#contact-form">Let our team know</SmartLink> and include the
             address you were trying to reach.
           </p>
         </div>

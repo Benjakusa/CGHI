@@ -224,7 +224,7 @@ export default function Resources() {
         title="Request a resource"
         body="If you need a specific report, tool or dataset, tell us and we will point you to it."
         actions={[
-          { label: 'Contact Our Team', to: '/contact#contact-form', variant: 'white' },
+          { label: 'Contact Our Team', to: '/partner-with-us#contact-form', variant: 'white' },
         ]}
       />
     </Layout>

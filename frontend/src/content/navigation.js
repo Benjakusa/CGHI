@@ -4,7 +4,7 @@
  * The audit prescribes a single, coherent story:
  *
  *   Home → Who We Are → What We Do → Projects → Initiatives → Impact →
- *   Insights & Research → Partners → Contact
+ *   Insights & Research → Partners → Partner With Us
  *
  * `PRIMARY_NAV` drives the header, `FOOTER_NAV` drives the footer columns and
  * `ROUTES` is the canonical list of indexable URLs. Because all three read
@@ -39,7 +39,7 @@ export const PRIMARY_NAV = [
     label: 'Get Involved',
     id: 'get-involved',
     children: [
-      { label: 'Partner With Us', to: '/contact#contact-form', id: 'partner-with-us' },
+      { label: 'Partner With Us', to: '/partner-with-us#contact-form', id: 'partner-with-us' },
       { label: 'Careers', to: '/careers', id: 'careers' },
     ],
   },
@@ -49,14 +49,14 @@ export const PRIMARY_NAV = [
     children: [
       { label: 'Insights & Research', to: '/insights', id: 'insights' },
       { label: 'Resource Library', to: '/resources', id: 'resources' },
-      { label: 'Media & Press', to: '/contact#contact-details', id: 'media-press' },
+      { label: 'Media & Press', to: '/partner-with-us#contact-details', id: 'media-press' },
     ],
   },
-  { label: 'Contact Us', to: '/contact', id: 'contact' },
+  { label: 'Contact Us', to: '/partner-with-us', id: 'contact' },
 ];
 
 /** Persistent header call to action. */
-export const HEADER_CTA = { label: 'Partner With Us', to: '/contact#contact-form' };
+export const HEADER_CTA = { label: 'Partner With Us', to: '/partner-with-us#contact-form' };
 
 /** Route matching: which nav item should show as active for a pathname. */
 export const NAV_IDS = [
@@ -74,7 +74,7 @@ export const FOOTER_NAV = [
       { label: 'Resource Library', to: '/resources' },
       { label: 'Insights & Research', to: '/insights' },
       { label: 'Partners & Collaborators', to: '/partners' },
-      { label: 'Contact Our Team', to: '/contact' },
+      { label: 'Contact Our Team', to: '/partner-with-us' },
     ],
   },
   {
@@ -90,8 +90,8 @@ export const FOOTER_NAV = [
   {
     title: 'Media Center',
     links: [
-      { label: 'Media & Press', to: '/contact#contact-details' },
-      { label: 'Partner With Us', to: '/contact#contact-form' },
+      { label: 'Media & Press', to: '/partner-with-us#contact-details' },
+      { label: 'Partner With Us', to: '/partner-with-us#contact-form' },
     ],
   },
 ];
@@ -118,7 +118,7 @@ export const ROUTES = [
   { path: '/leadership', priority: '0.6', changefreq: 'monthly', label: 'Leadership & Team' },
   { path: '/resources', priority: '0.6', changefreq: 'weekly', label: 'Resource Library' },
   { path: '/careers', priority: '0.5', changefreq: 'monthly', label: 'Careers' },
-  { path: '/contact', priority: '0.8', changefreq: 'yearly', label: 'Contact' },
+  { path: '/partner-with-us', priority: '0.8', changefreq: 'yearly', label: 'Partner With Us' },
   { path: '/privacy', priority: '0.3', changefreq: 'yearly', label: 'Privacy Policy' },
   { path: '/terms', priority: '0.3', changefreq: 'yearly', label: 'Terms of Use' },
   { path: '/accessibility', priority: '0.3', changefreq: 'yearly', label: 'Accessibility Statement' },
@@ -204,12 +204,12 @@ export const PAGE_META = {
       { label: 'Careers', to: '/careers' },
     ],
   },
-  '/contact': {
-    title: `Contact CGP | ${BRAND.name}`,
+  '/partner-with-us': {
+    title: `Partner With Us | ${BRAND.name}`,
     description:
-      'Contact the Center for Global Health & Pandemic Intelligence in Westlands, Nairobi to discuss partnerships, technical collaboration or research enquiries.',
-    navId: 'contact',
-    breadcrumb: [{ label: 'Contact', to: '/contact' }],
+      'Partner with the Center for Global Health & Pandemic Intelligence in Westlands, Nairobi to discuss partnerships, technical collaboration, research enquiries, media or careers.',
+    navId: 'partner-with-us',
+    breadcrumb: [{ label: 'Partner With Us', to: '/partner-with-us' }],
   },
   '/privacy': {
     title: `Privacy Policy | ${BRAND.name}`,

@@ -60,7 +60,7 @@ const DEFAULT_HERO = {
   btn1_text: 'Explore Our Work',
   btn1_link: '/projects',
   btn2_text: 'Partner With Us',
-  btn2_link: '/contact#contact-form',
+  btn2_link: '/partner-with-us#contact-form',
   image_url: null,
 };
 
@@ -98,7 +98,7 @@ function HeroSlide({ slide, isActive, priority }) {
             <SmartLink className="btn btn-white" to={slide.btn1_link || '/projects'}>
               {slide.btn1_text || 'Explore Our Work'}
             </SmartLink>
-            <SmartLink className="btn btn-outline-light" to={slide.btn2_link || '/contact#contact-form'}>
+            <SmartLink className="btn btn-outline-light" to={slide.btn2_link || '/partner-with-us#contact-form'}>
               {slide.btn2_text || 'Partner With Us'}
             </SmartLink>
           </div>
@@ -359,10 +359,10 @@ export default function Home() {
                 <i className="bi bi-chat-left-text" />
               </div>
               <h3>
-                <SmartLink to="/contact#contact-form">Partner With Us</SmartLink>
+                <SmartLink to="/partner-with-us#contact-form">Partner With Us</SmartLink>
               </h3>
               <p>Get in touch to discuss partnership opportunities.</p>
-              <SmartLink className="text-link card-link" to="/contact#contact-form">
+              <SmartLink className="text-link card-link" to="/partner-with-us#contact-form">
                 Start a conversation <i className="bi bi-arrow-right" aria-hidden="true" />
               </SmartLink>
             </article>
@@ -491,7 +491,7 @@ export default function Home() {
         body="Explore our projects, join our expert network, or get in touch to discuss partnership opportunities."
         actions={[
           { label: 'Explore Our Work', to: '/projects', variant: 'white' },
-          { label: 'Partner With Us', to: '/contact#contact-form', variant: 'white' },
+          { label: 'Partner With Us', to: '/partner-with-us#contact-form', variant: 'white' },
         ]}
       />
     </Layout>

@@ -151,7 +151,7 @@ export default function Partners() {
         title="Become a partner"
         body="If your organisation works on global health security, preparedness or surveillance, we would like to hear from you."
         actions={[
-          { label: 'Partner With Us', to: '/contact#contact-form', variant: 'white' },
+          { label: 'Partner With Us', to: '/partner-with-us#contact-form', variant: 'white' },
           { label: 'Explore Our Work', to: '/projects', variant: 'white' },
         ]}
       />

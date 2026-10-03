@@ -179,7 +179,7 @@ export default function Initiatives() {
         body="See the full project record behind these initiatives."
         actions={[
           { label: 'Explore Our Projects', to: '/projects', variant: 'white' },
-          { label: 'Partner With Us', to: '/contact#contact-form', variant: 'white' },
+          { label: 'Partner With Us', to: '/partner-with-us#contact-form', variant: 'white' },
         ]}
       />
     </Layout>

@@ -266,7 +266,7 @@ function ProjectBody({ project }) {
         title="Interested in this work?"
         body="We are happy to share more detail and discuss collaboration."
         actions={[
-          { label: 'Contact Our Team', to: '/contact#contact-form', variant: 'white' },
+          { label: 'Contact Our Team', to: '/partner-with-us#contact-form', variant: 'white' },
           { label: 'Explore Our Work', to: '/projects', variant: 'white' },
         ]}
       />

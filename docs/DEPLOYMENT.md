@@ -76,7 +76,7 @@ form: `POST /api/contact` must exist or the form will report a send failure.
 4. Browser devtools → Network: page requests go to the `VITE_API_BASE_URL`
    origin (no calls to `localhost` or `127.0.0.1` from a real visitor's
    session).
-5. Submit a test enquiry through `/contact` and confirm it arrives in the admin
+5. Submit a test enquiry through `/partner-with-us` and confirm it arrives in the admin
    list.
 6. Rotate the admin password away from the legacy seed password (the API logs a
    warning at boot while it is still in use).

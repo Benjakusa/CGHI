@@ -142,7 +142,7 @@ export default function Accessibility() {
                 Email: <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
               </p>
               <p>
-                Or use the <SmartLink to="/contact#contact-form">contact form</SmartLink> and
+                Or use the <SmartLink to="/partner-with-us#contact-form">contact form</SmartLink> and
                 select “Something else”.
               </p>
             </address>

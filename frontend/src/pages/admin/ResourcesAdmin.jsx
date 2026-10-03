@@ -140,7 +140,7 @@ export default function ResourcesAdmin() {
             </div>
 
             <div style={{
-                background: '#fff',
+                background: '#ffffff',
                 border: '1px solid var(--border)',
                 borderRadius: '8px',
                 overflow: 'auto',
@@ -180,8 +180,8 @@ export default function ResourcesAdmin() {
                                 <td style={{ padding: isMobile ? '10px' : '16px' }}>
                                     {item.published ? (
                                         <span style={{
-                                            background: '#e8f8f5',
-                                            color: '#27ae60',
+                                            background: 'rgba(0, 0, 0, 0.06)',
+                                            color: '#000000',
                                             padding: '4px 8px',
                                             borderRadius: '4px',
                                             fontSize: isMobile ? '0.7rem' : '0.8rem',
@@ -189,8 +189,8 @@ export default function ResourcesAdmin() {
                                         }}>Published</span>
                                     ) : (
                                         <span style={{
-                                            background: '#fef5e7',
-                                            color: '#f39c12',
+                                            background: 'rgba(0, 0, 0, 0.06)',
+                                            color: '#000000',
                                             padding: '4px 8px',
                                             borderRadius: '4px',
                                             fontSize: isMobile ? '0.7rem' : '0.8rem',
@@ -230,9 +230,9 @@ export default function ResourcesAdmin() {
                                             Edit
                                         </button>
                                         <button onClick={() => handleDelete(item.id)} style={{
-                                            background: '#fdf3f2',
-                                            color: '#c0392b',
-                                            border: '1px solid #f5b7b1',
+                                            background: 'rgba(0, 0, 0, 0.06)',
+                                            color: '#000000',
+                                            border: '1px solid rgba(0, 0, 0, 0.35)',
                                             borderRadius: '4px',
                                             padding: isMobile ? '6px 10px' : '6px 12px',
                                             cursor: 'pointer',
@@ -267,7 +267,7 @@ export default function ResourcesAdmin() {
                     padding: isMobile ? '16px' : '0'
                 }}>
                     <div style={{
-                        background: '#fff',
+                        background: '#ffffff',
                         width: '100%',
                         maxWidth: '620px',
                         borderRadius: '8px',
@@ -403,7 +403,7 @@ export default function ResourcesAdmin() {
                                 <button type="button" onClick={() => setModalOpen(false)} style={{
                                     padding: '12px 20px',
                                     border: '1px solid var(--border)',
-                                    background: '#fff',
+                                    background: '#ffffff',
                                     borderRadius: '4px',
                                     cursor: 'pointer',
                                     width: isMobile ? '100%' : 'auto',
