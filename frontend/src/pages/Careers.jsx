@@ -398,7 +398,7 @@ export default function Careers() {
                                             <div style={{ marginBottom: '12px' }}>
                                                 <span className="job-dept">{j.department || 'General'}</span>
                                                 <h3 style={{ marginTop: '6px', marginBottom: '4px' }}>{j.title}</h3>
-                                                <div style={{ display: 'flex', gap: '12px', fontSize: '0.82rem', color: 'var(--ink-muted)', flexWrap: 'wrap' }}>
+                                                <div style={{ display: 'flex', gap: '12px', fontSize: 'var(--fs-small)', color: 'var(--ink-muted)', flexWrap: 'wrap' }}>
                                                     {j.location && <span><i className="bi bi-geo-alt" aria-hidden="true"></i> {j.location}</span>}
                                                     {j.employment_type && <span><i className="bi bi-clock" aria-hidden="true"></i> {j.employment_type}</span>}
                                                 </div>
@@ -501,7 +501,7 @@ export default function Careers() {
                         border: 2px solid var(--brand) !important;
                         color: #ffffff !important;
                         border-radius: var(--radius) !important;
-                        font-weight: 700;
+                        font-weight: var(--fw-bold);
                         font-size: var(--fs-small);
                         padding: 10px 18px;
                         display: inline-flex;
@@ -521,7 +521,7 @@ export default function Careers() {
                         border: 2px solid var(--brand) !important;
                         color: #ffffff !important;
                         border-radius: var(--radius) !important;
-                        font-weight: 700;
+                        font-weight: var(--fw-bold);
                         font-size: var(--fs-small);
                         padding: 10px 18px;
                         display: inline-flex;

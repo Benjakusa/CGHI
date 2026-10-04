@@ -344,7 +344,7 @@ export default function WhatWeDo() {
           flex-direction: column;
           align-items: center;
           color: #000000;
-          font-size: 1.1rem;
+          font-size: var(--fs-lead);
           line-height: 0.4;
         }
         .wwd-arrow-head .bi {
@@ -404,7 +404,7 @@ export default function WhatWeDo() {
           justify-content: center;
           background: skyblue;
           color: #000000;
-          font-size: 2.35rem;
+          font-size: var(--fs-stat);
           border: 2px solid #000000;
           box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.5);
         }

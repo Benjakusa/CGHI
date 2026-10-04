@@ -203,8 +203,8 @@ export default function ContactAdmin() {
                                 border: `1px solid ${active ? 'var(--sky-dark)' : 'var(--border)'}`,
                                 background: active ? 'var(--sky-dark)' : '#ffffff',
                                 color: active ? '#ffffff' : 'var(--ink)',
-                                fontWeight: 600,
-                                fontSize: '0.85rem',
+                                fontWeight: 'var(--fw-semibold)',
+                                fontSize: 'var(--fs-small)',
                                 cursor: 'pointer',
                             }}
                         >
@@ -231,7 +231,7 @@ export default function ContactAdmin() {
 
             {!error && items.length === 0 && (
                 <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--ink-muted)' }}>
-                    <i className="bi bi-envelope-open" style={{ fontSize: '3rem', marginBottom: '16px', display: 'block' }}></i>
+                    <i className="bi bi-envelope-open" style={{ fontSize: 'var(--fs-stat)', marginBottom: '16px', display: 'block' }}></i>
                     <h4>No Enquiries{filter === 'all' ? ' Yet' : ' In This View'}</h4>
                     <p style={{ margin: '8px 0 0' }}>
                         Messages sent through the contact form will appear here.
@@ -260,21 +260,21 @@ export default function ContactAdmin() {
                                 return (
                                     <React.Fragment key={item.id}>
                                         <tr>
-                                            <td style={{ color: 'var(--ink-muted)', fontFamily: 'var(--mono)', fontSize: '0.82rem' }}>#{item.id}</td>
-                                            <td style={{ color: 'var(--ink-muted)', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>{formatDate(item.created_at)}</td>
+                                            <td style={{ color: 'var(--ink-muted)', fontFamily: 'var(--mono)', fontSize: 'var(--fs-small)' }}>#{item.id}</td>
+                                            <td style={{ color: 'var(--ink-muted)', fontSize: 'var(--fs-small)', whiteSpace: 'nowrap' }}>{formatDate(item.created_at)}</td>
                                             <td>
                                                 <strong>{item.name}</strong>
-                                                <div style={{ fontSize: '0.85rem' }}>
+                                                <div style={{ fontSize: 'var(--fs-small)' }}>
                                                     <a href={`mailto:${item.email}`} style={{ color: 'var(--sky)', textDecoration: 'none' }}>{item.email}</a>
                                                 </div>
                                                 {item.organisation && (
-                                                    <div style={{ color: 'var(--ink-muted)', fontSize: '0.82rem' }}>{item.organisation}</div>
+                                                    <div style={{ color: 'var(--ink-muted)', fontSize: 'var(--fs-small)' }}>{item.organisation}</div>
                                                 )}
                                             </td>
                                             <td>{TOPIC_LABELS[item.topic] || item.topic}</td>
                                             <td>{item.subject || <span style={{ color: 'var(--ink-muted)' }}>—</span>}</td>
                                             <td>
-                                                <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: 700, color: '#ffffff', background: meta.color, marginBottom: '6px' }}>
+                                                <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: '999px', fontSize: 'var(--fs-caption)', fontWeight: 'var(--fw-bold)', color: '#ffffff', background: meta.color, marginBottom: '6px' }}>
                                                     {meta.label}
                                                 </span>
                                                 <select
@@ -282,7 +282,7 @@ export default function ContactAdmin() {
                                                     disabled={busyId === item.id}
                                                     aria-label={`Change status for enquiry ${item.id}`}
                                                     onChange={(e) => updateStatus(item.id, e.target.value)}
-                                                    style={{ display: 'block', padding: '6px', border: '1px solid var(--border)', borderRadius: '4px', fontSize: '0.85rem' }}
+                                                    style={{ display: 'block', padding: '6px', border: '1px solid var(--border)', borderRadius: '4px', fontSize: 'var(--fs-small)' }}
                                                 >
                                                     {STATUSES.map((s) => (
                                                         <option key={s.value} value={s.value}>{s.label}</option>
@@ -312,10 +312,10 @@ export default function ContactAdmin() {
                                         {isOpen && (
                                             <tr>
                                                 <td colSpan={7} style={{ background: 'var(--surface)', padding: '18px' }}>
-                                                    <p style={{ margin: '0 0 10px', fontWeight: 700 }}>Message</p>
+                                                    <p style={{ margin: '0 0 10px', fontWeight: 'var(--fw-bold)' }}>Message</p>
                                                     <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{item.message}</p>
                                                     {item.phone && (
-                                                        <p style={{ margin: '12px 0 0', color: 'var(--ink-muted)', fontSize: '0.88rem' }}>
+                                                        <p style={{ margin: '12px 0 0', color: 'var(--ink-muted)', fontSize: 'var(--fs-small)' }}>
                                                             Phone: {item.phone}
                                                         </p>
                                                     )}

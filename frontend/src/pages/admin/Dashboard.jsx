@@ -97,11 +97,11 @@ export default function DashboardLayout({ children, title }) {
                     padding: 0 24px 32px;
                 }
                 .admin-sidebar-label span {
-                    font-size: 0.78rem;
+                    font-size: var(--fs-caption);
+                    font-weight: var(--fw-semibold);
                     text-transform: uppercase;
-                    letter-spacing: 0.08em;
+                    letter-spacing: 0.1em;
                     color: var(--ink-muted);
-                    font-weight: 600;
                 }
                 .admin-sidebar-nav {
                     display: flex;
@@ -116,8 +116,8 @@ export default function DashboardLayout({ children, title }) {
                     background: transparent;
                     border-right: 3px solid transparent;
                     text-decoration: none;
-                    font-weight: 400;
-                    font-size: 1rem;
+                    font-weight: var(--fw-regular);
+                    font-size: var(--fs-body);
                     transition: background 0.15s, color 0.15s;
                 }
                 .admin-sidebar-nav a:hover {
@@ -129,7 +129,7 @@ export default function DashboardLayout({ children, title }) {
                     color: var(--sky-dark);
                     background: rgba(0, 0, 0, 0.08);
                     border-right-color: var(--sky);
-                    font-weight: 600;
+                    font-weight: var(--fw-semibold);
                 }
                 .admin-main {
                     flex: 1;
@@ -143,7 +143,8 @@ export default function DashboardLayout({ children, title }) {
                 }
                 .admin-title {
                     margin-bottom: 24px;
-                    font-size: 2rem;
+                    font-size: var(--fs-h1);
+                    font-weight: var(--fw-bold);
                 }
 
                 .dash-grid {
@@ -170,14 +171,15 @@ export default function DashboardLayout({ children, title }) {
                 }
                 .dash-card-header h3 {
                     margin: 0;
-                    font-size: 1.25rem;
+                    font-size: var(--fs-h3);
+                    font-weight: var(--fw-semibold);
                 }
                 .dash-badge {
                     color: #ffffff;
                     padding: 4px 12px;
                     border-radius: 100px;
-                    font-size: 0.85rem;
-                    font-weight: 600;
+                    font-size: var(--fs-small);
+                    font-weight: var(--fw-semibold);
                     white-space: nowrap;
                 }
                 .dash-card-stats {
@@ -193,16 +195,17 @@ export default function DashboardLayout({ children, title }) {
                     text-align: center;
                 }
                 .dash-stat-num {
-                    font-size: 1.5rem;
-                    font-weight: 700;
+                    font-size: var(--fs-stat);
+                    font-weight: var(--fw-bold);
                     color: var(--ink);
                     margin-bottom: 4px;
                 }
                 .dash-stat-lbl {
-                    font-size: 0.8rem;
+                    font-size: var(--fs-caption);
+                    font-weight: var(--fw-semibold);
                     color: var(--ink-muted);
                     text-transform: uppercase;
-                    letter-spacing: 0.5px;
+                    letter-spacing: 0.1em;
                 }
 
                 .dash-manage-btn {
@@ -215,8 +218,8 @@ export default function DashboardLayout({ children, title }) {
                     border: 2px solid var(--brand);
                     border-radius: var(--radius);
                     padding: 12px 16px;
-                    font-weight: 700;
-                    font-size: 0.88rem;
+                    font-weight: var(--fw-bold);
+                    font-size: var(--fs-small);
                     letter-spacing: 0.02em;
                     text-decoration: none;
                     white-space: normal;
@@ -245,7 +248,7 @@ export default function DashboardLayout({ children, title }) {
                         border: none;
                         border-radius: 6px;
                         cursor: pointer;
-                        font-size: 1.2rem;
+                        font-size: var(--fs-h3);
                         box-shadow: 0 2px 8px rgba(0,0,0,0.2);
                     }
                     .admin-shell-inner {
@@ -276,7 +279,7 @@ export default function DashboardLayout({ children, title }) {
                         padding: 14px 20px;
                         border-right: none;
                         border-left: 3px solid transparent;
-                        font-size: 0.95rem;
+                        font-size: var(--fs-body);
                     }
                     .admin-sidebar-nav a.active {
                         border-right-color: transparent;
@@ -286,7 +289,7 @@ export default function DashboardLayout({ children, title }) {
                         padding: 72px 16px 24px;
                     }
                     .admin-title {
-                        font-size: 1.5rem;
+                        font-size: var(--fs-h1);
                     }
                     .dash-card {
                         padding: 16px;
@@ -354,7 +357,7 @@ export function Dashboard() {
         return (
             <DashboardLayout title="Overview">
                 <div style={{ textAlign: 'center', padding: '40px', color: '#000000' }}>
-                    <i className="bi bi-exclamation-triangle-fill" style={{ fontSize: '2rem' }}></i>
+                    <i className="bi bi-exclamation-triangle-fill" style={{ fontSize: 'var(--fs-stat)' }}></i>
                     <p style={{ marginTop: '16px' }}>Error loading dashboard: {error || 'No data available'}</p>
                 </div>
             </DashboardLayout>

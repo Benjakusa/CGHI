@@ -156,7 +156,7 @@ export default function PartnersAdmin() {
                     borderCollapse: 'collapse', 
                     textAlign: 'left',
                     minWidth: isMobile ? '500px' : 'auto',
-                    fontSize: isMobile ? '0.85rem' : '1rem'
+                    fontSize: 'var(--fs-body)'
                 }}>
                     <thead>
                         <tr style={{ background: 'var(--surface-alt)', borderBottom: '1px solid var(--border)' }}>
@@ -170,7 +170,7 @@ export default function PartnersAdmin() {
                     <tbody>
                         {items.map(item => (
                             <tr key={item.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                                <td style={{ padding: isMobile ? '10px' : '16px', fontWeight: 600 }}>{item.sort_order}</td>
+                                <td style={{ padding: isMobile ? '10px' : '16px', fontWeight: 'var(--fw-semibold)' }}>{item.sort_order}</td>
                                 <td style={{ padding: isMobile ? '10px' : '16px' }}>
                                     <img src={resolveAssetUrl(item.logo_url)} alt={item.name} style={{ 
                                         width: isMobile ? '30px' : '50px', 
@@ -178,7 +178,7 @@ export default function PartnersAdmin() {
                                         objectFit: 'contain' 
                                     }} />
                                 </td>
-                                <td style={{ padding: isMobile ? '10px' : '16px', fontWeight: 600, fontSize: isMobile ? '0.85rem' : '1rem' }}>{item.name}</td>
+                                <td style={{ padding: isMobile ? '10px' : '16px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>{item.name}</td>
                                 <td style={{ padding: isMobile ? '10px' : '16px' }}>
                                     {item.published ? (
                                         <span style={{ 
@@ -186,8 +186,8 @@ export default function PartnersAdmin() {
                                             color: '#000000', 
                                             padding: '4px 8px', 
                                             borderRadius: '4px', 
-                                            fontSize: isMobile ? '0.7rem' : '0.8rem', 
-                                            fontWeight: 600 
+                                            fontSize: 'var(--fs-caption)', 
+                                            fontWeight: 'var(--fw-semibold)' 
                                         }}>Published</span>
                                     ) : (
                                         <span style={{ 
@@ -195,8 +195,8 @@ export default function PartnersAdmin() {
                                             color: '#000000', 
                                             padding: '4px 8px', 
                                             borderRadius: '4px', 
-                                            fontSize: isMobile ? '0.7rem' : '0.8rem', 
-                                            fontWeight: 600 
+                                            fontSize: 'var(--fs-caption)', 
+                                            fontWeight: 'var(--fw-semibold)' 
                                         }}>Draft</span>
                                     )}
                                 </td>
@@ -214,7 +214,7 @@ export default function PartnersAdmin() {
                                             borderRadius: '4px', 
                                             padding: isMobile ? '6px 10px' : '6px 12px', 
                                             cursor: 'pointer',
-                                            fontSize: isMobile ? '0.75rem' : '0.85rem',
+                                            fontSize: 'var(--fs-small)',
                                             whiteSpace: 'nowrap'
                                         }}>
                                             <i className={item.published ? 'bi bi-toggle-off' : 'bi bi-toggle-on'} style={{ marginRight: '4px' }}></i>
@@ -226,7 +226,7 @@ export default function PartnersAdmin() {
                                             borderRadius: '4px', 
                                             padding: isMobile ? '6px 10px' : '6px 12px', 
                                             cursor: 'pointer',
-                                            fontSize: isMobile ? '0.75rem' : '0.85rem'
+                                            fontSize: 'var(--fs-small)'
                                         }}>
                                             <i className="bi bi-pencil" style={{ marginRight: '4px' }}></i>
                                             Edit
@@ -238,7 +238,7 @@ export default function PartnersAdmin() {
                                             borderRadius: '4px', 
                                             padding: isMobile ? '6px 10px' : '6px 12px', 
                                             cursor: 'pointer',
-                                            fontSize: isMobile ? '0.75rem' : '0.85rem'
+                                            fontSize: 'var(--fs-small)'
                                         }}>
                                             <i className="bi bi-trash" style={{ marginRight: '4px' }}></i>
                                             Delete
@@ -276,22 +276,22 @@ export default function PartnersAdmin() {
                         padding: isMobile ? '20px' : '32px',
                         margin: isMobile ? '16px' : '0'
                     }}>
-                        <h2 style={{ marginBottom: '24px', fontSize: isMobile ? '1.3rem' : '1.8rem' }}>{current.id ? 'Edit Partner' : 'Add Partner'}</h2>
+                        <h2 style={{ marginBottom: '24px', fontSize: 'var(--fs-h1)' }}>{current.id ? 'Edit Partner' : 'Add Partner'}</h2>
                         <form onSubmit={handleSave}>
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Name *</label>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Name *</label>
                                 <input required value={current.name || ''} onChange={e => setCurrent({ ...current, name: e.target.value })} style={{ 
                                     width: '100%', 
                                     padding: '10px', 
                                     border: '1px solid var(--border)', 
                                     borderRadius: '4px',
-                                    fontSize: isMobile ? '0.9rem' : '1rem'
+                                    fontSize: 'var(--fs-body)'
                                 }} />
                             </div>
 
                             {/* Logo Upload Section */}
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Logo</label>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Logo</label>
                                 
                                 <div style={{ 
                                     display: 'flex', 
@@ -310,14 +310,14 @@ export default function PartnersAdmin() {
                                             padding: isMobile ? '8px' : '8px',
                                             border: '1px solid var(--border)',
                                             borderRadius: '4px',
-                                            fontSize: isMobile ? '0.85rem' : '0.9rem'
+                                            fontSize: 'var(--fs-small)'
                                         }}
                                     />
-                                    {uploading && <span style={{ color: '#01abed', fontSize: '0.85rem' }}>Uploading...</span>}
+                                    {uploading && <span style={{ color: '#01abed', fontSize: 'var(--fs-small)' }}>Uploading...</span>}
                                 </div>
 
                                 <div style={{ marginTop: '8px' }}>
-                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.85rem', color: 'var(--ink-muted)' }}>Or enter logo URL directly:</label>
+                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: 'var(--fs-small)', color: 'var(--ink-muted)' }}>Or enter logo URL directly:</label>
                                     <input 
                                         value={current.logo_url || ''} 
                                         onChange={handleLogoUrlChange} 
@@ -327,7 +327,7 @@ export default function PartnersAdmin() {
                                             padding: '10px', 
                                             border: '1px solid var(--border)', 
                                             borderRadius: '4px',
-                                            fontSize: isMobile ? '0.9rem' : '1rem'
+                                            fontSize: 'var(--fs-body)'
                                         }} 
                                     />
                                 </div>
@@ -347,13 +347,13 @@ export default function PartnersAdmin() {
                             </div>
 
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Website (Optional)</label>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Website (Optional)</label>
                                 <input value={current.website || ''} onChange={e => setCurrent({ ...current, website: e.target.value })} style={{ 
                                     width: '100%', 
                                     padding: '10px', 
                                     border: '1px solid var(--border)', 
                                     borderRadius: '4px',
-                                    fontSize: isMobile ? '0.9rem' : '1rem'
+                                    fontSize: 'var(--fs-body)'
                                 }} placeholder="https://..." />
                             </div>
 
@@ -364,13 +364,13 @@ export default function PartnersAdmin() {
                                 marginBottom: '24px' 
                             }}>
                                 <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Sort Order</label>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Sort Order</label>
                                     <input type="number" value={current.sort_order || 0} onChange={e => setCurrent({ ...current, sort_order: parseInt(e.target.value) || 0 })} style={{ 
                                         width: '100%', 
                                         padding: '10px', 
                                         border: '1px solid var(--border)', 
                                         borderRadius: '4px',
-                                        fontSize: isMobile ? '0.9rem' : '1rem'
+                                        fontSize: 'var(--fs-body)'
                                     }} />
                                 </div>
                                 <div style={{ 
@@ -380,7 +380,7 @@ export default function PartnersAdmin() {
                                     paddingTop: isMobile ? '0' : '28px',
                                     width: isMobile ? '100%' : 'auto'
                                 }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>
                                         <input type="checkbox" checked={!!current.published} onChange={e => setCurrent({ ...current, published: e.target.checked ? 1 : 0 })} style={{ width: '18px', height: '18px' }} />
                                         Published
                                     </label>
@@ -400,12 +400,12 @@ export default function PartnersAdmin() {
                                     borderRadius: '4px', 
                                     cursor: 'pointer',
                                     width: isMobile ? '100%' : 'auto',
-                                    fontSize: isMobile ? '0.9rem' : '1rem'
+                                    fontSize: 'var(--fs-body)'
                                 }}>Cancel</button>
                                 <button type="submit" className="btn-primary" style={{ 
                                     width: isMobile ? '100%' : 'auto',
                                     padding: '12px 24px',
-                                    fontSize: isMobile ? '0.9rem' : '1rem'
+                                    fontSize: 'var(--fs-body)'
                                 }}>Save Partner</button>
                             </div>
                         </form>

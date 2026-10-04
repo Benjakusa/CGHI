@@ -39,11 +39,11 @@ export default function Login() {
             <Navbar />
             <main style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', backgroundColor: 'var(--surface)' }}>
                 <div style={{ background: '#ffffff', padding: '40px', borderRadius: '12px', boxShadow: 'var(--shadow)', width: '100%', maxWidth: '420px' }}>
-                    <h1 style={{ fontSize: '1.75rem', marginBottom: '8px', textAlign: 'center' }}>Staff Login</h1>
+                    <h1 style={{ fontSize: 'var(--fs-h1)', marginBottom: '8px', textAlign: 'center' }}>Staff Login</h1>
                     <p style={{ textAlign: 'center', color: 'var(--ink-muted)', marginBottom: '32px' }}>Access the CGP Content Management System</p>
 
                     {error && (
-                        <div style={{ background: 'rgba(0, 0, 0, 0.06)', color: '#000000', padding: '12px', borderRadius: '6px', marginBottom: '24px', fontSize: '0.92rem' }}>
+                        <div style={{ background: 'rgba(0, 0, 0, 0.06)', color: '#000000', padding: '12px', borderRadius: '6px', marginBottom: '24px', fontSize: 'var(--fs-small)' }}>
                             <i className="bi bi-exclamation-circle-fill" style={{ marginRight: '8px' }}></i>
                             {error}
                         </div>
@@ -51,7 +51,7 @@ export default function Login() {
 
                     <form onSubmit={handleSubmit}>
                         <div style={{ marginBottom: '20px' }}>
-                            <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.92rem', fontWeight: 600 }}>Email Address</label>
+                            <label style={{ display: 'block', marginBottom: '6px', fontSize: 'var(--fs-small)', fontWeight: 'var(--fw-semibold)' }}>Email Address</label>
                             <input
                                 type="email"
                                 name="email"
@@ -65,7 +65,7 @@ export default function Login() {
                         </div>
 
                         <div style={{ marginBottom: '32px' }}>
-                            <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.92rem', fontWeight: 600 }}>Password</label>
+                            <label style={{ display: 'block', marginBottom: '6px', fontSize: 'var(--fs-small)', fontWeight: 'var(--fw-semibold)' }}>Password</label>
                             <input
                                 type="password"
                                 name="password"

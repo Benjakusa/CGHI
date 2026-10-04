@@ -168,7 +168,7 @@ export default function HeroesAdmin() {
                     borderCollapse: 'collapse', 
                     textAlign: 'left',
                     minWidth: isMobile ? '600px' : 'auto',
-                    fontSize: isMobile ? '0.85rem' : '1rem'
+                    fontSize: 'var(--fs-body)'
                 }}>
                     <thead>
                         <tr style={{ background: 'var(--surface-alt)', borderBottom: '1px solid var(--border)' }}>
@@ -182,7 +182,7 @@ export default function HeroesAdmin() {
                     <tbody>
                         {heroes.map(h => (
                             <tr key={h.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                                <td style={{ padding: isMobile ? '10px' : '16px', fontWeight: 600 }}>{h.sort_order}</td>
+                                <td style={{ padding: isMobile ? '10px' : '16px', fontWeight: 'var(--fw-semibold)' }}>{h.sort_order}</td>
                                 <td style={{ padding: isMobile ? '10px' : '16px' }}>
                                     <img src={resolveAssetUrl(h.image_url)} alt="" style={{ 
                                         width: isMobile ? '40px' : '60px', 
@@ -192,8 +192,8 @@ export default function HeroesAdmin() {
                                     }} />
                                 </td>
                                 <td style={{ padding: isMobile ? '10px' : '16px' }}>
-                                    <div style={{ fontWeight: 600, fontSize: isMobile ? '0.85rem' : '1rem' }}>{h.title}</div>
-                                    <div style={{ fontSize: isMobile ? '0.75rem' : '0.85rem', color: 'var(--ink-muted)' }}>{h.topic}</div>
+                                    <div style={{ fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>{h.title}</div>
+                                    <div style={{ fontSize: 'var(--fs-small)', color: 'var(--ink-muted)' }}>{h.topic}</div>
                                 </td>
                                 <td style={{ padding: isMobile ? '10px' : '16px' }}>
                                     {h.published ? (
@@ -202,8 +202,8 @@ export default function HeroesAdmin() {
                                             color: '#000000', 
                                             padding: '4px 8px', 
                                             borderRadius: '4px', 
-                                            fontSize: isMobile ? '0.7rem' : '0.8rem', 
-                                            fontWeight: 600,
+                                            fontSize: 'var(--fs-caption)', 
+                                            fontWeight: 'var(--fw-semibold)',
                                             display: isMobile ? 'inline-block' : 'inline'
                                         }}>Published</span>
                                     ) : (
@@ -212,8 +212,8 @@ export default function HeroesAdmin() {
                                             color: '#000000', 
                                             padding: '4px 8px', 
                                             borderRadius: '4px', 
-                                            fontSize: isMobile ? '0.7rem' : '0.8rem', 
-                                            fontWeight: 600 
+                                            fontSize: 'var(--fs-caption)', 
+                                            fontWeight: 'var(--fw-semibold)' 
                                         }}>Draft</span>
                                     )}
                                 </td>
@@ -231,7 +231,7 @@ export default function HeroesAdmin() {
                                             borderRadius: '4px', 
                                             padding: isMobile ? '6px 10px' : '6px 12px', 
                                             cursor: 'pointer',
-                                            fontSize: isMobile ? '0.75rem' : '0.85rem',
+                                            fontSize: 'var(--fs-small)',
                                             whiteSpace: 'nowrap'
                                         }}>
                                             <i className={h.published ? 'bi bi-toggle-off' : 'bi bi-toggle-on'} style={{ marginRight: '4px' }}></i>
@@ -243,7 +243,7 @@ export default function HeroesAdmin() {
                                             borderRadius: '4px', 
                                             padding: isMobile ? '6px 10px' : '6px 12px', 
                                             cursor: 'pointer',
-                                            fontSize: isMobile ? '0.75rem' : '0.85rem'
+                                            fontSize: 'var(--fs-small)'
                                         }}>
                                             <i className="bi bi-pencil" style={{ marginRight: '4px' }}></i>
                                             Edit
@@ -255,7 +255,7 @@ export default function HeroesAdmin() {
                                             borderRadius: '4px', 
                                             padding: isMobile ? '6px 10px' : '6px 12px', 
                                             cursor: 'pointer',
-                                            fontSize: isMobile ? '0.75rem' : '0.85rem'
+                                            fontSize: 'var(--fs-small)'
                                         }}>
                                             <i className="bi bi-trash" style={{ marginRight: '4px' }}></i>
                                             Delete
@@ -295,37 +295,37 @@ export default function HeroesAdmin() {
                         overflowY: 'auto',
                         margin: isMobile ? '16px' : '0'
                     }}>
-                        <h2 style={{ marginBottom: '24px', fontSize: isMobile ? '1.3rem' : '1.8rem' }}>{current.id ? 'Edit Hero' : 'Add Hero'}</h2>
+                        <h2 style={{ marginBottom: '24px', fontSize: 'var(--fs-h1)' }}>{current.id ? 'Edit Hero' : 'Add Hero'}</h2>
                         <form onSubmit={handleSave}>
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Title *</label>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Title *</label>
                                 <input required value={current.title || ''} onChange={e => setCurrent({ ...current, title: e.target.value })} style={{ 
                                     width: '100%', 
                                     padding: isMobile ? '10px' : '10px', 
                                     border: '1px solid var(--border)', 
                                     borderRadius: '4px',
-                                    fontSize: isMobile ? '0.9rem' : '1rem'
+                                    fontSize: 'var(--fs-body)'
                                 }} />
                             </div>
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Topic (Eyebrow text)</label>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Topic (Eyebrow text)</label>
                                 <input value={current.topic || ''} onChange={e => setCurrent({ ...current, topic: e.target.value })} style={{ 
                                     width: '100%', 
                                     padding: isMobile ? '10px' : '10px', 
                                     border: '1px solid var(--border)', 
                                     borderRadius: '4px',
-                                    fontSize: isMobile ? '0.9rem' : '1rem'
+                                    fontSize: 'var(--fs-body)'
                                 }} />
                             </div>
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Description</label>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Description</label>
                                 <textarea rows="3" value={current.description || ''} onChange={e => setCurrent({ ...current, description: e.target.value })} style={{ 
                                     width: '100%', 
                                     padding: '10px', 
                                     border: '1px solid var(--border)', 
                                     borderRadius: '4px', 
                                     fontFamily: 'inherit',
-                                    fontSize: isMobile ? '0.9rem' : '1rem'
+                                    fontSize: 'var(--fs-body)'
                                 }} />
                             </div>
                             <div style={{ 
@@ -335,23 +335,23 @@ export default function HeroesAdmin() {
                                 marginBottom: '16px' 
                             }}>
                                 <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Primary Button Text</label>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Primary Button Text</label>
                                     <input value={current.btn1_text || ''} onChange={e => setCurrent({ ...current, btn1_text: e.target.value })} style={{ 
                                         width: '100%', 
                                         padding: '10px', 
                                         border: '1px solid var(--border)', 
                                         borderRadius: '4px',
-                                        fontSize: isMobile ? '0.9rem' : '1rem'
+                                        fontSize: 'var(--fs-body)'
                                     }} />
                                 </div>
                                 <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Primary Button Link</label>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Primary Button Link</label>
                                     <input value={current.btn1_link || ''} onChange={e => setCurrent({ ...current, btn1_link: e.target.value })} style={{ 
                                         width: '100%', 
                                         padding: '10px', 
                                         border: '1px solid var(--border)', 
                                         borderRadius: '4px',
-                                        fontSize: isMobile ? '0.9rem' : '1rem'
+                                        fontSize: 'var(--fs-body)'
                                     }} />
                                 </div>
                             </div>
@@ -362,30 +362,30 @@ export default function HeroesAdmin() {
                                 marginBottom: '16px' 
                             }}>
                                 <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Secondary Button Text</label>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Secondary Button Text</label>
                                     <input value={current.btn2_text || ''} onChange={e => setCurrent({ ...current, btn2_text: e.target.value })} style={{ 
                                         width: '100%', 
                                         padding: '10px', 
                                         border: '1px solid var(--border)', 
                                         borderRadius: '4px',
-                                        fontSize: isMobile ? '0.9rem' : '1rem'
+                                        fontSize: 'var(--fs-body)'
                                     }} />
                                 </div>
                                 <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Secondary Button Link</label>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Secondary Button Link</label>
                                     <input value={current.btn2_link || ''} onChange={e => setCurrent({ ...current, btn2_link: e.target.value })} style={{ 
                                         width: '100%', 
                                         padding: '10px', 
                                         border: '1px solid var(--border)', 
                                         borderRadius: '4px',
-                                        fontSize: isMobile ? '0.9rem' : '1rem'
+                                        fontSize: 'var(--fs-body)'
                                     }} />
                                 </div>
                             </div>
 
                             {/* Image Upload Section */}
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Image</label>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Image</label>
                                 
                                 {/* File Upload Button */}
                                 <div style={{ 
@@ -405,15 +405,15 @@ export default function HeroesAdmin() {
                                             padding: isMobile ? '8px' : '8px',
                                             border: '1px solid var(--border)',
                                             borderRadius: '4px',
-                                            fontSize: isMobile ? '0.85rem' : '0.9rem'
+                                            fontSize: 'var(--fs-small)'
                                         }}
                                     />
-                                    {uploading && <span style={{ color: '#01abed', fontSize: '0.85rem' }}>Uploading...</span>}
+                                    {uploading && <span style={{ color: '#01abed', fontSize: 'var(--fs-small)' }}>Uploading...</span>}
                                 </div>
 
                                 {/* Or enter URL manually */}
                                 <div style={{ marginTop: '8px' }}>
-                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.85rem', color: 'var(--ink-muted)' }}>Or enter image URL directly:</label>
+                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: 'var(--fs-small)', color: 'var(--ink-muted)' }}>Or enter image URL directly:</label>
                                     <input 
                                         value={current.image_url || ''} 
                                         onChange={handleImageUrlChange} 
@@ -423,7 +423,7 @@ export default function HeroesAdmin() {
                                             padding: '10px', 
                                             border: '1px solid var(--border)', 
                                             borderRadius: '4px',
-                                            fontSize: isMobile ? '0.9rem' : '1rem'
+                                            fontSize: 'var(--fs-body)'
                                         }} 
                                     />
                                 </div>
@@ -450,13 +450,13 @@ export default function HeroesAdmin() {
                                 marginBottom: '24px' 
                             }}>
                                 <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Sort Order</label>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Sort Order</label>
                                     <input type="number" value={current.sort_order || 0} onChange={e => setCurrent({ ...current, sort_order: parseInt(e.target.value) || 0 })} style={{ 
                                         width: '100%', 
                                         padding: '10px', 
                                         border: '1px solid var(--border)', 
                                         borderRadius: '4px',
-                                        fontSize: isMobile ? '0.9rem' : '1rem'
+                                        fontSize: 'var(--fs-body)'
                                     }} />
                                 </div>
                                 <div style={{ 
@@ -466,7 +466,7 @@ export default function HeroesAdmin() {
                                     paddingTop: isMobile ? '0' : '28px',
                                     width: isMobile ? '100%' : 'auto'
                                 }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>
                                         <input type="checkbox" checked={!!current.published} onChange={e => setCurrent({ ...current, published: e.target.checked ? 1 : 0 })} style={{ width: '18px', height: '18px' }} />
                                         Published
                                     </label>
@@ -486,12 +486,12 @@ export default function HeroesAdmin() {
                                     borderRadius: '4px', 
                                     cursor: 'pointer',
                                     width: isMobile ? '100%' : 'auto',
-                                    fontSize: isMobile ? '0.9rem' : '1rem'
+                                    fontSize: 'var(--fs-body)'
                                 }}>Cancel</button>
                                 <button type="submit" className="btn-primary" style={{ 
                                     width: isMobile ? '100%' : 'auto',
                                     padding: '12px 24px',
-                                    fontSize: isMobile ? '0.9rem' : '1rem'
+                                    fontSize: 'var(--fs-body)'
                                 }}>Save Hero</button>
                             </div>
                         </form>

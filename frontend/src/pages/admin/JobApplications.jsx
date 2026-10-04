@@ -133,7 +133,7 @@ export default function JobApplications() {
 
             {applications.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--ink-muted)' }}>
-                    <i className="bi bi-inbox" style={{ fontSize: '3rem', marginBottom: '16px', display: 'block' }}></i>
+                    <i className="bi bi-inbox" style={{ fontSize: 'var(--fs-stat)', marginBottom: '16px', display: 'block' }}></i>
                     <h4>No Applications Yet</h4>
                     <p style={{ margin: '8px 0 0' }}>Job applications will appear here once candidates start applying.</p>
                 </div>
@@ -155,10 +155,10 @@ export default function JobApplications() {
                         <tbody>
                             {applications.map(app => (
                                 <tr key={app.id}>
-                                    <td style={{ color: 'var(--ink-muted)', fontFamily: 'var(--mono)', fontSize: '0.82rem' }}>#{app.id}</td>
+                                    <td style={{ color: 'var(--ink-muted)', fontFamily: 'var(--mono)', fontSize: 'var(--fs-small)' }}>#{app.id}</td>
                                     <td><strong>{app.name}</strong></td>
                                     <td><a href={`mailto:${app.email}`} style={{ color: 'var(--sky)', textDecoration: 'none' }}>{app.email}</a></td>
-                                    <td style={{ fontFamily: 'var(--mono)', fontSize: '0.85rem' }}>{app.phone}</td>
+                                    <td style={{ fontFamily: 'var(--mono)', fontSize: 'var(--fs-small)' }}>{app.phone}</td>
                                     <td>{app.jobTitle}</td>
                                     <td>
                                         {app.cover_letter_url && (
@@ -187,7 +187,7 @@ export default function JobApplications() {
                                             <span className="file-badge">No docs</span>
                                         )}
                                     </td>
-                                    <td style={{ color: 'var(--ink-muted)', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>{formatDate(app.created_at)}</td>
+                                    <td style={{ color: 'var(--ink-muted)', fontSize: 'var(--fs-small)', whiteSpace: 'nowrap' }}>{formatDate(app.created_at)}</td>
                                     <td>
                                         <button className="delete-btn" onClick={() => setDeleteConfirm(app)} title="Delete application">
                                             <i className="bi bi-trash3"></i> Delete

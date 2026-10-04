@@ -157,7 +157,7 @@ export default function CareersAdmin() {
                     borderCollapse: 'collapse', 
                     textAlign: 'left',
                     minWidth: isMobile ? '600px' : 'auto',
-                    fontSize: isMobile ? '0.85rem' : '1rem'
+                    fontSize: 'var(--fs-body)'
                 }}>
                     <thead>
                         <tr style={{ background: 'var(--surface-alt)', borderBottom: '1px solid var(--border)' }}>
@@ -171,9 +171,9 @@ export default function CareersAdmin() {
                     <tbody>
                         {items.map(item => (
                             <tr key={item.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                                <td style={{ padding: isMobile ? '10px' : '16px', fontWeight: 600, fontSize: isMobile ? '0.85rem' : '1rem' }}>{item.title}</td>
-                                <td style={{ padding: isMobile ? '10px' : '16px', fontSize: isMobile ? '0.8rem' : '0.9rem' }}>{item.department || 'N/A'}</td>
-                                <td style={{ padding: isMobile ? '10px' : '16px', fontSize: isMobile ? '0.8rem' : '0.9rem' }}>{item.location || 'N/A'}</td>
+                                <td style={{ padding: isMobile ? '10px' : '16px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>{item.title}</td>
+                                <td style={{ padding: isMobile ? '10px' : '16px', fontSize: 'var(--fs-small)' }}>{item.department || 'N/A'}</td>
+                                <td style={{ padding: isMobile ? '10px' : '16px', fontSize: 'var(--fs-small)' }}>{item.location || 'N/A'}</td>
                                 <td style={{ padding: isMobile ? '10px' : '16px' }}>
                                     {item.published ? (
                                         <span style={{ 
@@ -181,8 +181,8 @@ export default function CareersAdmin() {
                                             color: '#000000', 
                                             padding: '4px 8px', 
                                             borderRadius: '4px', 
-                                            fontSize: isMobile ? '0.7rem' : '0.8rem', 
-                                            fontWeight: 600 
+                                            fontSize: 'var(--fs-caption)', 
+                                            fontWeight: 'var(--fw-semibold)' 
                                         }}>Published</span>
                                     ) : (
                                         <span style={{ 
@@ -190,8 +190,8 @@ export default function CareersAdmin() {
                                             color: '#000000', 
                                             padding: '4px 8px', 
                                             borderRadius: '4px', 
-                                            fontSize: isMobile ? '0.7rem' : '0.8rem', 
-                                            fontWeight: 600 
+                                            fontSize: 'var(--fs-caption)', 
+                                            fontWeight: 'var(--fw-semibold)' 
                                         }}>Draft</span>
                                     )}
                                 </td>
@@ -209,7 +209,7 @@ export default function CareersAdmin() {
                                             borderRadius: '4px', 
                                             padding: isMobile ? '6px 10px' : '6px 12px', 
                                             cursor: 'pointer',
-                                            fontSize: isMobile ? '0.75rem' : '0.85rem',
+                                            fontSize: 'var(--fs-small)',
                                             whiteSpace: 'nowrap'
                                         }}>
                                             <i className={item.published ? 'bi bi-toggle-off' : 'bi bi-toggle-on'} style={{ marginRight: '4px' }}></i>
@@ -221,7 +221,7 @@ export default function CareersAdmin() {
                                             borderRadius: '4px', 
                                             padding: isMobile ? '6px 10px' : '6px 12px', 
                                             cursor: 'pointer',
-                                            fontSize: isMobile ? '0.75rem' : '0.85rem'
+                                            fontSize: 'var(--fs-small)'
                                         }}>
                                             <i className="bi bi-pencil" style={{ marginRight: '4px' }}></i>
                                             Edit
@@ -233,7 +233,7 @@ export default function CareersAdmin() {
                                             borderRadius: '4px', 
                                             padding: isMobile ? '6px 10px' : '6px 12px', 
                                             cursor: 'pointer',
-                                            fontSize: isMobile ? '0.75rem' : '0.85rem'
+                                            fontSize: 'var(--fs-small)'
                                         }}>
                                             <i className="bi bi-trash" style={{ marginRight: '4px' }}></i>
                                             Delete
@@ -273,16 +273,16 @@ export default function CareersAdmin() {
                         overflowY: 'auto',
                         margin: isMobile ? '16px' : '0'
                     }}>
-                        <h2 style={{ marginBottom: '24px', fontSize: isMobile ? '1.3rem' : '1.8rem' }}>{current.id ? 'Edit Job' : 'Add Job'}</h2>
+                        <h2 style={{ marginBottom: '24px', fontSize: 'var(--fs-h1)' }}>{current.id ? 'Edit Job' : 'Add Job'}</h2>
                         <form onSubmit={handleSave}>
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Job Title *</label>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Job Title *</label>
                                 <input required value={current.title || ''} onChange={e => setCurrent({ ...current, title: e.target.value })} style={{ 
                                     width: '100%', 
                                     padding: '10px', 
                                     border: '1px solid var(--border)', 
                                     borderRadius: '4px',
-                                    fontSize: isMobile ? '0.9rem' : '1rem'
+                                    fontSize: 'var(--fs-body)'
                                 }} />
                             </div>
 
@@ -293,52 +293,52 @@ export default function CareersAdmin() {
                                 marginBottom: '16px' 
                             }}>
                                 <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Department</label>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Department</label>
                                     <input value={current.department || ''} onChange={e => setCurrent({ ...current, department: e.target.value })} style={{ 
                                         width: '100%', 
                                         padding: '10px', 
                                         border: '1px solid var(--border)', 
                                         borderRadius: '4px',
-                                        fontSize: isMobile ? '0.9rem' : '1rem'
+                                        fontSize: 'var(--fs-body)'
                                     }} />
                                 </div>
                                 <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Location</label>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Location</label>
                                     <input value={current.location || ''} onChange={e => setCurrent({ ...current, location: e.target.value })} style={{ 
                                         width: '100%', 
                                         padding: '10px', 
                                         border: '1px solid var(--border)', 
                                         borderRadius: '4px',
-                                        fontSize: isMobile ? '0.9rem' : '1rem'
+                                        fontSize: 'var(--fs-body)'
                                     }} />
                                 </div>
                             </div>
 
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Employment Type</label>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Employment Type</label>
                                 <input value={current.employment_type || ''} onChange={e => setCurrent({ ...current, employment_type: e.target.value })} style={{ 
                                     width: '100%', 
                                     padding: '10px', 
                                     border: '1px solid var(--border)', 
                                     borderRadius: '4px',
-                                    fontSize: isMobile ? '0.9rem' : '1rem'
+                                    fontSize: 'var(--fs-body)'
                                 }} placeholder="Full-time, Contract, etc." />
                             </div>
 
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Job Description</label>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Job Description</label>
                                 <textarea rows="4" value={current.description || ''} onChange={e => setCurrent({ ...current, description: e.target.value })} style={{ 
                                     width: '100%', 
                                     padding: '10px', 
                                     border: '1px solid var(--border)', 
                                     borderRadius: '4px', 
                                     fontFamily: 'inherit',
-                                    fontSize: isMobile ? '0.9rem' : '1rem'
+                                    fontSize: 'var(--fs-body)'
                                 }} />
                             </div>
 
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Qualifications (comma separated)</label>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Qualifications (comma separated)</label>
                                 <input value={Array.isArray(current.qualifications) ? current.qualifications.join(', ') : ''} 
                                     onChange={e => setCurrent({ ...current, qualifications: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} 
                                     style={{ 
@@ -346,13 +346,13 @@ export default function CareersAdmin() {
                                         padding: '10px', 
                                         border: '1px solid var(--border)', 
                                         borderRadius: '4px',
-                                        fontSize: isMobile ? '0.9rem' : '1rem'
+                                        fontSize: 'var(--fs-body)'
                                     }} 
                                     placeholder="Qualification 1, Qualification 2, ..." />
                             </div>
 
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Preferred Experience (comma separated)</label>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Preferred Experience (comma separated)</label>
                                 <input value={Array.isArray(current.preferred_experience) ? current.preferred_experience.join(', ') : ''} 
                                     onChange={e => setCurrent({ ...current, preferred_experience: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} 
                                     style={{ 
@@ -360,7 +360,7 @@ export default function CareersAdmin() {
                                         padding: '10px', 
                                         border: '1px solid var(--border)', 
                                         borderRadius: '4px',
-                                        fontSize: isMobile ? '0.9rem' : '1rem'
+                                        fontSize: 'var(--fs-body)'
                                     }} 
                                     placeholder="Experience 1, Experience 2, ..." />
                             </div>
@@ -372,41 +372,41 @@ export default function CareersAdmin() {
                                 marginBottom: '16px' 
                             }}>
                                 <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Apply Email</label>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Apply Email</label>
                                     <input value={current.apply_email || ''} onChange={e => setCurrent({ ...current, apply_email: e.target.value })} style={{ 
                                         width: '100%', 
                                         padding: '10px', 
                                         border: '1px solid var(--border)', 
                                         borderRadius: '4px',
-                                        fontSize: isMobile ? '0.9rem' : '1rem'
+                                        fontSize: 'var(--fs-body)'
                                     }} placeholder="jobs@example.com" />
                                 </div>
                                 <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Email Subject</label>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Email Subject</label>
                                     <input value={current.apply_subject || ''} onChange={e => setCurrent({ ...current, apply_subject: e.target.value })} style={{ 
                                         width: '100%', 
                                         padding: '10px', 
                                         border: '1px solid var(--border)', 
                                         borderRadius: '4px',
-                                        fontSize: isMobile ? '0.9rem' : '1rem'
+                                        fontSize: 'var(--fs-body)'
                                     }} placeholder="Application - Job Title" />
                                 </div>
                             </div>
 
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Closing Date</label>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Closing Date</label>
                                 <input type="date" value={current.closing_date || ''} onChange={e => setCurrent({ ...current, closing_date: e.target.value })} style={{ 
                                     width: '100%', 
                                     padding: '10px', 
                                     border: '1px solid var(--border)', 
                                     borderRadius: '4px',
-                                    fontSize: isMobile ? '0.9rem' : '1rem'
+                                    fontSize: 'var(--fs-body)'
                                 }} />
                             </div>
 
                             {/* Document Upload Section */}
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>Attach Document (PDF/Image)</label>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Attach Document (PDF/Image)</label>
                                 
                                 <div style={{ 
                                     display: 'flex', 
@@ -425,14 +425,14 @@ export default function CareersAdmin() {
                                             padding: isMobile ? '8px' : '8px',
                                             border: '1px solid var(--border)',
                                             borderRadius: '4px',
-                                            fontSize: isMobile ? '0.85rem' : '0.9rem'
+                                            fontSize: 'var(--fs-small)'
                                         }}
                                     />
-                                    {uploading && <span style={{ color: '#01abed', fontSize: '0.85rem' }}>Uploading...</span>}
+                                    {uploading && <span style={{ color: '#01abed', fontSize: 'var(--fs-small)' }}>Uploading...</span>}
                                 </div>
 
                                 <div style={{ marginTop: '8px' }}>
-                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.85rem', color: 'var(--ink-muted)' }}>Or enter document URL directly:</label>
+                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: 'var(--fs-small)', color: 'var(--ink-muted)' }}>Or enter document URL directly:</label>
                                     <input 
                                         value={current.document_url || ''} 
                                         onChange={e => setCurrent({ ...current, document_url: e.target.value })} 
@@ -442,7 +442,7 @@ export default function CareersAdmin() {
                                             padding: '10px', 
                                             border: '1px solid var(--border)', 
                                             borderRadius: '4px',
-                                            fontSize: isMobile ? '0.9rem' : '1rem'
+                                            fontSize: 'var(--fs-body)'
                                         }} 
                                     />
                                 </div>
@@ -480,7 +480,7 @@ export default function CareersAdmin() {
                                     alignItems: 'center',
                                     width: isMobile ? '100%' : 'auto'
                                 }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, fontSize: isMobile ? '0.9rem' : '1rem' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>
                                         <input type="checkbox" checked={!!current.published} onChange={e => setCurrent({ ...current, published: e.target.checked ? 1 : 0 })} style={{ width: '18px', height: '18px' }} />
                                         Published
                                     </label>
@@ -500,12 +500,12 @@ export default function CareersAdmin() {
                                     borderRadius: '4px', 
                                     cursor: 'pointer',
                                     width: isMobile ? '100%' : 'auto',
-                                    fontSize: isMobile ? '0.9rem' : '1rem'
+                                    fontSize: 'var(--fs-body)'
                                 }}>Cancel</button>
                                 <button type="submit" className="btn-primary" style={{ 
                                     width: isMobile ? '100%' : 'auto',
                                     padding: '12px 24px',
-                                    fontSize: isMobile ? '0.9rem' : '1rem'
+                                    fontSize: 'var(--fs-body)'
                                 }}>Save Job</button>
                             </div>
                         </form>
