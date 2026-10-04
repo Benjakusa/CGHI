@@ -439,9 +439,10 @@ body.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate
 .hero-carousel {
   position: relative;
   width: 100%;
-  height: 100vh;
-  min-height: 520px;
-  max-height: 100vh;
+  /* Floor only, never a fixed height: the active slide is in normal flow and
+     sizes the band, so fixed height/max-height could clip hero copy into the
+     section below. */
+  min-height: 100vh;
   overflow: hidden;
   background: var(--black);
   z-index: 1;
@@ -574,7 +575,8 @@ body.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate
 }
 
 @media (max-width: 768px) {
-  .hero-carousel { height: 100svh; max-height: 100svh; }
+  /* svh floor only: a fixed height would clip long hero copy into Welcome. */
+  .hero-carousel { min-height: 100svh; }
   .hero-slide { flex-direction: column; }
 
   .hero-slide-panel {

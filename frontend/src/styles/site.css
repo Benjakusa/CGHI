@@ -4519,10 +4519,37 @@ section {
  * Adjustments requested in the homepage review. Colours stay on the palette
  * tokens: --sky is #01abed, --black is #000000 and --white is #FFFFFF. */
 
-/* Hero: one viewport tall, copy centred, title never larger than 22px. */
+/* Hero: at least one viewport tall with centred copy, and the band always
+   wraps its content — min-height only, never height/max-height. The active
+   slide (below) is in normal flow and sizes the band, so long hero copy
+   stretches the band instead of spilling past its edge into Welcome. This
+   100vh floor supersedes section 5's clamp() floor.
+   NB: style.css's `height: 100vh` (and its mobile `height: 100svh` twin) fix
+   the band at exactly one viewport, so this rule CANCELS them — without the
+   `!important` below, tall copy + dots outgrow the fixed band and paint over
+   the Welcome section. */
 .hero-carousel {
-  height: 100vh;
-  max-height: 100vh;
+  min-height: 100vh;
+  height: auto !important;
+  max-height: none !important;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Crossfade stack that cannot overlap the next section: inactive slides stay
+   absolutely stacked (zero layout height, no pointer input) while the ACTIVE
+   slide returns to normal flow, so the carousel's height always equals the
+   active slide's content. overflow:hidden then clips only the oversized
+   parallax image, never the copy. Equal specificity to the legacy rules in
+   style.css, but this file loads second so these win. */
+.hero-slide {
+  z-index: 0;
+}
+
+.hero-slide.active {
+  position: relative;
+  inset: auto;
+  z-index: 1;
 }
 
 .hero-slide .wrap {
@@ -4535,18 +4562,23 @@ section {
 
 /* Hero copy sits dead-centre in every slide, on both axes: the panel centres
    its children as a flex column and the text itself is centred, so eyebrow,
-   title, description and CTA row all share one centre line. */
+   title, description and CTA row all share one centre line. The panel is
+   viewport-tall (svh where supported) with symmetric padding — the top clears
+   the fixed transparent navbar and the mirrored bottom keeps the copy centred
+   while leaving the dots sitting in empty padding, clear of the CTAs. Taller
+   copy grows the panel, slide and band together, so nothing ever overlaps the
+   section below. Each !important outranks a legacy style.css rule: the
+   symmetric padding beats the asymmetric mobile paddings (56px top / 200px
+   bottom, then 24px 16px) that used to push the copy off the centre line, and
+   the flex-column display beats its `flex-direction` switch that stacked the
+   panel's children oddly at ≤768px. */
 .hero-slide-panel {
   align-items: center;
   justify-content: center;
+  flex-direction: column !important;
   text-align: center;
-}
-
-/* Symmetric padding at every breakpoint: the fixed transparent navbar's
-   clearance is mirrored top-to-bottom so the copy is centred in the band, and
-   !important outranks the legacy mobile paddings (56px top / 200px bottom,
-   then 24px 16px) that used to push the copy off the centre line. */
-.hero-slide-panel {
+  min-height: 100vh;
+  min-height: 100svh;
   padding: calc(var(--header-h) + 3.5rem) clamp(1rem, 4vw, 1.5rem) !important;
 }
 
@@ -4795,10 +4827,13 @@ section {
 }
 
 @media (max-width: 768px) {
-  /* svh keeps the one-viewport hero honest on mobile browsers. */
+  /* svh keeps the one-viewport hero honest on mobile browsers — floor only,
+     so the band still grows with long hero copy instead of clipping it. */
   .hero-carousel {
-    height: 100svh;
-    max-height: 100svh;
+    min-height: 100svh;
+    /* Floor, not ceiling: cancels style.css's `max-height: 100svh` mobile cap
+       so long copy stretches the band instead of painting over Welcome. */
+    max-height: none !important;
   }
 }
 
