@@ -19,7 +19,7 @@ Home
 Who We Are:    About CGP | Leadership & Team | Partners & Collaborators
 What We Do:    Overview | Projects & Impact | CGP Initiatives
 Get Involved:  Partner With Us | Careers            (new group; Careers moved here)
-Media Center:  Insights & Research | Resource Library | Media & Press   (moved here)
+Media Center:  Media Insights and Research | Resource Library   (Media & Press removed)
 Contact Us
 Header button: Partner With Us (Red Cross: Donate)
 

@@ -96,7 +96,7 @@ export default function Insights() {
       ...BASE_JSONLD,
       pageJsonLd({ name: META.title, path: '/insights', description: META.description }),
       breadcrumbJsonLd(META.breadcrumb),
-      itemListJsonLd('Insights and research', articles.map((a) => ({ name: a.title, to: `/insights/${a.slug}` }))),
+      itemListJsonLd(META.title, articles.map((a) => ({ name: a.title, to: `/insights/${a.slug}` }))),
     ],
     [articles]
   );

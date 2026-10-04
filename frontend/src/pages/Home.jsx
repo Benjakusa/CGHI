@@ -428,7 +428,7 @@ export default function Home() {
           <SectionHeader
             id="insights-heading"
             eyebrow="Updates"
-            title="Latest insights & research"
+            title="Latest Media Insights and Research"
             action={{ label: 'Read the Research', to: '/insights' }}
           />
           <AsyncSection

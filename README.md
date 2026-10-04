@@ -52,7 +52,7 @@ CGHI/
 ### Public Pages
 
 The information architecture: **Home → Who We Are → What We Do → Projects →
-Initiatives → Insights & Research → Partners → Partner With Us**.
+Initiatives → Media Insights and Research → Partners → Partner With Us**.
 
 - **Home** — Hero, five capability cards, "CGP at a Glance", featured projects, initiatives, latest insights, selected partners
 - **About** — Who we are, mission, vision, approach, expertise, leadership status, partners
