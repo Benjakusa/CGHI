@@ -6,76 +6,238 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const BLOCKS = '.section-header, .page-header .wrap > *, .frame-figure, .cta-strip-inner, .prose > *';
-const GRID_ITEMS =
-  ':is(.grid-auto, .grid-3, .grid-2, .partner-grid, .stats-single-card-grid, .fact-grid) > *';
+/**
+ * Targets the reveal walks on every scan.
+ *
+ * The list is declarative and lives in one place: the animation applies
+ * site-wide, so a new section only has to reuse an existing pattern (a
+ * `.grid-3`, a `.section-header`, a card) to inherit the behaviour.
+ *
+ * Two tiers:
+ *   BLOCKS - single elements that animate as one unit (headings, figures).
+ *   ITEM_PARENTS - repeated containers whose children stagger by position.
+ */
+const BLOCKS = [
+  '.section-header',
+  '.page-header .wrap > *',
+  '.frame-figure',
+  '.cta-strip-inner',
+  '.prose > *',
+  '.subheading-row',
+  '.privacy-section',
+  '.footer-brand',
+  '.footer-column',
+  '.footer-bottom',
+  '.section-trailing-link',
+].join(', ');
+
+const ITEM_PARENTS = [
+  '.grid-3',
+  '.grid-2',
+  '.grid-2--center',
+  '.grid-2--flush',
+  '.grid-auto',
+  '.grid-4',
+  '.partner-grid',
+  '.partner-grid--lg',
+  '.stats-single-card-grid',
+  '.fact-grid',
+  '.areas-grid',
+  '.collab-grid',
+  '.discipline-grid',
+  '.wwd-card-grid',
+  '.mv-grid',
+  '.pillar-grid',
+  '.contact-info-grid',
+  '.sos-grid',
+  '.footer-grid',
+].join(', ');
+
+/**
+ * Subtrees that must never be animated:
+ *
+ *   .site-header     - the nav is interactive (dropdowns, focus order); a
+ *                      transform on an open panel would trap focus and offset
+ *                      hit-testing.
+ *   .partner-marquee - the track is transformed continuously by its own
+ *                      looping animation; a reveal transform would fight it.
+ *   skeletons        - placeholders that get replaced by real content.
+ *   form controls    - animating an input risks a visible flash between its
+ *                      focused and resting state. Forms reveal via their
+ *                      container instead.
+ */
+const SKIP =
+  '.site-header, .partner-marquee, .skeleton, .skeleton-card, .async-section, ' +
+  'input, select, textarea, button, label, option, .carousel-dots';
+
+/** Opt out for a single element, for one-off cases. */
+const SKIP_SELECTOR = '[data-reveal-skip]';
+
+/**
+ * Children of the repeated containers.
+ *
+ * Built by mapping each parent selector individually rather than appending
+ * ` > *` to the joined list: in a comma-separated selector the combinator binds
+ * only to the final entry, so `'.grid-3, .grid-auto' + ' > *'` silently becomes
+ * `'.grid-3, .grid-auto, .grid-auto > *'` — the leading selectors stop matching
+ * children entirely, every sibling index resolves to -1 and the stagger
+ * collapses to no delay at all.
+ */
+const ITEM_CHILDREN = ITEM_PARENTS.split(', ')
+  .map((sel) => `${sel} > *`)
+  .join(', ');
+
+/** Everything the reveal system considers a candidate. */
+const CANDIDATES = `${BLOCKS}, ${ITEM_CHILDREN}`;
+
+/** Stagger step and ceiling: ~55ms apart, capped so long rows stay snappy. */
+const STAGGER_MS = 55;
+const STAGGER_CAP = 6;
 
 export default function useScrollAnimations(routeKey) {
   useEffect(() => {
-    const main = document.getElementById('main-content');
-    if (!main) return undefined;
-
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const root = document.querySelector('.site-shell');
     const header = document.querySelector('.site-header');
+    if (!root) return undefined;
+
+    /* ---- Header shadow: unchanged behaviour, kept here so the hook stays the
+       single place that owns scroll-driven chrome. ---- */
     const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 8);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
 
-    if (reduce.matches) {
-      return () => window.removeEventListener('scroll', onScroll);
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    /* ---- Hero parallax stays on ScrollTrigger: it is a scrubbed effect tied to
+       the hero's own geometry (one trigger site-wide), not part of the reveal
+       system below. ---- */
+    let ctx = null;
+    if (!reduceMotion.matches) {
+      ctx = gsap.context(() => {
+        document.querySelectorAll('.hero-carousel').forEach((hero) => {
+          // Only pages with a hero reach here; guard the inner query so GSAP is
+          // never handed an empty NodeList (it warns and, on some builds, throws).
+          const images = hero.querySelectorAll('.hero-slide-img');
+          if (images.length === 0) return;
+          gsap.to(images, {
+            yPercent: 6,
+            ease: 'none',
+            scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
+          });
+        });
+      });
     }
 
-    const ctx = gsap.context(() => {
-      const reveal = (el, delay = 0) => {
-        if (el.dataset.revealed) return;
-        el.dataset.revealed = '1';
-        gsap.from(el, {
-          autoAlpha: 0,
-          y: 20,
-          duration: 0.7,
-          delay,
-          ease: 'power2.out',
-          clearProps: 'transform,opacity,visibility',
-          scrollTrigger: { trigger: el, start: 'top 90%', once: true },
-        });
-      };
+    const teardownBase = () => {
+      window.removeEventListener('scroll', onScroll);
+      ctx?.revert();
+    };
 
-      const scan = () => {
-        main.querySelectorAll(BLOCKS).forEach((el) => reveal(el));
-        main.querySelectorAll(GRID_ITEMS).forEach((el) => {
-          const index = Array.prototype.indexOf.call(el.parentElement.children, el);
-          reveal(el, Math.min(index, 8) * 0.125);
-        });
-        ScrollTrigger.refresh();
-      };
+    /* ---- Reveal setup.
+       The pre-animation state lives in CSS behind a `.js-reveal` class that only
+       this script sets. If JS never runs, is skipped for reduced motion, or
+       throws partway through setup, the class is absent or removed and every
+       element renders at its normal position — content can never be stranded
+       invisible. That is why the hidden state is not written inline per
+       element as it is tagged. */
+    const html = document.documentElement;
 
-      scan();
+    if (reduceMotion.matches || typeof IntersectionObserver === 'undefined') {
+      return teardownBase;
+    }
 
-      main.querySelectorAll('.hero-carousel').forEach((hero) => {
-        gsap.to(hero.querySelectorAll('.hero-slide-img'), {
-          yPercent: 6,
-          ease: 'none',
-          scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
+    html.classList.add('js-reveal');
+    // Safety net: any uncaught error drops the whole page back to visible.
+    const onError = () => html.classList.remove('js-reveal');
+    window.addEventListener('error', onError, { once: true });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-revealed');
+          observer.unobserve(entry.target); // plays once per page visit
         });
+      },
+      {
+        // Fire slightly after the element breaks into view so the motion reads
+        // as caused by the scroll rather than snapping the instant it appears.
+        rootMargin: '0px 0px -8% 0px',
+        threshold: 0.01,
+      }
+    );
+
+    /**
+     * Tag candidates and hand them to the observer.
+     *
+     * `querySelectorAll` returns document order, so an ancestor is always seen
+     * before its descendants. That lets the nested check below simply ask
+     * whether an ancestor was already tagged, which stops a card being animated
+     * inside a grid that is itself animating (doubled transform, doubled
+     * offset, and the child appearing to lag twice as long).
+     */
+    const collect = (scope) => {
+      const found = [];
+      scope.querySelectorAll(BLOCKS).forEach((el) => found.push(el));
+      scope.querySelectorAll(ITEM_PARENTS).forEach((parent) => {
+        Array.from(parent.children).forEach((child) => found.push(child));
       });
 
-      let timer;
-      const observer = new MutationObserver(() => {
-        window.clearTimeout(timer);
-        timer = window.setTimeout(scan, 120);
-      });
-      observer.observe(main, { childList: true, subtree: true });
+      found.forEach((el) => {
+        if (el.hasAttribute('data-reveal')) return;
+        if (el.matches(SKIP) || el.closest(SKIP) || el.closest(SKIP_SELECTOR)) return;
+        if (el.parentElement?.closest('[data-reveal]')) return;
 
-      return () => {
-        window.clearTimeout(timer);
-        observer.disconnect();
-      };
-    }, main);
+        el.setAttribute('data-reveal', '');
+
+        // Stagger only siblings that are themselves reveal targets, so a
+        // non-animated child cannot consume an index and skew the timings.
+        const parent = el.parentElement;
+        if (parent) {
+          const index = Array.prototype.indexOf.call(
+            Array.from(parent.children).filter(
+              (s) => s.matches(CANDIDATES) && !s.closest(SKIP)
+            ),
+            el
+          );
+          const delay = Math.min(Math.max(index, 0), STAGGER_CAP) * STAGGER_MS;
+          if (delay) el.style.setProperty('--reveal-delay', `${delay}ms`);
+        }
+
+        observer.observe(el);
+      });
+    };
+
+    collect(root);
+/* ---- Dynamically rendered content (CMS news, resources, partners, and the
+       skeleton -> card swap inside AsyncSection) animates on arrival. Debounced
+       because one API response typically inserts a whole grid at once. ---- */
+    let timer = 0;
+    const mutation = new MutationObserver(() => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => collect(root), 120);
+    });
+    mutation.observe(root, { childList: true, subtree: true });
+
+    /* Honour the OS setting changing mid-visit without a reload. */
+    const onMotionChange = () => {
+      if (!reduceMotion.matches) return;
+      root.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('is-revealed'));
+      observer.disconnect();
+      mutation.disconnect();
+      html.classList.remove('js-reveal');
+    };
+    reduceMotion.addEventListener('change', onMotionChange);
 
     return () => {
-      window.removeEventListener('scroll', onScroll);
-      ctx.revert();
-      ScrollTrigger.getAll().forEach((t) => t.kill());
+      window.clearTimeout(timer);
+      window.removeEventListener('error', onError);
+      reduceMotion.removeEventListener('change', onMotionChange);
+      observer.disconnect();
+      mutation.disconnect();
+      html.classList.remove('js-reveal');
+      teardownBase();
     };
   }, [routeKey]);
 }
+
