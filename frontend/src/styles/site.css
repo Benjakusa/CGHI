@@ -49,15 +49,55 @@
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* --------------------------------------------------------------------------
+   Type scale.
+
+   One place to change the whole site's typography. Fixed rem throughout —
+   deliberately not clamp()/vw. A fluid scale makes the same heading render at
+   visibly different sizes across the viewport range, which reads as
+   inconsistency; these values hold steady at every width so the site keeps one
+   calm, even rhythm. The trade-off is that the sizes no longer adapt to the
+   viewport, which is the point.
+
+     --fs-body      1rem        body copy
+     --fs-h1        1.75rem     H1, page titles
+     --fs-h2        1.375rem    section headings
+     --fs-h3        1.1875rem   card / sub headings
+     --fs-h4        1.0625rem   minor headings
+     --fs-lead      1.0625rem   lead and standfirst paragraphs
+     --fs-small     0.875rem    small and meta text
+     --fs-caption   0.75rem     captions and eyebrows
+     --fs-stat      1.75rem     stat and metric numbers
+
+   Matching weights are tokens too, so a heading's weight is changed in one
+   place alongside its size.
+   ------------------------------------------------------------------------ */
 :root {
-  --step--1: clamp(0.82rem, 0.79rem + 0.14vw, 0.9rem);
-  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.09rem);
-  --step-1: clamp(1.2rem, 1.12rem + 0.4vw, 1.4rem);
-  --step-2: clamp(1.44rem, 1.3rem + 0.7vw, 1.85rem);
-  --step-3: clamp(1.7rem, 1.45rem + 1.2vw, 2.4rem);
-  --step-4: clamp(2rem, 1.6rem + 1.9vw, 3.2rem);
-  --step-5: clamp(2.3rem, 1.7rem + 2.9vw, 4rem);
+  --fs-body: 1rem;
+  --fs-h1: 1.75rem;
+  --fs-h2: 1.375rem;
+  --fs-h3: 1.1875rem;
+  --fs-h4: 1.0625rem;
+  --fs-lead: 1.0625rem;
+  --fs-small: 0.875rem;
+  --fs-caption: 0.75rem;
+  --fs-stat: 1.75rem;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* Body measure. 62ch keeps a comfortable 60-80 character line at 1rem,
+     which is the range that stays readable without the eye losing the
+     start of the next line. */
+  --measure: 62ch;
 }
+
+/* The migration off the old fluid --step-* scale is complete: no rule in this
+   file references them, so the alias block that used to keep them resolving to
+   the new scale has been removed. Any future use of a --step-* name is a typo,
+   not an implicit fallback. */
 
 /* --------------------------------------------------------------------------
    2. Accessibility utilities
@@ -245,22 +285,21 @@ section {
 }
 
 .section-header h2 {
-  font-size: var(--step-3);
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  /* Size/weight come from the shared heading scale; only the placement is
+     section-specific. */
   margin: 0.35rem 0 0;
 }
 
 .section-header p {
   margin-top: 0.65rem;
   color: var(--ink-soft);
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
 }
 
 .section-label {
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   font-weight: 500;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -269,7 +308,7 @@ section {
 
 .section-lede {
   color: var(--ink-soft);
-  font-size: var(--step-1);
+  font-size: var(--fs-lead);
   line-height: 1.55;
 }
 
@@ -282,7 +321,7 @@ section {
 }
 
 .lead {
-  font-size: var(--step-1);
+  font-size: var(--fs-lead);
   line-height: 1.55;
   color: var(--ink);
 }
@@ -300,23 +339,23 @@ section {
 }
 
 .page-header h1 {
-  font-size: var(--step-4);
-  line-height: 1.08;
-  letter-spacing: -0.025em;
+  /* Size/weight from the shared scale; the measure is capped so a long page
+     title wraps within a comfortable line length instead of running the full
+     width of the band. */
   max-width: 22ch;
 }
 
 .page-header .dek {
   margin-top: 1rem;
   max-width: 60ch;
-  font-size: var(--step-1);
+  font-size: var(--fs-lead);
   color: var(--ink-soft);
 }
 
 /* Breadcrumbs: a real <ol> so the trail is announced as a list. */
 .breadcrumb {
   margin-bottom: 1.1rem;
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
 }
 
 .breadcrumb-list {
@@ -361,7 +400,7 @@ section {
   margin: 1.25rem 0 0;
   padding: 0;
   list-style: none;
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-soft);
 }
 
@@ -402,7 +441,7 @@ section {
   border-radius: var(--radius-btn);
   background: var(--sky);
   color: var(--black);
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
   font-weight: 600;
   line-height: 1.2;
   text-align: center;
@@ -568,7 +607,7 @@ section {
   border-radius: var(--radius-btn);
   background: var(--sky-tint);
   color: var(--sky-deep);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -592,7 +631,7 @@ section {
   border: 2px solid var(--border);
   border-radius: var(--radius-btn);
   background: var(--white);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-soft);
 }
 
@@ -738,7 +777,7 @@ section {
   border-radius: var(--radius-btn);
   background: transparent;
   color: var(--ink);
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
   font-weight: 500;
   text-decoration: none;
   cursor: pointer;
@@ -797,7 +836,7 @@ section {
   padding: 0.6rem 0.75rem;
   border-radius: var(--radius-sm);
   color: var(--ink);
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
   text-decoration: none;
 }
 
@@ -865,7 +904,7 @@ section {
   border-radius: var(--radius-btn);
   background: transparent;
   color: var(--ink);
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
   text-align: left;
   text-decoration: none;
   cursor: pointer;
@@ -896,14 +935,14 @@ section {
 
 .footer-tagline {
   color: var(--white);
-  font-size: var(--step-1);
+  font-size: var(--fs-lead);
   font-weight: 600;
 }
 
 .footer-mission {
   margin-top: 0.6rem;
   max-width: 34ch;
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
 }
 
 .footer-logo img,
@@ -943,7 +982,7 @@ section {
   margin: 0 0 0.9rem;
   color: var(--white);
   font-family: var(--font-mono);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   font-weight: 500;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -973,7 +1012,7 @@ section {
 
 .footer-address {
   font-style: normal;
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
 }
 
 .footer-address a {
@@ -989,7 +1028,7 @@ section {
   margin-top: clamp(2rem, 1.5rem + 1.5vw, 3rem);
   padding-top: 1.25rem;
   border-top: 1px solid rgba(255, 255, 255, 0.18);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
 }
 
 .footer-legal {
@@ -1075,7 +1114,7 @@ section {
 
 .hero-slide-eyebrow {
   font-family: var(--font-mono);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--sky-tint-strong);
@@ -1084,16 +1123,16 @@ section {
 .hero-slide h1 {
   margin-top: 0.6rem;
   max-width: 18ch;
-  font-size: var(--step-5);
-  line-height: 1.03;
-  letter-spacing: -0.03em;
+  /* The hero uses the same H1 size as every other page. It was previously a
+     fluid clamp() topping out near 4rem; the spec calls for a calm, uniform
+     scale, so the hero now matches the rest of the site exactly. */
   color: var(--white);
 }
 
 .hero-slide p {
   margin-top: 1rem;
   max-width: 52ch;
-  font-size: var(--step-1);
+  font-size: var(--fs-lead);
   color: rgba(255, 255, 255, 0.9);
 }
 
@@ -1176,7 +1215,7 @@ section {
 .approach-card h3,
 .resource-card h3,
 .value-card h3 {
-  font-size: var(--step-1);
+  font-size: var(--fs-lead);
   line-height: 1.25;
   letter-spacing: -0.01em;
 }
@@ -1190,7 +1229,7 @@ section {
 .resource-card p,
 .value-card p {
   color: var(--ink-soft);
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
 }
 
 /* Icon cards */
@@ -1232,7 +1271,7 @@ section {
   justify-content: space-between;
   gap: 0.5rem 1rem;
   flex-wrap: wrap;
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-muted);
 }
 
@@ -1256,7 +1295,7 @@ section {
   display: grid;
   gap: 0.35rem;
   margin: 0;
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
 }
 
 .project-card-facts div {
@@ -1288,7 +1327,7 @@ section {
 
 .initiative-label {
   font-family: var(--font-mono);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-muted);
 }
 
@@ -1296,7 +1335,7 @@ section {
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: var(--step--1) !important;
+  font-size: var(--fs-small) !important;
   color: var(--ink-muted) !important;
 }
 
@@ -1358,7 +1397,7 @@ section {
   margin: 1.25rem 0;
   padding-block: 0.9rem;
   border-block: 1px solid var(--border);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-muted);
 }
 
@@ -1438,7 +1477,7 @@ section {
 }
 
 .partner-card-name {
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   font-weight: 600;
   color: var(--ink-soft);
 }
@@ -1462,7 +1501,7 @@ section {
   border-radius: var(--radius);
   background: var(--white);
   color: var(--ink-soft);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   font-weight: 600;
   text-align: center;
   text-decoration: none;
@@ -1499,7 +1538,7 @@ section {
 }
 
 .leader-card-position {
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--sky-dark);
   font-weight: 600;
 }
@@ -1535,7 +1574,7 @@ section {
   background: var(--sky-deep);
   color: var(--white);
   font-family: var(--font-mono);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   font-weight: 700;
   letter-spacing: 0.03em;
 }
@@ -1616,7 +1655,7 @@ section {
 
 .frame-figure figcaption {
   margin-top: 0.75rem;
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-muted);
 }
 
@@ -1630,8 +1669,8 @@ section {
 
 .stat-num,
 .stat-strip-num {
-  font-size: var(--step-3);
-  font-weight: 800;
+  font-size: var(--fs-stat);
+  font-weight: var(--fw-bold);
   line-height: 1;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
@@ -1639,7 +1678,7 @@ section {
 
 .stat-lbl,
 .stat-strip-lbl {
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: inherit;
   opacity: 0.85;
 }
@@ -1696,7 +1735,7 @@ section {
 }
 
 .fact dt {
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-muted);
 }
 
@@ -1737,7 +1776,7 @@ section {
 .filter-chips legend {
   display: block;
   margin-bottom: 0.4rem;
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   font-weight: 600;
   color: var(--ink-soft);
 }
@@ -1773,7 +1812,7 @@ section {
   border-radius: var(--radius-sm);
   background: var(--white);
   color: var(--ink);
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
 }
 
 .input:hover {
@@ -1826,7 +1865,7 @@ select.input {
   border: 2px solid var(--border-ink);
   border-radius: var(--radius-btn);
   background: var(--white);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   font-weight: 600;
   color: var(--ink-soft);
   cursor: pointer;
@@ -1870,7 +1909,7 @@ select.input {
 
 .filter-bar-count {
   margin-left: auto;
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
 }
@@ -1893,7 +1932,7 @@ select.input {
   border-left: 4px solid var(--sky-deep);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   background: var(--sky-tint);
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
 }
 
 .form-alert[role='alert'] {
@@ -1917,15 +1956,15 @@ select.input {
 
 .form-note {
   margin-top: 1rem;
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-muted);
-  max-width: 60ch;
+  max-width: var(--measure);
 }
 
 .form-reference {
   margin-top: 0.75rem;
   font-family: var(--font-mono);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-muted);
 }
 
@@ -1944,13 +1983,13 @@ select.input {
 
 .field > label,
 .field > .field-label {
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
   font-weight: 600;
   color: var(--ink);
 }
 
 .field-hint {
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-muted);
 }
 
@@ -1958,7 +1997,7 @@ select.input {
   display: flex;
   align-items: flex-start;
   gap: 0.4rem;
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   font-weight: 600;
   color: #000000;
 }
@@ -2113,11 +2152,11 @@ select.input {
 }
 
 .empty-state h3 {
-  font-size: var(--step-1);
+  font-size: var(--fs-lead);
 }
 
 .empty-state p {
-  max-width: 52ch;
+  max-width: var(--measure);
   margin: 0;
 }
 
@@ -2140,7 +2179,7 @@ select.input {
 
 .error-code {
   font-family: var(--font-mono);
-  font-size: var(--step-5);
+  font-size: var(--fs-stat);
   font-weight: 700;
   line-height: 1;
   color: var(--sky);
@@ -2148,7 +2187,7 @@ select.input {
 
 .error-page h1 {
   margin-top: 0.75rem;
-  font-size: var(--step-3);
+  font-size: var(--fs-h1);
 }
 
 .error-destinations {
@@ -2162,7 +2201,7 @@ select.input {
 .error-help {
   margin-top: 2rem;
   color: var(--ink-muted);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
 }
 
 /* --------------------------------------------------------------------------
@@ -2172,7 +2211,10 @@ select.input {
 /* Prose: long-form body copy in articles, policies and the accessibility
    statement. Measures are capped so lines stay 60-75 characters. */
 .prose {
-  max-width: var(--wrap-prose);
+  /* Long-form article copy is capped by the shared measure so it matches the
+     body text everywhere else; `--wrap-prose` is a wider container that could
+     leave lines running past a comfortable reading length. */
+  max-width: var(--measure);
 }
 
 .prose > * + * {
@@ -2181,7 +2223,7 @@ select.input {
 
 .prose h2 {
   margin-top: 2.5rem;
-  font-size: var(--step-2);
+  font-size: var(--fs-h2);
   line-height: 1.2;
   letter-spacing: -0.02em;
   scroll-margin-top: calc(var(--header-h) + 1rem);
@@ -2189,7 +2231,7 @@ select.input {
 
 .prose h3 {
   margin-top: 2rem;
-  font-size: var(--step-1);
+  font-size: var(--fs-lead);
 }
 
 .prose ul,
@@ -2206,7 +2248,7 @@ select.input {
   margin: 1.75rem 0;
   padding: 0.25rem 0 0.25rem 1.25rem;
   border-left: 4px solid var(--sky);
-  font-size: var(--step-1);
+  font-size: var(--fs-lead);
   color: var(--ink);
 }
 
@@ -2221,7 +2263,7 @@ select.input {
 .prose table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
 }
 
 .prose th,
@@ -2234,7 +2276,7 @@ select.input {
 /* Subheading with an inline link (project detail) */
 .subheading {
   margin-top: 2.5rem;
-  font-size: var(--step-2);
+  font-size: var(--fs-h3);
   letter-spacing: -0.02em;
 }
 
@@ -2268,7 +2310,7 @@ select.input {
 
 .notice-panel-meta {
   margin-top: 0.5rem;
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-muted);
 }
 
@@ -2285,7 +2327,7 @@ select.input {
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -2294,7 +2336,7 @@ select.input {
 
 .pending-field-note {
   margin: 0.35rem 0 0;
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-muted);
 }
 
@@ -2339,13 +2381,13 @@ select.input {
 }
 
 .accordion-summary-title {
-  font-size: var(--step-1);
+  font-size: var(--fs-lead);
   font-weight: 600;
   line-height: 1.25;
 }
 
 .accordion-summary-meta {
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-muted);
 }
 
@@ -2355,7 +2397,7 @@ select.input {
   border-radius: var(--radius-btn);
   background: var(--surface-alt);
   font-family: var(--font-mono);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-soft);
 }
 
@@ -2400,7 +2442,7 @@ select.input {
 .accordion-section h4 {
   margin-bottom: 0.5rem;
   font-family: var(--font-mono);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -2408,7 +2450,7 @@ select.input {
 }
 
 .accordion-section p {
-  max-width: 72ch;
+  max-width: var(--measure);
   color: var(--ink-soft);
 }
 
@@ -2446,12 +2488,12 @@ select.input {
 
 .initiative-index strong {
   display: block;
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
   line-height: 1.25;
 }
 
 .initiative-index em {
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   font-style: normal;
   color: var(--ink-muted);
 }
@@ -2480,14 +2522,14 @@ select.input {
 }
 
 .sos-cell .n {
-  font-size: var(--step-2);
-  font-weight: 800;
+  font-size: var(--fs-stat);
+  font-weight: var(--fw-bold);
   line-height: 1;
   color: var(--sky-dark);
 }
 
 .sos-cell .d {
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-soft);
 }
 
@@ -2516,19 +2558,19 @@ select.input {
 
 .capability-block-index {
   font-family: var(--font-mono);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--sky-dark);
   padding-top: 0.75rem;
 }
 
 .capability-block h2 {
-  font-size: var(--step-3);
+  font-size: var(--fs-h2);
   line-height: 1.15;
   letter-spacing: -0.02em;
 }
 
 .capability-block p {
-  max-width: 70ch;
+  max-width: var(--measure);
   margin-top: 0.75rem;
   color: var(--ink-soft);
 }
@@ -2560,7 +2602,7 @@ select.input {
   gap: 0.5rem;
   margin-bottom: 2rem;
   font-family: var(--font-mono);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-muted);
 }
 
@@ -2571,7 +2613,7 @@ select.input {
 
 .privacy-block h2 {
   margin-bottom: 0.75rem;
-  font-size: var(--step-2);
+  font-size: var(--fs-h2);
   line-height: 1.2;
   letter-spacing: -0.02em;
 }
@@ -2663,14 +2705,14 @@ select.input {
 }
 
 .contact-info-item h3 {
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
   margin-bottom: 0.2rem;
 }
 
 .contact-info-item p,
 .contact-info-item address {
   margin: 0;
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
   color: var(--ink-soft);
   font-style: normal;
 }
@@ -2725,7 +2767,7 @@ select.input {
   padding: 0.8rem 1rem;
   border-radius: var(--radius-sm);
   background: var(--surface);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-soft);
 }
 
@@ -2858,7 +2900,7 @@ select.input {
     width: 100%;
     min-height: var(--tap);
     padding: 0.75rem 0.9rem;
-    font-size: var(--step-1);
+    font-size: var(--fs-lead);
   }
 
   /* Dropdowns inline in the mobile panel instead of floating. */
@@ -3146,7 +3188,7 @@ select.input {
 }
 
 .nav-profile-label {
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
 }
 
 .footer-copyright {
@@ -3161,7 +3203,7 @@ select.input {
   border-radius: var(--radius-btn);
   background: var(--sky-tint);
   color: var(--sky-deep);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   font-weight: 600;
 }
 
@@ -3171,7 +3213,7 @@ select.input {
   border-left: 3px solid var(--sky);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   background: var(--surface);
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
   color: var(--ink-soft);
 }
 
@@ -3219,14 +3261,14 @@ select.input {
 }
 
 .dash-stat-num {
-  font-size: var(--step-2);
-  font-weight: 800;
+  font-size: var(--fs-stat);
+  font-weight: var(--fw-bold);
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 
 .dash-stat-lbl {
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   color: var(--ink-muted);
 }
 
@@ -3235,7 +3277,7 @@ select.input {
   border-radius: var(--radius-btn);
   background: var(--sky-tint);
   color: var(--sky-deep);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   font-weight: 600;
 }
 
@@ -3248,7 +3290,7 @@ select.input {
   border-radius: var(--radius-btn);
   background: var(--white);
   color: var(--black);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   font-weight: 600;
   text-decoration: none;
   transition: background-color 0.22s ease-out, color 0.22s ease-out;
@@ -3370,23 +3412,45 @@ select.input {
   --header-h: 4.75rem;
 }
 
+/* Heading scale.
+   Every level is sized and weighted from the tokens defined in section 1, so
+   the hierarchy is declared once for the whole site rather than re-specified by
+   each page. The scale is deliberately shallow: with H1 at 1.75rem and H4 at
+   1.0625rem there are no oversized display sizes, and no step spans more than
+   ~0.19rem, which keeps headings calm and even rather than dramatic. */
 h1,
 h2,
 h3,
 h4 {
   font-family: var(--font-display);
-  letter-spacing: -0.015em;
   color: var(--ink);
+  /* Slight negative tracking keeps the small heading sizes legible without
+     loosening; it is not reduced to zero, which would make tight sizes muddy. */
+  letter-spacing: -0.015em;
+}
+
+h1 {
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
+  line-height: 1.2;
 }
 
 h2 {
-  font-size: var(--step-4);
-  line-height: 1.12;
-  font-weight: 700;
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-semibold);
+  line-height: 1.25;
 }
 
 h3 {
-  font-weight: 600;
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-semibold);
+  line-height: 1.3;
+}
+
+h4 {
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-semibold);
+  line-height: 1.35;
 }
 
 /* 2. Layout and rhythm ---------------------------------------------------- */
@@ -3420,17 +3484,22 @@ section {
   max-width: 46rem;
 }
 
-/* The label is a short rule + text, not a tracked uppercase eyebrow. */
+/* Eyebrow / caption treatment.
+
+   Standardised across every variant of this label: 0.75rem, semibold, uppercase
+   with 0.1em tracking. The earlier base rule used 0.875rem/500 and this later
+   override had dropped the uppercase entirely, so the same eyebrow rendered
+   three different ways depending on the page. One treatment now. */
 .section-label {
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 0.9rem;
   font-family: var(--font-sans);
-  font-size: var(--step--1);
-  font-weight: 600;
-  letter-spacing: 0;
-  text-transform: none;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--sky-deep);
 }
 
@@ -3575,20 +3644,22 @@ section {
   border-left: 4px solid var(--sky);
   background: rgba(255, 255, 255, 0.1);
   font-family: var(--font-sans);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: none;
   color: var(--white);
 }
 
+/* This later rule wins over the earlier `.hero-slide h1` at equal specificity,
+   so the hero's size is declared here from the shared token. Previously a fluid
+   clamp() running to 4.6rem — the single largest text on the site and the most
+   visible symptom of the oversized scale the audit removes. */
 .hero-slide h1 {
   max-width: 20ch;
   margin-top: 1.25rem;
-  font-size: clamp(2.4rem, 1.7rem + 3.4vw, 4.6rem);
-  font-weight: 700;
-  line-height: 1.06;
-  letter-spacing: -0.025em;
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
 }
 
 .hero-slide p {
@@ -3800,7 +3871,7 @@ section {
 
 .footer-heading {
   font-family: var(--font-display);
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
   font-weight: 600;
   letter-spacing: 0;
   text-transform: none;
@@ -3935,7 +4006,7 @@ section {
 .utility-bar {
   background: var(--sky-deep);
   color: var(--white);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   max-height: 3rem;
   overflow: hidden;
   transition: max-height 0.3s var(--ease);
@@ -4116,7 +4187,7 @@ section {
 .primary-nav-item > .dropbtn,
 .primary-nav-item > .dropdown > .dropbtn {
   font-family: var(--font-display);
-  font-size: 0.95rem;
+  font-size: var(--fs-small);
   font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
@@ -4294,7 +4365,7 @@ section {
   background: transparent;
   text-transform: none;
   letter-spacing: 0;
-  font-size: 0.95rem;
+  font-size: var(--fs-small);
   font-weight: 500;
   font-family: var(--font-display);
 }
@@ -4370,7 +4441,7 @@ section {
   background: transparent;
   box-shadow: none;
   font-family: var(--font-sans);
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   letter-spacing: 0;
   text-transform: none;
 }
@@ -4492,10 +4563,12 @@ section {
   width: 100%;
 }
 
+/* Hero title measure. Size comes from the shared H1 token, so this rule only
+   constrains the measure — the old clamp() here shrank the hero heading to 22px
+   on narrow screens, which fought the H1 size set elsewhere. */
 .hero-slide h1,
 .hero-slide-panel h1 {
   max-width: min(44rem, 100%);
-  font-size: clamp(1.15rem, 0.95rem + 0.9vw, 22px);
 }
 
 /* Welcome: the DMT-PHE video is never taller than the section that holds it. */
@@ -4851,7 +4924,7 @@ section {
 .area-card h4 {
   margin: 0;
   color: var(--black);
-  font-size: var(--step-1);
+  font-size: var(--fs-lead);
   line-height: 1.25;
 }
 
@@ -4918,7 +4991,7 @@ section {
 .discipline-card h4 {
   margin: 0;
   color: var(--ink);
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
   font-weight: 600;
   line-height: 1.35;
 }
@@ -5002,13 +5075,13 @@ section {
 
 .collab-card h3 {
   color: var(--black);
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
   line-height: 1.3;
 }
 
 .collab-card p {
   color: rgba(0, 0, 0, 0.85) !important;
-  font-size: var(--step--1) !important;
+  font-size: var(--fs-small) !important;
 }
 
 .icon-card.collab-card:hover {
@@ -5101,7 +5174,7 @@ section {
 
 .article-page .prose {
   max-width: none;
-  font-size: var(--step-0);
+  font-size: var(--fs-body);
   line-height: 1.8;
 }
 
@@ -5177,7 +5250,7 @@ section {
 }
 
 .nav-profile-label {
-  font-size: var(--step--1);
+  font-size: var(--fs-small);
   font-weight: 600;
   white-space: nowrap;
 }

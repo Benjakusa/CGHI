@@ -278,6 +278,11 @@ export default function WhatWeDo() {
         }
 
         /* ---------- Header (centred) ---------- */
+        /* Typography here comes from the shared --fs-* scale so this page
+           matches every other route. It previously ran its own fluid scale
+           inside this <style> block (a clamp() title, 3.6rem step numerals,
+           1.35rem card titles), which is what made What We Do read as a
+           different, louder site from the rest. */
         .wwd-capabilities-head {
           text-align: center;
           max-width: 720px;
@@ -285,9 +290,9 @@ export default function WhatWeDo() {
         }
         .wwd-eyebrow {
           display: inline-block;
-          font-size: 0.75rem;
-          font-weight: 700;
-          letter-spacing: 0.18em;
+          font-size: var(--fs-caption);
+          font-weight: var(--fw-semibold);
+          letter-spacing: 0.1em;
           text-transform: uppercase;
           color: #000000;
           padding: 0.35rem 0.9rem;
@@ -297,14 +302,15 @@ export default function WhatWeDo() {
           margin-bottom: 1rem;
         }
         .wwd-title {
-          font-size: clamp(1.85rem, 4vw, 2.6rem);
-          line-height: 1.15;
+          font-size: var(--fs-h2);
+          font-weight: var(--fw-semibold);
+          line-height: 1.25;
           margin: 0 0 0.85rem;
           color: #000000;
         }
         .wwd-lede {
-          font-size: 1.05rem;
-          line-height: 1.65;
+          font-size: var(--fs-lead);
+          line-height: 1.6;
           color: #000000;
           margin: 0;
         }
@@ -403,18 +409,20 @@ export default function WhatWeDo() {
           box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.5);
         }
         .wwd-card-step {
-          font-size: 3.6rem;
-          font-weight: 800;
+          /* Was 3.6rem/800 — by far the largest text on the site. Now a stat
+             numeral like every other figure in the system. */
+          font-size: var(--fs-stat);
+          font-weight: var(--fw-bold);
           line-height: 1;
           color: skyblue;
-          letter-spacing: -0.04em;
+          letter-spacing: -0.02em;
           margin-top: -0.25rem;
         }
         .wwd-card-tag {
           display: inline-block;
-          font-size: 0.7rem;
-          font-weight: 700;
-          letter-spacing: 0.12em;
+          font-size: var(--fs-caption);
+          font-weight: var(--fw-semibold);
+          letter-spacing: 0.1em;
           text-transform: uppercase;
           padding: 0.3rem 0.75rem;
           border-radius: 999px;
@@ -429,21 +437,20 @@ export default function WhatWeDo() {
           min-width: 0;
         }
         .wwd-card-title {
-          font-size: 1.35rem;
+          font-size: var(--fs-h3);
           line-height: 1.3;
           margin: 0 0 0.65rem;
           color: #000000;
         }
         .wwd-card-summary {
-          font-size: 1.02rem;
+          font-size: var(--fs-body);
           line-height: 1.6;
           color: #000000;
-          font-weight: 500;
           margin: 0 0 0.85rem;
         }
         .wwd-card-body {
-          font-size: 0.95rem;
-          line-height: 1.7;
+          font-size: var(--fs-small);
+          line-height: 1.6;
           color: #000000;
           margin: 0 0 0.75rem;
         }
@@ -454,8 +461,8 @@ export default function WhatWeDo() {
           display: inline-flex;
           align-items: center;
           gap: 0.45rem;
-          font-weight: 600;
-          font-size: 0.95rem;
+          font-weight: var(--fw-semibold);
+          font-size: var(--fs-small);
           color: #000000;
           text-decoration: none;
           border-bottom: 2px solid skyblue;
@@ -492,7 +499,9 @@ export default function WhatWeDo() {
             gap: 1rem;
           }
           .wwd-card-step {
-            font-size: 2.6rem;
+            /* Same stat token as the desktop rule; the breakpoint only changes
+               the margin, so the numeral cannot shrink away from the scale. */
+            font-size: var(--fs-stat);
             margin-top: 0;
           }
           .wwd-arrow {

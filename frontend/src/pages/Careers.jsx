@@ -502,7 +502,7 @@ export default function Careers() {
                         color: #ffffff !important;
                         border-radius: var(--radius) !important;
                         font-weight: 700;
-                        font-size: 0.85rem;
+                        font-size: var(--fs-small);
                         padding: 10px 18px;
                         display: inline-flex;
                         align-items: center;
@@ -522,7 +522,7 @@ export default function Careers() {
                         color: #ffffff !important;
                         border-radius: var(--radius) !important;
                         font-weight: 700;
-                        font-size: 0.85rem;
+                        font-size: var(--fs-small);
                         padding: 10px 18px;
                         display: inline-flex;
                         align-items: center;
