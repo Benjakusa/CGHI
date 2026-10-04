@@ -1,3 +1,4 @@
+
 /**
  * What We Do.
  *
@@ -7,59 +8,47 @@
  * prose — that was the audit's "text-heavy sections" finding.
  */
 
-import React, { useMemo } from "react";
-import Layout from "../components/Layout";
-import PageHeader from "../components/PageHeader";
+import React, { useMemo } from 'react';
+import Layout from '../components/Layout';
+import PageHeader from '../components/PageHeader';
 import Seo, {
   BASE_JSONLD,
   breadcrumbJsonLd,
   itemListJsonLd,
   pageJsonLd,
-} from "../components/Seo";
-import SmartLink from "../components/SmartLink";
+} from '../components/Seo';
+import SmartLink from '../components/SmartLink';
 import {
   CtaStrip,
   InitiativeChips,
   ProjectChips,
   SectionHeader,
-} from "../components/cards";
-import { GLANCE } from "../content/impact";
-import { PAGE_META } from "../content/navigation";
-import { CAPABILITIES } from "../content/capabilities";
+} from '../components/cards';
+import { GLANCE } from '../content/impact';
+import { PAGE_META } from '../content/navigation';
+import { CAPABILITIES } from '../content/capabilities';
 
-const META = PAGE_META["/what-we-do"];
+const META = PAGE_META['/what-we-do'];
 
 /** Headline counters. Only verified figures are shown. */
 const HEADLINE = GLANCE.filter((f) =>
-  ["capabilities", "financing", "response-time", "initiatives"].includes(f.id),
+  ['capabilities', 'financing', 'response-time', 'initiatives'].includes(f.id)
 );
 
 export default function WhatWeDo() {
   const jsonLd = useMemo(
     () => [
       ...BASE_JSONLD,
-      pageJsonLd({
-        name: META.title,
-        path: "/what-we-do",
-        description: META.description,
-      }),
+      pageJsonLd({ name: META.title, path: '/what-we-do', description: META.description }),
       breadcrumbJsonLd(META.breadcrumb),
-      itemListJsonLd(
-        "Areas of expertise",
-        CAPABILITIES.map((c) => ({ name: c.title, to: "/what-we-do" })),
-      ),
+      itemListJsonLd('Areas of expertise', CAPABILITIES.map((c) => ({ name: c.title, to: '/what-we-do' }))),
     ],
-    [],
+    []
   );
 
   return (
     <Layout navId="what-we-do">
-      <Seo
-        title={META.title}
-        description={META.description}
-        path="/what-we-do"
-        jsonLd={jsonLd}
-      />
+      <Seo title={META.title} description={META.description} path="/what-we-do" jsonLd={jsonLd} />
 
       <PageHeader
         trail={META.breadcrumb}
@@ -69,10 +58,7 @@ export default function WhatWeDo() {
       />
 
       {/* ---------------- Headline figures ---------------- */}
-      <section
-        className="section-tight section-surface"
-        aria-label="CGP at a glance"
-      >
+      <section className="section-tight section-surface" aria-label="CGP at a glance">
         <div className="wrap">
           <div className="stat-strip">
             {HEADLINE.map((figure) => (
@@ -85,83 +71,87 @@ export default function WhatWeDo() {
         </div>
       </section>
 
-      {/* ---------------- Five capabilities — restyled graphical section ---------------- */}
-      <section
-        aria-labelledby="capabilities-heading"
-        className="capabilities-graphical"
-      >
-        <div className="wrap">
-          <div className="capabilities-intro">
-            <SectionHeader
-              id="capabilities-heading"
-              align="center"
-              eyebrow="Five Areas"
-              title="Technical capabilities"
-              lede="Five interconnected areas of expertise, each linked to the projects and initiatives that put it into practice."
-            />
-          </div>
+      {/* ---------------- Five capabilities — graphical card flow ---------------- */}
+      <section className="wwd-capabilities" aria-labelledby="capabilities-heading">
+        <div className="wwd-capabilities-inner">
+          <header className="wwd-capabilities-head">
+            <span className="wwd-eyebrow">Five Areas</span>
+            <h2 id="capabilities-heading" className="wwd-title">
+              Technical capabilities
+            </h2>
+            <p className="wwd-lede">
+              Five interconnected areas of expertise, each linked to the projects
+              and initiatives that put it into practice.
+            </p>
+          </header>
 
-          <div className="capability-flow">
-            {CAPABILITIES.map((capability, index) => (
-              <React.Fragment key={capability.id}>
-                <article
-                  className="capability-node"
-                  id={capability.id}
-                  aria-labelledby={`${capability.id}-title`}
-                >
-                  <div className="capability-node-graphic">
-                    <div className="capability-node-icon">
-                      <i
-                        className={`bi ${capability.icon}`}
-                        aria-hidden="true"
-                      />
+          <div className="wwd-flow">
+            {CAPABILITIES.map((capability, index) => {
+              const isEven = index % 2 === 0;
+              return (
+                <React.Fragment key={capability.id}>
+                  <article
+                    id={capability.id}
+                    className={`wwd-card ${isEven ? 'wwd-card--a' : 'wwd-card--b'}`}
+                    aria-labelledby={`${capability.id}-title`}
+                  >
+                    <div className="wwd-card-grid">
+                      <div className="wwd-card-visual">
+                        <div className="wwd-card-icon-wrap">
+                          <i className={`bi ${capability.icon}`} aria-hidden="true" />
+                        </div>
+                        <span className="wwd-card-step" aria-hidden="true">
+                          {String(index + 1).padStart(2, '0')}
+                        </span>
+                        <span className="wwd-card-tag">{capability.tag}</span>
+                      </div>
+
+                      <div className="wwd-card-content">
+                        <h3 id={`${capability.id}-title`} className="wwd-card-title">
+                          {capability.title}
+                        </h3>
+                        <p className="wwd-card-summary">{capability.summary}</p>
+                        {capability.body.map((paragraph) => (
+                          <p key={paragraph.slice(0, 40)} className="wwd-card-body">
+                            {paragraph}
+                          </p>
+                        ))}
+
+                        {capability.cta && (
+                          <div className="wwd-card-cta">
+                            <SmartLink className="wwd-inline-link" to={capability.cta.to}>
+                              {capability.cta.label}
+                              <i className="bi bi-arrow-right" aria-hidden="true" />
+                            </SmartLink>
+                          </div>
+                        )}
+
+                        <div className="wwd-card-refs">
+                          <ProjectChips ids={capability.relatedProjects} />
+                          <InitiativeChips ids={capability.relatedInitiatives} />
+                        </div>
+                      </div>
                     </div>
-                    <span className="capability-node-index" aria-hidden="true">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                  </div>
+                  </article>
 
-                  <div className="capability-node-body">
-                    <span className="pill">{capability.tag}</span>
-                    <h3 id={`${capability.id}-title`}>{capability.title}</h3>
-                    <p className="lead">{capability.summary}</p>
-                    {capability.body.map((paragraph) => (
-                      <p key={paragraph.slice(0, 40)}>{paragraph}</p>
-                    ))}
-
-                    <div className="capability-node-links">
-                      {capability.cta && (
-                        <SmartLink className="text-link" to={capability.cta.to}>
-                          {capability.cta.label}{" "}
-                          <i className="bi bi-arrow-right" aria-hidden="true" />
-                        </SmartLink>
-                      )}
+                  {index < CAPABILITIES.length - 1 && (
+                    <div className="wwd-arrow" aria-hidden="true">
+                      <span className="wwd-arrow-line" />
+                      <span className="wwd-arrow-head">
+                        <i className="bi bi-chevron-down" />
+                        <i className="bi bi-chevron-down wwd-arrow-head-2" />
+                      </span>
                     </div>
-
-                    <div className="capability-node-refs">
-                      <ProjectChips ids={capability.relatedProjects} />
-                      <InitiativeChips ids={capability.relatedInitiatives} />
-                    </div>
-                  </div>
-                </article>
-
-                {index < CAPABILITIES.length - 1 && (
-                  <div className="capability-connector" aria-hidden="true">
-                    <span className="connector-line" />
-                    <i className="bi bi-chevron-double-down connector-arrow" />
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
+                  )}
+                </React.Fragment>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* ---------------- Approach summary ---------------- */}
-      <section
-        className="section-surface-alt"
-        aria-labelledby="related-heading"
-      >
+      <section className="section-surface-alt" aria-labelledby="related-heading">
         <div className="wrap">
           <SectionHeader
             id="related-heading"
@@ -176,13 +166,9 @@ export default function WhatWeDo() {
                 <i className="bi bi-kanban-fill" />
               </div>
               <h3>Projects &amp; Impact</h3>
-              <p>
-                Outcome-led summaries of CGP’s project record across Kenya and
-                the region.
-              </p>
+              <p>Outcome-led summaries of CGP’s project record across Kenya and the region.</p>
               <SmartLink className="text-link card-link" to="/projects">
-                Explore Our Projects{" "}
-                <i className="bi bi-arrow-right" aria-hidden="true" />
+                Explore Our Projects <i className="bi bi-arrow-right" aria-hidden="true" />
               </SmartLink>
             </article>
             <article className="icon-card">
@@ -190,13 +176,9 @@ export default function WhatWeDo() {
                 <i className="bi bi-broadcast-pin" />
               </div>
               <h3>CGP Initiatives</h3>
-              <p>
-                Six active programmes putting epidemic intelligence into
-                practice subnationally.
-              </p>
+              <p>Six active programmes putting epidemic intelligence into practice subnationally.</p>
               <SmartLink className="text-link card-link" to="/initiatives">
-                View initiatives{" "}
-                <i className="bi bi-arrow-right" aria-hidden="true" />
+                View initiatives <i className="bi bi-arrow-right" aria-hidden="true" />
               </SmartLink>
             </article>
             <article className="icon-card">
@@ -204,13 +186,9 @@ export default function WhatWeDo() {
                 <i className="bi bi-journal-richtext" />
               </div>
               <h3>Media Insights and Research</h3>
-              <p>
-                Research, policy and field updates from the CGP team and its
-                partners.
-              </p>
+              <p>Research, policy and field updates from the CGP team and its partners.</p>
               <SmartLink className="text-link card-link" to="/insights">
-                Read the Research{" "}
-                <i className="bi bi-arrow-right" aria-hidden="true" />
+                Read the Research <i className="bi bi-arrow-right" aria-hidden="true" />
               </SmartLink>
             </article>
             <article className="icon-card">
@@ -218,13 +196,9 @@ export default function WhatWeDo() {
                 <i className="bi bi-people-fill" />
               </div>
               <h3>Partners</h3>
-              <p>
-                The ministries, institutes and agencies CGP delivers this work
-                with.
-              </p>
+              <p>The ministries, institutes and agencies CGP delivers this work with.</p>
               <SmartLink className="text-link card-link" to="/partners">
-                Meet our partners{" "}
-                <i className="bi bi-arrow-right" aria-hidden="true" />
+                Meet our partners <i className="bi bi-arrow-right" aria-hidden="true" />
               </SmartLink>
             </article>
           </div>
@@ -235,10 +209,289 @@ export default function WhatWeDo() {
         title="Explore CGP's projects & initiatives"
         body="See CGP's capabilities in action through our project record and subnational programmes."
         actions={[
-          { label: "Explore Our Projects", to: "/projects", variant: "white" },
-          { label: "CGP Initiatives", to: "/initiatives", variant: "white" },
+          { label: 'Explore Our Projects', to: '/projects', variant: 'white' },
+          { label: 'CGP Initiatives', to: '/initiatives', variant: 'white' },
         ]}
       />
+
+      <style>{`
+        /* ============================================================
+           FIVE AREAS — graphical, centred, self-contained styling
+           ============================================================ */
+        .wwd-capabilities {
+          position: relative;
+          padding: 5.5rem 1.25rem 6rem;
+          background:
+            radial-gradient(circle at 50% 0%, rgba(0, 123, 167, 0.10), transparent 55%),
+            linear-gradient(180deg, #f5faff 0%, #ffffff 45%, #f0f7fb 100%);
+          overflow: hidden;
+        }
+        .wwd-capabilities::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-image:
+            linear-gradient(rgba(0, 123, 167, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 123, 167, 0.05) 1px, transparent 1px);
+          background-size: 44px 44px;
+          mask-image: radial-gradient(circle at 50% 30%, #000 0%, transparent 78%);
+          -webkit-mask-image: radial-gradient(circle at 50% 30%, #000 0%, transparent 78%);
+          pointer-events: none;
+        }
+        .wwd-capabilities-inner {
+          position: relative;
+          max-width: 1080px;
+          margin: 0 auto;
+        }
+
+        /* ---------- Header (centred) ---------- */
+        .wwd-capabilities-head {
+          text-align: center;
+          max-width: 720px;
+          margin: 0 auto 3.5rem;
+        }
+        .wwd-eyebrow {
+          display: inline-block;
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: #007ba7;
+          padding: 0.35rem 0.9rem;
+          border: 1px solid rgba(0, 123, 167, 0.35);
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.85);
+          margin-bottom: 1rem;
+        }
+        .wwd-title {
+          font-size: clamp(1.85rem, 4vw, 2.6rem);
+          line-height: 1.15;
+          margin: 0 0 0.85rem;
+          color: #0a2540;
+        }
+        .wwd-lede {
+          font-size: 1.05rem;
+          line-height: 1.65;
+          color: #4a5a68;
+          margin: 0;
+        }
+
+        /* ---------- Flow / connectors ---------- */
+        .wwd-flow {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0;
+        }
+
+        .wwd-arrow {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 72px;
+          position: relative;
+          z-index: 1;
+        }
+        .wwd-arrow-line {
+          width: 3px;
+          flex: 1;
+          background: linear-gradient(180deg, rgba(0, 123, 167, 0.15), #007ba7);
+          border-radius: 2px;
+        }
+        .wwd-arrow-head {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          color: #007ba7;
+          font-size: 1.1rem;
+          line-height: 0.4;
+        }
+        .wwd-arrow-head .bi {
+          animation: wwd-bounce 1.8s ease-in-out infinite;
+        }
+        .wwd-arrow-head-2 {
+          margin-top: -0.55rem;
+          opacity: 0.55;
+          animation-delay: 0.25s !important;
+        }
+        @keyframes wwd-bounce {
+          0%, 100% { transform: translateY(0); opacity: 1; }
+          50%      { transform: translateY(4px); opacity: 0.6; }
+        }
+
+        /* ---------- Cards (alternating backgrounds) ---------- */
+        .wwd-card {
+          width: 100%;
+          border-radius: 20px;
+          padding: 2rem 2rem 2rem;
+          background: #ffffff;
+          border: 1px solid rgba(10, 37, 64, 0.08);
+          box-shadow:
+            0 1px 2px rgba(10, 37, 64, 0.04),
+            0 18px 40px -24px rgba(10, 37, 64, 0.35);
+          transition: transform 0.35s ease, box-shadow 0.35s ease;
+        }
+        .wwd-card:hover {
+          transform: translateY(-4px);
+          box-shadow:
+            0 1px 2px rgba(10, 37, 64, 0.05),
+            0 28px 56px -24px rgba(10, 37, 64, 0.45);
+        }
+        .wwd-card--a {
+          background:
+            linear-gradient(135deg, #ffffff 0%, #f4fbff 100%);
+          border-left: 5px solid #007ba7;
+        }
+        .wwd-card--b {
+          background:
+            linear-gradient(135deg, #ffffff 0%, #f6f8f4 100%);
+          border-left: 5px solid #2e7d5b;
+        }
+        .wwd-card--b .wwd-card-icon-wrap {
+          background: linear-gradient(135deg, #2e7d5b, #4fa87d);
+          box-shadow: 0 12px 24px -12px rgba(46, 125, 91, 0.65);
+        }
+        .wwd-card--b .wwd-card-step {
+          color: rgba(46, 125, 91, 0.18);
+        }
+        .wwd-card--b .wwd-card-tag {
+          background: rgba(46, 125, 91, 0.10);
+          color: #2e7d5b;
+          border-color: rgba(46, 125, 91, 0.28);
+        }
+
+        .wwd-card-grid {
+          display: grid;
+          grid-template-columns: 180px 1fr;
+          gap: 2rem;
+          align-items: start;
+        }
+
+        /* ---------- Visual column ---------- */
+        .wwd-card-visual {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.9rem;
+          position: relative;
+        }
+        .wwd-card-icon-wrap {
+          width: 92px;
+          height: 92px;
+          border-radius: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, #007ba7, #00a6c9);
+          color: #ffffff;
+          font-size: 2.35rem;
+          box-shadow: 0 12px 24px -12px rgba(0, 123, 167, 0.75);
+        }
+        .wwd-card-step {
+          font-size: 3.6rem;
+          font-weight: 800;
+          line-height: 1;
+          color: rgba(0, 123, 167, 0.16);
+          letter-spacing: -0.04em;
+          margin-top: -0.25rem;
+        }
+        .wwd-card-tag {
+          display: inline-block;
+          font-size: 0.7rem;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          padding: 0.3rem 0.75rem;
+          border-radius: 999px;
+          background: rgba(0, 123, 167, 0.10);
+          color: #007ba7;
+          border: 1px solid rgba(0, 123, 167, 0.28);
+          text-align: center;
+        }
+
+        /* ---------- Content column ---------- */
+        .wwd-card-content {
+          min-width: 0;
+        }
+        .wwd-card-title {
+          font-size: 1.35rem;
+          line-height: 1.3;
+          margin: 0 0 0.65rem;
+          color: #0a2540;
+        }
+        .wwd-card-summary {
+          font-size: 1.02rem;
+          line-height: 1.6;
+          color: #2b3a47;
+          font-weight: 500;
+          margin: 0 0 0.85rem;
+        }
+        .wwd-card-body {
+          font-size: 0.95rem;
+          line-height: 1.7;
+          color: #55646f;
+          margin: 0 0 0.75rem;
+        }
+        .wwd-card-cta {
+          margin: 0.5rem 0 1rem;
+        }
+        .wwd-inline-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.45rem;
+          font-weight: 600;
+          font-size: 0.95rem;
+          color: #007ba7;
+          text-decoration: none;
+          border-bottom: 2px solid transparent;
+          transition: border-color 0.25s ease, gap 0.25s ease;
+        }
+        .wwd-inline-link:hover {
+          border-bottom-color: #007ba7;
+          gap: 0.7rem;
+        }
+        .wwd-card--b .wwd-inline-link {
+          color: #2e7d5b;
+        }
+        .wwd-card--b .wwd-inline-link:hover {
+          border-bottom-color: #2e7d5b;
+        }
+        .wwd-card-refs {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.6rem;
+          padding-top: 1rem;
+          border-top: 1px dashed rgba(10, 37, 64, 0.14);
+        }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 720px) {
+          .wwd-capabilities {
+            padding: 3.5rem 1rem 4rem;
+          }
+          .wwd-card {
+            padding: 1.5rem 1.25rem;
+          }
+          .wwd-card-grid {
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+          }
+          .wwd-card-visual {
+            flex-direction: row;
+            justify-content: flex-start;
+            gap: 1rem;
+          }
+          .wwd-card-step {
+            font-size: 2.6rem;
+            margin-top: 0;
+          }
+          .wwd-arrow {
+            height: 52px;
+          }
+        }
+      `}</style>
     </Layout>
   );
 }
