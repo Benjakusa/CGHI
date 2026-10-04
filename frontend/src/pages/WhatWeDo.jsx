@@ -160,7 +160,7 @@ export default function WhatWeDo() {
               <div className="card-icon" aria-hidden="true">
                 <i className="bi bi-journal-richtext" />
               </div>
-              <h3>Insights &amp; Research</h3>
+              <h3>Media Insights and Research</h3>
               <p>Research, policy and field updates from the CGP team and its partners.</p>
               <SmartLink className="text-link card-link" to="/insights">
                 Read the Research <i className="bi bi-arrow-right" aria-hidden="true" />

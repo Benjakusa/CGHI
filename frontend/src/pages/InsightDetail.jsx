@@ -82,7 +82,7 @@ function ArticleBody({ article, all }) {
                   <span className="breadcrumb-sep" aria-hidden="true">/</span>
                 </li>
                 <li className="breadcrumb-item">
-                  <SmartLink to="/insights">Insights &amp; Research</SmartLink>
+                  <SmartLink to="/insights">Media Insights and Research</SmartLink>
                   <span className="breadcrumb-sep" aria-hidden="true">/</span>
                 </li>
                 <li className="breadcrumb-item">
@@ -110,7 +110,7 @@ function ArticleBody({ article, all }) {
         </header>
 
         <section>
-          <div className="wrap wrap--prose">
+          <div className="wrap article-page">
             {image && (
               <figure className="article-hero">
                 <SmartImage

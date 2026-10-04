@@ -1,5 +1,5 @@
 /**
- * Insights & Research.
+ * Media Insights and Research.
  *
  * Articles are served by `GET /api/news` and edited through /admin/news — that
  * stays the source of truth so editors keep their existing workflow. This file

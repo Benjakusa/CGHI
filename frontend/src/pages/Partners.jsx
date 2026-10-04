@@ -25,6 +25,7 @@ import { PAGE_META } from '../content/navigation';
 import {
   COLLABORATOR_TYPES,
   FALLBACK_PARTNERS,
+  verifiedWebsite,
 } from '../content/partners';
 
 const META = PAGE_META['/partners'];
@@ -41,7 +42,7 @@ export default function Partners() {
     return list.filter((p) => p.name.toLowerCase().includes(term));
   }, [list, query]);
 
-  const linkedCount = list.filter((p) => p.website).length;
+  const linkedCount = list.filter((p) => verifiedWebsite(p)).length;
 
   const jsonLd = useMemo(
     () => [
@@ -68,6 +69,7 @@ export default function Partners() {
         <div className="wrap">
           <SectionHeader
             id="network-heading"
+            align="center"
             eyebrow="Our network"
             title={`${list.length} partner${list.length === 1 ? '' : 's'} and collaborators`}
             lede={
@@ -77,7 +79,7 @@ export default function Partners() {
             }
           />
 
-          <div className="filter-bar">
+          <div className="filter-bar filter-bar--center">
             <div className="field field-inline">
               <label htmlFor="partner-search">Filter partners</label>
               <input
@@ -129,13 +131,14 @@ export default function Partners() {
         <div className="wrap">
           <SectionHeader
             id="types-heading"
+            align="center"
             eyebrow="How we work together"
             title="Types of collaborator"
             lede="CGP’s partnerships span government, multilateral, financing, academic, implementing and community channels."
           />
-          <div className="grid-auto">
+          <div className="grid-auto collab-grid">
             {COLLABORATOR_TYPES.map((type) => (
-              <article key={type.id} className="icon-card icon-card--compact">
+              <article key={type.id} className="icon-card collab-card">
                 <div className="card-icon" aria-hidden="true">
                   <i className={`bi ${type.icon}`} />
                 </div>

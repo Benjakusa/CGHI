@@ -22,7 +22,6 @@ import SmartLink from '../components/SmartLink';
 import { CtaStrip, ProjectCard, SectionHeader } from '../components/cards';
 import { PAGE_META } from '../content/navigation';
 import { PROJECTS } from '../content/projects';
-import { PROJECT_STATS } from '../content/impact';
 
 const META = PAGE_META['/projects'];
 
@@ -59,33 +58,18 @@ export default function Projects() {
         dek="Pandemic Fund leadership, 7-1-7 readiness, AI surveillance, digital One Health pilots and simulation readiness — and what each of them changed."
       />
 
-      {/* ---------------- Impact figures ---------------- */}
-      <section className="section-dark section-tight" aria-label="Project record at a glance">
-        <div className="wrap">
-          <div className="stats-single-card">
-            <div className="stats-single-card-grid stats-single-card-grid--4">
-              {PROJECT_STATS.map((figure) => (
-                <div className="stat-cell" key={figure.id}>
-                  <span className="stat-num">{figure.display}</span>
-                  <span className="stat-lbl">{figure.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* ---------------- Listing ---------------- */}
       <section aria-labelledby="record-heading">
         <div className="wrap">
           <SectionHeader
             id="record-heading"
+            align="center"
             eyebrow="Project Record"
             title="Flagship projects"
             lede="Each entry summarises the problem, CGP’s contribution and the result."
           />
 
-          <div className="filter-bar">
+          <div className="filter-bar filter-bar--center">
             <div className="field field-inline">
               <label htmlFor="project-theme">Filter by theme</label>
               <select
@@ -120,7 +104,7 @@ export default function Projects() {
             </p>
           )}
 
-          <p className="section-trailing-link">
+          <p className="section-trailing-link section-trailing-link--center">
             <SmartLink className="text-link" to="/partner-with-us#contact-form">
               Ask us about a project <i className="bi bi-arrow-right" aria-hidden="true" />
             </SmartLink>

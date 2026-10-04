@@ -767,7 +767,9 @@ section {
 
 .dropdown-content {
   position: absolute;
-  top: calc(100% + 0.35rem);
+  /* Flush with the trigger: any gap here is dead space the pointer has to
+     cross, which used to close the menu mid-travel. */
+  top: 100%;
   left: 0;
   z-index: 950;
   min-width: 15rem;
@@ -965,9 +967,8 @@ section {
 }
 
 .footer-column a:hover {
-  color: var(--white);
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
+  color: var(--sky);
+  text-decoration: none;
 }
 
 .footer-address {
@@ -1009,8 +1010,8 @@ section {
 }
 
 .footer-legal a:hover {
-  color: var(--white);
-  text-decoration: underline;
+  color: var(--sky);
+  text-decoration: none;
 }
 
 /* --------------------------------------------------------------------------
@@ -1503,19 +1504,94 @@ section {
   font-weight: 600;
 }
 
-/* Approach cards (About) */
+/* Approach cards (About): a graphical five-stage flow. Numbered badges, icon
+   tiles and chevron connectors show how one stage leads to the next — stacked
+   with down-chevrons on small screens, a horizontal chain on wide ones. */
 .approach-grid {
   counter-reset: approach;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 3rem;
+  position: relative;
 }
 
 .approach-card {
   position: relative;
+  align-items: center;
+  text-align: center;
 }
 
 .approach-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  background: var(--sky-deep);
+  color: var(--white);
   font-family: var(--font-mono);
   font-size: var(--step--1);
-  color: var(--sky-dark);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.approach-card .approach-icon {
+  width: 3.25rem;
+  height: 3.25rem;
+  font-size: 1.4rem;
+  background: var(--sky);
+  color: var(--black);
+}
+
+/* Chevron drawn from two borders: points down between stacked stages … */
+.approach-card::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -1.7rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-right: 3px solid var(--sky);
+  border-bottom: 3px solid var(--sky);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.approach-card:last-child::after {
+  content: none;
+}
+
+@media (min-width: 1101px) {
+  .approach-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 2.5rem;
+  }
+
+  /* Connecting line that runs behind the cards and shows through each gap. */
+  .approach-grid::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 0;
+    border-top: 3px solid var(--sky);
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  /* … and points right between stages in the horizontal chain. */
+  .approach-card::after {
+    left: auto;
+    right: -1.62rem;
+    bottom: auto;
+    top: 50%;
+    transform: translateY(-50%) rotate(-45deg);
+  }
 }
 
 /* Frame figure (About/Home split) */
@@ -3788,18 +3864,17 @@ section {
 }
 
 /* Link underlines: a real text-decoration, not an animated background-image
-   gradient (gradients are not permitted anywhere). */
-.text-link,
-.dropdown-list a,
-.footer-column a {
+   gradient (gradients are not permitted anywhere).
+   Navbar and footer links are deliberately excluded — they must never carry a
+   permanent underline; their hover/focus states are colour changes instead. */
+.text-link {
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 0.22em;
   transition: color 0.22s ease-out, text-decoration-color 0.22s ease-out;
 }
 
-.text-link:hover,
-.footer-column a:hover {
+.text-link:hover {
   text-decoration-color: var(--sky);
 }
 
@@ -3839,10 +3914,12 @@ section {
   }
 }
 
-/* Inner-page banner: solid brand band with breadcrumb, like the RC page titles */
+/* Inner-page banner: solid sky-blue band with breadcrumb, like the RC page
+   titles. Black text on #01abed keeps every hero heading, breadcrumb and label
+   at ~8:1 contrast (white would only reach ~2.6:1). */
 .page-header {
-  background: var(--sky-deep);
-  color: var(--white);
+  background: var(--sky);
+  color: var(--black);
   padding-block: clamp(2.5rem, 2rem + 3vw, 5rem);
 }
 
@@ -3851,12 +3928,18 @@ section {
 .page-header .breadcrumb a,
 .page-header .breadcrumb-sep,
 .page-header .breadcrumb [aria-current],
+.page-header .breadcrumb-item,
 .page-header .section-label {
-  color: var(--white);
+  color: var(--black);
+}
+
+.page-header .breadcrumb a:hover {
+  color: var(--black);
+  opacity: 0.75;
 }
 
 .page-header .section-label::before {
-  background: var(--sky);
+  background: var(--black);
 }
 
 /* Footer: five columns (brand + CTA, three link columns, contact) */
@@ -4540,6 +4623,470 @@ section {
 
   .partner-marquee-track[aria-hidden='true'] {
     display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   18. 2026 UI refresh ------------------------------------------------------
+   Sky-blue bands, uniform card grids and the graphical process flow. Colours
+   stay on the existing palette tokens: --sky (#01abed), --black, --white.
+   ------------------------------------------------------------------------ */
+
+/* --- Sky-blue section band (About: Mission & Vision) --------------------- */
+.section-sky {
+  background: var(--sky);
+  color: var(--black);
+}
+
+.section-sky h2,
+.section-sky h3,
+.section-sky h4 {
+  color: var(--black);
+}
+
+.section-sky p {
+  color: rgba(0, 0, 0, 0.82);
+}
+
+/* Mission & Vision: two uniform cards — same width, height, radius, padding
+   and internal rhythm, on every breakpoint. */
+.mv-grid {
+  align-items: stretch;
+}
+
+.mv-grid .vm-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  height: 100%;
+  margin: 0;
+  padding: clamp(1.75rem, 1.3rem + 1.6vw, 3rem);
+  background: var(--white);
+  color: var(--ink);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 4px solid var(--black);
+}
+
+.mv-grid .vm-card h3 {
+  margin: 0;
+}
+
+.mv-grid .vm-card p {
+  margin: 0;
+  color: var(--ink-soft);
+  max-width: 52ch;
+}
+
+/* --- Expertise: everything centred --------------------------------------- */
+.subheading--center {
+  margin: clamp(2.5rem, 2rem + 2vw, 3.5rem) auto 1.5rem;
+  text-align: center;
+}
+
+.pillar-grid .value-card {
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
+.pillar-grid .value-card p {
+  max-width: 46ch;
+}
+
+/* Areas of Work: uniform sky-blue cards, contents centred on both axes. */
+.areas-grid {
+  grid-auto-rows: 1fr;
+}
+
+.area-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  height: 100%;
+  margin: 0;
+  padding: clamp(1.5rem, 1.2rem + 1vw, 2.25rem);
+  text-align: center;
+  background: var(--sky);
+  color: var(--black);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease),
+    border-color 0.25s var(--ease);
+}
+
+.area-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  flex: none;
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--black);
+  font-size: 1.4rem;
+}
+
+.area-card h4 {
+  margin: 0;
+  color: var(--black);
+  font-size: var(--step-1);
+  line-height: 1.25;
+}
+
+.area-card h4 a {
+  color: var(--black);
+  text-decoration: none;
+}
+
+.area-card h4 a:hover,
+.area-card h4 a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.area-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+  border-color: var(--black);
+}
+
+/* Disciplines: white cards, blue outline, subtle shadow, centred icon,
+   title and content, consistent size and spacing. */
+.discipline-grid {
+  display: grid;
+  grid-auto-rows: 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: clamp(1.25rem, 0.9rem + 1.4vw, 2rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.discipline-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  height: 100%;
+  margin: 0;
+  padding: clamp(1.5rem, 1.2rem + 1vw, 2.25rem);
+  text-align: center;
+  background: var(--white);
+  border: 2px solid var(--sky);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease),
+    border-color 0.25s var(--ease);
+}
+
+.discipline-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  flex: none;
+  border-radius: var(--radius);
+  background: var(--sky-tint);
+  color: var(--sky-deep);
+  font-size: 1.4rem;
+}
+
+.discipline-card h4 {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--step-0);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.discipline-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+  border-color: var(--sky-deep);
+}
+
+/* --- Centred filter rows and trailing links ------------------------------ */
+.filter-bar--center {
+  justify-content: center;
+  align-items: flex-end;
+  text-align: center;
+  border-bottom: 0;
+}
+
+.filter-bar--center .field-inline {
+  flex: 0 1 auto;
+  /* An explicit width lets the control below fill it; percentage widths against
+     a shrink-to-fit parent resolve to `auto`, which is why the field is sized
+     here rather than on the input. */
+  width: min(100%, 26rem);
+}
+
+.filter-bar--center .field-inline > label {
+  text-align: center;
+}
+
+.filter-bar--center .input {
+  width: 100%;
+  min-width: 0;
+}
+
+.filter-bar--center .filter-bar-count {
+  /* Full-width flex basis (no shrink) puts the live count on its own centred
+     line under the control, so the whole block reads as one centred group. */
+  margin-left: 0;
+  flex: 0 0 100%;
+  width: auto;
+  text-align: center;
+}
+
+.section-trailing-link--center {
+  text-align: center;
+}
+
+.empty-inline {
+  text-align: center;
+}
+
+/* --- Partners: "How we work together" — blue cards, centred -------------- */
+.collab-grid {
+  grid-auto-rows: 1fr;
+}
+
+.icon-card.collab-card {
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  height: 100%;
+  text-align: center;
+  background: var(--sky);
+  color: var(--black);
+  border: 1px solid transparent;
+  box-shadow: var(--shadow-sm);
+}
+
+.collab-card .card-icon {
+  background: var(--white);
+  color: var(--black);
+}
+
+.collab-card h3 {
+  color: var(--black);
+  font-size: var(--step-0);
+  line-height: 1.3;
+}
+
+.collab-card p {
+  color: rgba(0, 0, 0, 0.85) !important;
+  font-size: var(--step--1) !important;
+}
+
+.icon-card.collab-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+  border-color: var(--black);
+}
+
+/* Partner logos: unmistakable clickable affordance. */
+.partner-tile > a {
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
+}
+
+.partner-tile > a:hover,
+.partner-tile > a:focus-visible {
+  border-color: var(--sky-dark);
+  background: var(--sky-tint);
+  color: var(--sky-deep);
+  box-shadow: var(--shadow);
+}
+
+.partner-tile > a:hover .partner-card-name,
+.partner-tile > a:focus-visible .partner-card-name {
+  color: var(--sky-deep);
+}
+
+/* --- CGP Initiatives: mixed sky / black / white composition -------------- */
+.initiatives-programmes {
+  padding: 0;
+}
+
+/* Sky-blue header band. */
+.initiatives-programmes-head {
+  background: var(--sky);
+  color: var(--black);
+  padding-block: clamp(2.5rem, 2rem + 3vw, 4rem);
+}
+
+.initiatives-programmes-head .section-header {
+  margin-bottom: 0;
+}
+
+.initiatives-programmes-head h2,
+.initiatives-programmes-head p,
+.initiatives-programmes-head .section-label {
+  color: var(--black);
+}
+
+.initiatives-programmes-head .section-lede {
+  color: rgba(0, 0, 0, 0.82);
+}
+
+.initiatives-programmes-head .section-label::before,
+.initiatives-programmes-head .section-label::after {
+  background: var(--black);
+}
+
+/* Black band holding the white programme cards. */
+.initiatives-programmes-body {
+  background: var(--black);
+  padding-block: clamp(3rem, 2rem + 4vw, 5rem);
+}
+
+.initiatives-programmes-body .accordion-list {
+  max-width: 62rem;
+  margin-inline: auto;
+  gap: 1rem;
+}
+
+.initiatives-programmes-body .accordion-item {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.initiatives-programmes-body .accordion-item > summary:hover {
+  background: var(--sky-tint);
+}
+
+.initiatives-programmes-body .accordion-item[open] {
+  border-color: var(--sky);
+}
+
+/* --- Article reading experience ------------------------------------------ */
+.article-page {
+  max-width: 56rem;
+}
+
+.article-page .prose {
+  max-width: none;
+  font-size: var(--step-0);
+  line-height: 1.8;
+}
+
+.article-page .prose p {
+  max-width: 72ch;
+}
+
+.article-page .prose > * + * {
+  margin-top: 1.35rem;
+}
+
+.article-page .article-hero {
+  border-radius: var(--radius-lg);
+}
+
+.article-page .article-back {
+  margin-top: clamp(2rem, 1.5rem + 1.5vw, 3rem);
+}
+
+/* --- Navbar: plain Partner With Us link + Sign In button ----------------- */
+/* Partner With Us: no background box — it reads like the other nav items. */
+.primary-nav .nav-cta,
+.primary-nav-item > .nav-cta {
+  background: transparent !important;
+  border-color: transparent !important;
+  color: var(--ink) !important;
+}
+
+.primary-nav .nav-cta:hover,
+.primary-nav .nav-cta:focus-visible,
+.primary-nav-item > .nav-cta:hover,
+.primary-nav-item > .nav-cta:focus-visible {
+  background: var(--sky-tint) !important;
+  border-color: transparent !important;
+  color: var(--sky-deep) !important;
+}
+
+@media (min-width: 901px) {
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .nav-cta,
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .primary-nav-item > .nav-cta {
+    background: transparent !important;
+    border-color: transparent !important;
+    color: var(--white) !important;
+  }
+
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .nav-cta:hover,
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .nav-cta:focus-visible,
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .primary-nav-item > .nav-cta:hover,
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .primary-nav-item > .nav-cta:focus-visible {
+    background: rgba(255, 255, 255, 0.14) !important;
+    border-color: transparent !important;
+    color: var(--white) !important;
+  }
+}
+
+/* Sign In: a clearly visible button, not plain text. */
+.nav-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: auto;
+  min-width: var(--tap);
+  height: auto;
+  min-height: var(--tap);
+  padding: 0.55rem 1.15rem;
+  border: 2px solid var(--black);
+  border-radius: var(--radius);
+  background: var(--sky);
+  color: var(--black);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.nav-profile-label {
+  font-size: var(--step--1);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.nav-profile-btn:hover {
+  background: var(--black);
+  border-color: var(--black);
+  color: var(--white);
+}
+
+@media (min-width: 901px) {
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .nav-profile-btn {
+    color: var(--black);
+  }
+
+  .site-shell[data-hero] .site-header:not(.is-scrolled) .nav-profile-btn:hover {
+    color: var(--white);
+  }
+}
+
+@media (max-width: 900px) {
+  .nav-profile-btn {
+    width: auto;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Reduced motion: keep the hover affordance as colour/shadow only. */
+@media (prefers-reduced-motion: reduce) {
+  .area-card:hover,
+  .discipline-card:hover,
+  .icon-card.collab-card:hover,
+  .approach-card:hover {
+    transform: none;
   }
 }
 

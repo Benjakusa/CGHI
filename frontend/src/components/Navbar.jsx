@@ -12,6 +12,15 @@ PRIMARY_NAV.forEach((item) => {
   if (item.children) item.children.forEach((c) => { PARENT_OF[c.id] = item.id; });
 });
 
+/**
+ * Grace period before a hover-opened dropdown closes. The panel sits flush
+ * against its trigger (see `.dropdown-content { top: 100% }`), so the pointer
+ * never crosses dead space — the timer is a safety net for the panel border
+ * and for slow cursors, guaranteeing the menu stays open long enough to move
+ * into it and click an item.
+ */
+const DROPDOWN_CLOSE_DELAY = 260;
+
 function useHoverCapable() {
   const [capable, setCapable] = useState(false);
   useEffect(() => {
@@ -25,6 +34,31 @@ function useHoverCapable() {
 }
 
 function NavDropdown({ item, isActive, open, onToggle, onClose, onKeyDown, hoverCapable, panelId, buttonId }) {
+  const leaveTimer = useRef(null);
+
+  const clearLeaveTimer = useCallback(() => {
+    if (leaveTimer.current) {
+      window.clearTimeout(leaveTimer.current);
+      leaveTimer.current = null;
+    }
+  }, []);
+
+  // Never leave a pending close behind on unmount.
+  useEffect(() => clearLeaveTimer, [clearLeaveTimer]);
+
+  const handleEnter = () => {
+    clearLeaveTimer();
+    onToggle(item.id, true);
+  };
+
+  const handleLeave = () => {
+    clearLeaveTimer();
+    leaveTimer.current = window.setTimeout(() => {
+      leaveTimer.current = null;
+      onToggle(item.id, false);
+    }, DROPDOWN_CLOSE_DELAY);
+  };
+
   return (
     <div
       className={[
@@ -32,8 +66,17 @@ function NavDropdown({ item, isActive, open, onToggle, onClose, onKeyDown, hover
         open ? 'open' : '',
         isActive ? 'has-active' : '',
       ].filter(Boolean).join(' ')}
-      onMouseEnter={hoverCapable ? () => onToggle(item.id, true) : undefined}
-      onMouseLeave={hoverCapable ? () => onToggle(item.id, false) : undefined}
+      data-menu-id={item.id}
+      onMouseEnter={hoverCapable ? handleEnter : undefined}
+      onMouseLeave={hoverCapable ? handleLeave : undefined}
+      onBlur={(event) => {
+        // Keyboard: when focus leaves the trigger and its panel entirely the
+        // menu closes; moving between them keeps it open.
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          clearLeaveTimer();
+          onToggle(item.id, false);
+        }
+      }}
     >
       <button
         type="button"
@@ -42,7 +85,7 @@ function NavDropdown({ item, isActive, open, onToggle, onClose, onKeyDown, hover
         aria-haspopup="true"
         aria-expanded={open}
         aria-controls={panelId}
-        onClick={() => onToggle(item.id)}
+        onClick={() => onToggle(item.id, hoverCapable ? true : undefined)}
         onKeyDown={onKeyDown}
       >
         {item.label}{' '}
@@ -156,7 +199,8 @@ export default function Navbar({ activePage }) {
   const onMenuKeyDown = useCallback((event) => {
     const { key } = event;
     if (!['ArrowDown', 'ArrowUp', 'Home', 'End', 'Escape'].includes(key)) return;
-    const panel = event.currentTarget.closest('.dropdown')?.querySelector('.dropdown-content');
+    const container = event.currentTarget.closest('.dropdown');
+    const panel = container?.querySelector('.dropdown-content');
     if (!panel) return;
     const links = Array.from(panel.querySelectorAll('a, button'));
     if (links.length === 0) return;
@@ -164,19 +208,31 @@ export default function Navbar({ activePage }) {
     if (key === 'Escape') {
       event.preventDefault();
       setOpenMenu(null);
-      const trigger = event.currentTarget.closest('.dropdown')?.querySelector('.dropbtn');
+      const trigger = container.querySelector('.dropbtn');
       if (trigger) trigger.focus();
       return;
     }
 
     event.preventDefault();
-    const current = links.indexOf(document.activeElement);
-    let next;
-    if (key === 'ArrowDown') next = current < 0 ? 0 : (current + 1) % links.length;
-    else if (key === 'ArrowUp') next = current <= 0 ? links.length - 1 : current - 1;
-    else if (key === 'Home') next = 0;
-    else next = links.length - 1;
-    links[next].focus();
+    const focusStep = () => {
+      const current = links.indexOf(document.activeElement);
+      let next;
+      if (key === 'ArrowDown') next = current < 0 ? 0 : (current + 1) % links.length;
+      else if (key === 'ArrowUp') next = current <= 0 ? links.length - 1 : current - 1;
+      else if (key === 'Home') next = 0;
+      else next = links.length - 1;
+      links[next].focus();
+    };
+
+    // Arrow keys on a closed trigger open the menu first, then move focus in
+    // once the panel has rendered and become visible.
+    const menuId = container.dataset.menuId;
+    if (menuId && !container.classList.contains('open')) {
+      setOpenMenu(menuId);
+      window.setTimeout(focusStep, 0);
+    } else {
+      focusStep();
+    }
   }, []);
 
   function handleLogout() {
@@ -298,7 +354,7 @@ export default function Navbar({ activePage }) {
                 type="button"
                 className="nav-profile-btn"
                 data-escape-target="true"
-                aria-label={isAuthenticated ? `Signed in as ${admin?.name || 'administrator'}. Open account menu` : 'Staff sign in'}
+                aria-label={isAuthenticated ? `Signed in as ${admin?.name || 'administrator'}. Open account menu` : 'Sign In'}
                 aria-haspopup="true"
                 aria-expanded={profileOpen}
                 onClick={() =>
@@ -309,12 +365,12 @@ export default function Navbar({ activePage }) {
               >
                 <i
                   className={`bi ${
-                    isAuthenticated ? 'bi-person-fill-check' : 'bi-person-circle'
+                    isAuthenticated ? 'bi-person-fill-check' : 'bi-box-arrow-in-right'
                   }`}
                   aria-hidden="true"
                 />
                 <span className="nav-profile-label">
-                  {isAuthenticated ? admin?.name?.split(' ')[0] || 'Admin' : 'Staff'}
+                  {isAuthenticated ? admin?.name?.split(' ')[0] || 'Admin' : 'Sign In'}
                 </span>
               </button>
 

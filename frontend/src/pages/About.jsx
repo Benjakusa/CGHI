@@ -2,8 +2,8 @@
  * About / "Who We Are".
  *
  * Structured to the audit spec: Who We Are → Mission → Vision → Approach →
- * Expertise → Leadership → Partners, each as a named <section> with a single
- * <h2> so the heading hierarchy is h1 → h2 → h3 with no skips.
+ * Expertise, each as a named <section> with a single <h2> so the heading
+ * hierarchy is h1 → h2 → h3 with no skips.
  */
 
 import React, { useMemo } from 'react';
@@ -17,14 +17,11 @@ import Seo, {
 } from '../components/Seo';
 import SmartLink from '../components/SmartLink';
 import SmartImage from '../components/SmartImage';
-import { CtaStrip, PartnerGrid, SectionHeader } from '../components/cards';
-import { AsyncSection } from '../components/Skeleton';
-import useApi from '../hooks/useApi';
+import { CtaStrip, SectionHeader } from '../components/cards';
 import { BRAND } from '../config/site';
 import { PAGE_META } from '../content/navigation';
 import { CAPABILITIES } from '../content/capabilities';
 import { EXPERTISE_AREAS } from '../content/leadership';
-import { FALLBACK_PARTNERS, HOMEPAGE_PARTNER_COUNT } from '../content/partners';
 
 const META = PAGE_META['/about'];
 
@@ -94,13 +91,19 @@ const APPROACH = [
   },
 ];
 
-export default function About() {
-  const partners = useApi('/api/partners', FALLBACK_PARTNERS);
-  const selected = (partners.data?.length ? partners.data : FALLBACK_PARTNERS).slice(
-    0,
-    HOMEPAGE_PARTNER_COUNT
-  );
+/** Icon per discipline card on the Expertise band. */
+const DISCIPLINE_ICONS = {
+  epidemiology: 'bi-clipboard2-pulse',
+  'data-science': 'bi-cpu',
+  'emergency-management': 'bi-lightning-charge',
+  'one-health': 'bi-heart-pulse',
+  'health-systems': 'bi-building',
+  'community-engagement': 'bi-people',
+  'research-methods': 'bi-search',
+  IHR: 'bi-globe2',
+};
 
+export default function About() {
   const jsonLd = useMemo(
     () => [
       ...BASE_JSONLD,
@@ -161,12 +164,12 @@ export default function About() {
       </section>
 
       {/* ---------------- Mission & Vision ---------------- */}
-      <section className="section-dark" aria-labelledby="mission-vision">
+      <section className="section-sky" aria-labelledby="mission-vision">
         <div className="wrap">
           <h2 id="mission-vision" className="sr-only">
             Our mission and vision
           </h2>
-          <div className="grid-2 grid-2--flush">
+          <div className="grid-2 mv-grid">
             <div className="vm-card">
               <span className="vm-icon" aria-hidden="true">
                 <i className="bi bi-bullseye" />
@@ -216,6 +219,7 @@ export default function About() {
         <div className="wrap">
           <SectionHeader
             id="expertise-heading"
+            align="center"
             eyebrow="Expertise"
             title="What Makes CGP Different"
             lede="Our value proposition, and the technical disciplines behind it."
@@ -233,13 +237,13 @@ export default function About() {
             ))}
           </div>
 
-          <h3 className="subheading">Areas of work</h3>
-          <div className="grid-auto">
+          <h3 className="subheading subheading--center">Areas of work</h3>
+          <div className="grid-auto areas-grid">
             {CAPABILITIES.map((capability) => (
-              <article key={capability.id} className="icon-card icon-card--compact">
-                <div className="card-icon" aria-hidden="true">
+              <article key={capability.id} className="area-card">
+                <span className="area-card-icon" aria-hidden="true">
                   <i className={`bi ${capability.icon}`} />
-                </div>
+                </span>
                 <h4>
                   <SmartLink to={`/what-we-do#${capability.id}`}>{capability.title}</SmartLink>
                 </h4>
@@ -247,56 +251,17 @@ export default function About() {
             ))}
           </div>
 
-          <h3 className="subheading">Disciplines</h3>
-          <ul className="chip-list chip-list--static">
+          <h3 className="subheading subheading--center">Disciplines</h3>
+          <ul className="discipline-grid">
             {EXPERTISE_AREAS.map((area) => (
-              <li key={area.id}>{area.label}</li>
+              <li key={area.id} className="discipline-card">
+                <span className="discipline-icon" aria-hidden="true">
+                  <i className={`bi ${DISCIPLINE_ICONS[area.id] || 'bi-journal-text'}`} />
+                </span>
+                <h4>{area.label}</h4>
+              </li>
             ))}
           </ul>
-        </div>
-      </section>
-
-      {/* ---------------- Leadership ---------------- */}
-      <section aria-labelledby="leadership-heading">
-        <div className="wrap">
-          <div className="split-panel">
-            <div>
-              <span className="section-label">Leadership</span>
-              <h2 id="leadership-heading">Leadership &amp; team</h2>
-              <p>
-                CGP is led by a multidisciplinary team spanning epidemiology, data science, One
-                Health, health systems and community engagement.
-              </p>
-              <div className="button-row">
-                <SmartLink className="btn" to="/leadership">
-                  Meet Our Team <i className="bi bi-arrow-right" aria-hidden="true" />
-                </SmartLink>
-                <SmartLink className="btn btn-outline" to="/careers">
-                  Careers at CGP
-                </SmartLink>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ---------------- Partners ---------------- */}
-      <section className="section-surface" aria-labelledby="about-partners-heading">
-        <div className="wrap">
-          <SectionHeader
-            id="about-partners-heading"
-            align="center"
-            eyebrow="Our Partners & Collaborators"
-            title="We do not work alone"
-            action={{ label: 'See all partners', to: '/partners' }}
-          />
-          <AsyncSection
-            loading={partners.loading}
-            label="Loading partners"
-            skeleton={<div className="partner-grid partner-grid--md" aria-hidden="true" />}
-          >
-            <PartnerGrid partners={selected} />
-          </AsyncSection>
         </div>
       </section>
 

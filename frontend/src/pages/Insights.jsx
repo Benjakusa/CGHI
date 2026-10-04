@@ -1,5 +1,5 @@
 /**
- * Insights & Research — /insights
+ * Media Insights and Research — /insights
  *
  * Replaces the old `/news` page. The audit asked for search and category
  * filters, and for cards with image, category, date, title, summary and a
@@ -106,7 +106,7 @@ export default function Insights() {
       <Seo
         title={
           isFiltered
-            ? `${query || 'Filtered results'} | Insights & Research | ${META.title.split('|')[1]?.trim()}`
+            ? `${query || 'Filtered results'} | Media Insights and Research | ${META.title.split('|')[1]?.trim()}`
             : META.title
         }
         description={META.description}
@@ -116,7 +116,7 @@ export default function Insights() {
 
       <PageHeader
         trail={META.breadcrumb}
-        h1="Insights & Research"
+        h1="Media Insights and Research"
         dek="Research, policy, One Health and data & AI publications, plus updates from CGP's field work and technical partnerships."
       />
 

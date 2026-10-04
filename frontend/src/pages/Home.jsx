@@ -182,7 +182,7 @@ function GlanceFigure({ figure }) {
 
   let display;
   if (figure.display && !/^\d+$/.test(String(figure.display))) {
-    // Prefixed/suffixed values (e.g. "$145M", "30%") are shown verbatim so no
+    // Prefixed/suffixed values (e.g. "30%") are shown verbatim so no
     // figure is ever re-derived from an animated integer.
     display = figure.display;
   } else {
@@ -200,8 +200,14 @@ function GlanceFigure({ figure }) {
 /**
  * Every figure on the homepage carries a published value — items still awaiting
  * an official source are filtered out rather than rendered as a blank stat.
+ *
+ * The "$145M Pandemic Fund financing" card was removed from CGP at a Glance at
+ * the stakeholder's request and no replacement figure was approved, so it is
+ * excluded here (it remains in the data file for the What We Do headline set).
  */
-const PUBLISHED_GLANCE = GLANCE.filter((figure) => figure.value != null);
+const PUBLISHED_GLANCE = GLANCE.filter(
+  (figure) => figure.value != null && figure.id !== 'financing'
+);
 
 function GlanceGrid() {
   return (

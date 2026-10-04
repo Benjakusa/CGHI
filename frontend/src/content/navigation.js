@@ -4,7 +4,7 @@
  * The audit prescribes a single, coherent story:
  *
  *   Home → Who We Are → What We Do → Projects → Initiatives → Impact →
- *   Insights & Research → Partners → Partner With Us
+ *   Media Insights and Research → Partners → Partner With Us
  *
  * `PRIMARY_NAV` drives the header, `FOOTER_NAV` drives the footer columns and
  * `ROUTES` is the canonical list of indexable URLs. Because all three read
@@ -47,9 +47,8 @@ export const PRIMARY_NAV = [
     label: 'Media Center',
     id: 'media',
     children: [
-      { label: 'Insights & Research', to: '/insights', id: 'insights' },
+      { label: 'Media Insights and Research', to: '/insights', id: 'insights' },
       { label: 'Resource Library', to: '/resources', id: 'resources' },
-      { label: 'Media & Press', to: '/partner-with-us#contact-details', id: 'media-press' },
     ],
   },
 ];
@@ -71,7 +70,7 @@ export const FOOTER_NAV = [
     links: [
       { label: 'Careers', to: '/careers' },
       { label: 'Resource Library', to: '/resources' },
-      { label: 'Insights & Research', to: '/insights' },
+      { label: 'Media Insights and Research', to: '/insights' },
       { label: 'Partners & Collaborators', to: '/partners' },
       { label: 'Contact Our Team', to: '/partner-with-us' },
     ],
@@ -89,7 +88,6 @@ export const FOOTER_NAV = [
   {
     title: 'Media Center',
     links: [
-      { label: 'Media & Press', to: '/partner-with-us#contact-details' },
       { label: 'Partner With Us', to: '/partner-with-us#contact-form' },
     ],
   },
@@ -112,7 +110,7 @@ export const ROUTES = [
   { path: '/what-we-do', priority: '0.9', changefreq: 'monthly', label: 'What We Do' },
   { path: '/projects', priority: '0.9', changefreq: 'monthly', label: 'Projects & Impact' },
   { path: '/initiatives', priority: '0.8', changefreq: 'monthly', label: 'CGP Initiatives' },
-  { path: '/insights', priority: '0.8', changefreq: 'weekly', label: 'Insights & Research' },
+  { path: '/insights', priority: '0.8', changefreq: 'weekly', label: 'Media Insights and Research' },
   { path: '/partners', priority: '0.7', changefreq: 'monthly', label: 'Partners & Collaborators' },
   { path: '/leadership', priority: '0.6', changefreq: 'monthly', label: 'Leadership & Team' },
   { path: '/resources', priority: '0.6', changefreq: 'weekly', label: 'Resource Library' },
@@ -170,11 +168,11 @@ export const PAGE_META = {
     breadcrumb: [{ label: 'CGP Initiatives', to: '/initiatives' }],
   },
   '/insights': {
-    title: `Insights & Research | ${BRAND.name}`,
+    title: `Media Insights and Research | ${BRAND.name}`,
     description:
       'Research, policy, One Health and data & AI publications and updates from the Center for Global Health & Pandemic Intelligence.',
     navId: 'insights',
-    breadcrumb: [{ label: 'Insights & Research', to: '/insights' }],
+    breadcrumb: [{ label: 'Media Insights and Research', to: '/insights' }],
   },
   '/partners': {
     title: `Partners & Collaborators | ${BRAND.name}`,

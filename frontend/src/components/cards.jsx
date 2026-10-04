@@ -6,6 +6,7 @@ import SmartImage from './SmartImage';
 import { CAPABILITY_BY_ID } from '../content/capabilities';
 import { INITIATIVE_BY_ID } from '../content/initiatives';
 import { PROJECTS_BY_SLUG } from '../content/projects';
+import { verifiedWebsite } from '../content/partners';
 import { categoryLabel, formatDate } from '../content/insights';
 import { resolveAssetUrl } from '../context/AuthContext';
 
@@ -238,6 +239,7 @@ export function PartnerGrid({ partners, size = 'md' }) {
       {partners.map((partner) => {
         const logo = partner.logo_url ? resolveAssetUrl(partner.logo_url) : null;
         const name = partner.name;
+        const website = verifiedWebsite(partner);
         const inner = (
           <>
             <span className="partner-card-logo">
@@ -259,9 +261,9 @@ export function PartnerGrid({ partners, size = 'md' }) {
 
         return (
           <li key={partner.id ?? partner.name} className="partner-tile">
-            {partner.website ? (
+            {website ? (
               <a
-                href={partner.website}
+                href={website}
                 target="_blank"
                 rel="noopener noreferrer"
                 title={name}
@@ -303,6 +305,7 @@ export function PartnerMarquee({
   const renderTile = (partner) => {
     const logo = partner.logo_url ? resolveAssetUrl(partner.logo_url) : null;
     const name = partner.name;
+    const website = verifiedWebsite(partner);
     const inner = (
       <>
         <span className="partner-card-logo">
@@ -324,8 +327,8 @@ export function PartnerMarquee({
 
     return (
       <li key={partner.id ?? name} className="partner-marquee-item">
-        {partner.website ? (
-          <a href={partner.website} target="_blank" rel="noopener noreferrer" title={name}>
+        {website ? (
+          <a href={website} target="_blank" rel="noopener noreferrer" title={name}>
             {inner}
             <span className="sr-only">(opens in a new tab)</span>
           </a>

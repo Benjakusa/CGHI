@@ -30,6 +30,25 @@ export const FALLBACK_PARTNERS = [
 export const HOMEPAGE_PARTNER_COUNT = 8;
 
 /**
+ * Verified official websites keyed by the exact partner name.
+ *
+ * Every URL below (and in FALLBACK_PARTNERS) is the organisation's own
+ * registered domain — no URL is ever guessed. `verifiedWebsite` lets a record
+ * served by the API fall back to the curated URL when its `website` column is
+ * empty, so a logo is only ever a link when a real, verified address exists.
+ */
+const VERIFIED_WEBSITES = FALLBACK_PARTNERS.reduce((map, partner) => {
+  map[partner.name] = partner.website;
+  return map;
+}, {});
+
+/** The verified official website for a partner, or null if none is known. */
+export function verifiedWebsite(partner) {
+  if (!partner) return null;
+  return partner.website || VERIFIED_WEBSITES[partner.name] || null;
+}
+
+/**
  * Categories of collaborator, transcribed from the existing "Strategic
  * Partnerships" paragraph in the pre-existing About page. Used as a
  * descriptive band on /partners so the page reads as a network rather than a

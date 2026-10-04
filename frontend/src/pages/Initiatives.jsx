@@ -19,7 +19,6 @@ import Seo, {
   itemListJsonLd,
   pageJsonLd,
 } from '../components/Seo';
-import SmartLink from '../components/SmartLink';
 import { CtaStrip, ProjectChips, SectionHeader } from '../components/cards';
 import { PAGE_META } from '../content/navigation';
 import { INITIATIVES, INITIATIVE_BY_ID, SECTIONS } from '../content/initiatives';
@@ -108,68 +107,54 @@ export default function Initiatives() {
         dek="Six subnational and community-level programmes through which CGP puts its epidemic-intelligence approach into practice."
       />
 
-      {/* ---------------- At a glance ---------------- */}
-      <section className="section-tight section-surface" aria-label="Initiatives at a glance">
-        <div className="wrap">
-          <ul className="initiative-index">
-            {INITIATIVES.map((initiative) => (
-              <li key={initiative.id}>
-                <SmartLink to={`/initiatives#${initiative.id}`}>
-                  <span className="initiative-icon" aria-hidden="true">
-                    <i className={`bi ${initiative.icon}`} />
-                  </span>
-                  <span>
-                    <strong>{initiative.title}</strong>
-                    <em>
-                      {initiative.status}
-                      {initiative.location ? ` · ${initiative.location}` : ''}
-                    </em>
-                  </span>
-                </SmartLink>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
       {/* ---------------- Full detail ---------------- */}
-      <section aria-labelledby="programmes-heading">
-        <div className="wrap">
-          <SectionHeader
-            id="programmes-heading"
-            eyebrow="Active programmes"
-            title="Initiative detail"
-            lede="Background, objectives, key activities and expected outcomes for each programme."
-          />
+      <section
+        className="initiatives-programmes"
+        aria-labelledby="programmes-heading"
+      >
+        <div className="initiatives-programmes-head">
+          <div className="wrap">
+            <SectionHeader
+              id="programmes-heading"
+              align="center"
+              eyebrow="Active programmes"
+              title="Initiative detail"
+              lede="Background, objectives, key activities and expected outcomes for each programme."
+            />
+          </div>
+        </div>
 
-          <div className="accordion-list">
-            {INITIATIVES.map((initiative, index) => (
-              <details
-                className="accordion-item"
-                key={initiative.id}
-                id={initiative.id}
-                open={index === 0}
-              >
-                <summary>
-                  <span className="accordion-icon" aria-hidden="true">
-                    <i className={`bi ${initiative.icon}`} />
-                  </span>
-                  <span className="accordion-summary-text">
-                    <span className="accordion-summary-title">{initiative.title}</span>
-                    <span className="accordion-summary-meta">
-                      {initiative.status}
-                      {initiative.location ? ` · ${initiative.location}` : ''}
+        <div className="initiatives-programmes-body">
+          <div className="wrap">
+            <div className="accordion-list">
+              {INITIATIVES.map((initiative, index) => (
+                <details
+                  className="accordion-item"
+                  key={initiative.id}
+                  id={initiative.id}
+                  open={index === 0}
+                >
+                  <summary>
+                    <span className="accordion-icon" aria-hidden="true">
+                      <i className={`bi ${initiative.icon}`} />
                     </span>
-                  </span>
-                  <span className="accordion-tag">{initiative.label}</span>
-                  <span className="accordion-plus" aria-hidden="true" />
-                </summary>
-                <div className="accordion-panel">
-                  <p className="lead">{initiative.summary}</p>
-                  <SectionList initiative={initiative} />
-                </div>
-              </details>
-            ))}
+                    <span className="accordion-summary-text">
+                      <span className="accordion-summary-title">{initiative.title}</span>
+                      <span className="accordion-summary-meta">
+                        {initiative.status}
+                        {initiative.location ? ` · ${initiative.location}` : ''}
+                      </span>
+                    </span>
+                    <span className="accordion-tag">{initiative.label}</span>
+                    <span className="accordion-plus" aria-hidden="true" />
+                  </summary>
+                  <div className="accordion-panel">
+                    <p className="lead">{initiative.summary}</p>
+                    <SectionList initiative={initiative} />
+                  </div>
+                </details>
+              ))}
+            </div>
           </div>
         </div>
       </section>

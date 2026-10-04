@@ -18,7 +18,7 @@ import { PAGE_META } from '../content/navigation';
 const DESTINATIONS = [
   { to: '/what-we-do', icon: 'bi-tools', label: 'What We Do', note: 'Our five areas of expertise' },
   { to: '/projects', icon: 'bi-kanban-fill', label: 'Projects & Impact', note: 'Our project record' },
-  { to: '/insights', icon: 'bi-journal-richtext', label: 'Insights & Research', note: 'Publications and updates' },
+  { to: '/insights', icon: 'bi-journal-richtext', label: 'Media Insights and Research', note: 'Publications and updates' },
   { to: '/partners', icon: 'bi-people-fill', label: 'Partners', note: 'Who we work with' },
   { to: '/partner-with-us', icon: 'bi-envelope-fill', label: 'Contact', note: 'Talk to our team' },
 ];
