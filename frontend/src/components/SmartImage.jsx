@@ -1,14 +1,4 @@
-/**
- * SmartImage — one place for every image on the site so the performance and
- * accessibility rules cannot be forgotten on a new page:
- *
- *  - `alt` is required (pass `alt=""` explicitly for decorative images, which
- *    is asserted so a missing alt can never ship silently).
- *  - Lazy loading + async decoding by default; the LCP hero opts out.
- *  - Explicit width/height or an `aspectRatio` reserves the box, which is what
- *    keeps Cumulative Layout Shift at zero on slow connections.
- *  - A low-contrast placeholder background shows while the bytes arrive.
- */
+
 
 import React, { useState } from 'react';
 

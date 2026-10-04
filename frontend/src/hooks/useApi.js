@@ -1,17 +1,4 @@
-/**
- * Small data-fetching hooks.
- *
- * Every content section on the site pulls from the same Express API, so they
- * all share one hook that handles the loading / error / empty states and
- * re-runs when the endpoint changes. It also de-duplicates identical
- * concurrent requests, which matters on the homepage where heroes, partners
- * and insights all resolve in the same tick.
- *
- * Note: the fallback value is held in a ref rather than an effect dependency.
- * Callers naturally write `useApi('/api/jobs', [])`, which allocates a new
- * array every render — as an effect dependency that would re-trigger the
- * request on every state update and never settle.
- */
+
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { API_BASE } from '../context/AuthContext';
@@ -46,8 +33,6 @@ export default function useApi(path, fallback = null) {
   const alive = useRef(true);
   const fallbackRef = useRef(fallback);
 
-  // Keep the ref in step with the latest fallback without making it an effect
-  // dependency (see the note above about inline array literals).
   useEffect(() => {
     fallbackRef.current = fallback;
   }, [fallback]);
@@ -71,9 +56,6 @@ export default function useApi(path, fallback = null) {
       })
       .catch((err) => {
         if (cancelled) return;
-        // The API being unreachable must never break the page: fall back to
-        // the bundled content so the site still renders its real content.
-        // The error is still surfaced so a page can offer a retry affordance.
         setData(fallbackRef.current);
         setError(err);
       })

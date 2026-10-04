@@ -5,14 +5,8 @@ const db = require('../db');
 
 const router = express.Router();
 
-// POST /api/auth/login
 router.post('/login', (req, res) => {
-    // Guard: never sign with an undefined secret. jsonwebtoken will
-    // silently coerce undefined to the literal string "undefined" as
-    // the HMAC key, producing tokens that can never be verified by a
-    // process that has the real secret loaded.
     if (!process.env.JWT_SECRET) {
-        console.error('[CGHI auth] Login attempted but JWT_SECRET is not set.');
         return res.status(500).json({ error: 'Server misconfigured: JWT_SECRET is not set.' });
     }
 

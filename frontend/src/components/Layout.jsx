@@ -1,10 +1,4 @@
-/**
- * Layout — the shell every public page renders inside.
- *
- * Provides the skip-to-content link (the first focusable element on the page),
- * the header, the `<main id="main-content">` landmark that the skip link
- * targets, and the footer. Admin pages deliberately do not use this shell.
- */
+
 
 import React from 'react';
 import { useLocation } from 'react-router-dom';

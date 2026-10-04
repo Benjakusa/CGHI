@@ -1,15 +1,4 @@
-/**
- * "CGP at a Glance" figures for the homepage and /projects.
- *
- * `verified: true`  — the figure already appeared in the site's copy (Home.jsx,
- *                     Projects.jsx, WhatWeDo.jsx or the backend partner seed)
- *                     and is reproduced here unchanged.
- * `verified: false` — NO such figure existed on the site. The value is `null`
- *                     and the UI renders a clearly marked placeholder. These
- *                     are listed in `PENDING_FIGURES` so the outstanding data
- *                     request is explicit. Do not replace a `null` with a
- *                     number without a source.
- */
+
 
 export const GLANCE = [
   {
@@ -61,7 +50,6 @@ export const GLANCE = [
     verified: true,
   },
   {
-    // TODO(stakeholder): total across all engagements — not published anywhere.
     id: 'partners',
     value: null,
     display: null,
@@ -70,7 +58,6 @@ export const GLANCE = [
     verified: false,
   },
   {
-    // TODO(stakeholder): training figures were never published.
     id: 'trained',
     value: null,
     display: null,
@@ -79,7 +66,6 @@ export const GLANCE = [
     verified: false,
   },
   {
-    // TODO(stakeholder): publication/output inventory does not exist yet.
     id: 'outputs',
     value: null,
     display: null,

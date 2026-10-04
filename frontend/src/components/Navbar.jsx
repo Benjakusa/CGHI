@@ -1,22 +1,4 @@
-/**
- * Primary navigation.
- *
- * Rewritten to match the audit's information architecture:
- *   Home · Who We Are · What We Do · Insights · Contact  + Partner With Us CTA
- *
- * Behavioural changes vs the previous implementation:
- *  - Menus open on click AND on hover-capable pointers, but hover is never the
- *    only way in — every menu is reachable with Enter/Space on the toggle.
- *  - Arrow keys move between items, Escape closes and returns focus to the
- *    toggle, Home/End jump to the first/last item.
- *  - The mobile panel traps nothing but does close on Escape, on route change
- *    and on backdrop tap, and restores focus to the hamburger when closed.
- *  - Toggle/panel state is driven purely by React. The legacy `public/site.js`
- *    second nav controller has been removed, so there is no longer a
- *    `body.nav-open` class that two modules can fight over.
- *  - Active state is derived from the route, not passed in by each page, so a
- *    new page cannot forget to highlight itself.
- */
+
 
 import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
@@ -98,8 +80,6 @@ export default function Navbar({ activePage }) {
   const hoverCapable = useHoverCapable();
   const menuId = useId();
 
-  // Viewport changes must never leave a dropdown stranded in the desktop
-  // hover state, so the panel state resets when we cross into mobile.
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 900px)');
     const update = () => {
@@ -113,14 +93,12 @@ export default function Navbar({ activePage }) {
     return () => mq.removeEventListener('change', update);
   }, []);
 
-  // Every navigation closes the whole header state.
   useEffect(() => {
     setMobileOpen(false);
     setOpenMenu(null);
     setProfileOpen(false);
   }, [location.pathname]);
 
-  // Escape closes the topmost layer and returns focus to its trigger.
   useEffect(() => {
     if (!mobileOpen && !openMenu && !profileOpen) return undefined;
     function onKeyDown(event) {
@@ -141,7 +119,6 @@ export default function Navbar({ activePage }) {
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [mobileOpen, openMenu, profileOpen]);
 
-  // Background scroll lock while the mobile panel covers the page.
   useEffect(() => {
     if (!mobileOpen) return undefined;
     const previous = document.body.style.overflow;
@@ -151,7 +128,6 @@ export default function Navbar({ activePage }) {
     };
   }, [mobileOpen]);
 
-  // Close the mobile panel on outside tap / pointer-down.
   useEffect(() => {
     if (!mobileOpen) return undefined;
     function onPointerDown(event) {
@@ -176,11 +152,7 @@ export default function Navbar({ activePage }) {
     setProfileOpen(false);
   }, []);
 
-  /**
-   * Roving keyboard support inside an open dropdown. Menus are plain link
-   * lists (not ARIA `menu`), so the correct keys are the disclosure pattern's:
-   * arrows to move, Escape to dismiss, Home/End to jump.
-   */
+
   const onMenuKeyDown = useCallback((event) => {
     const { key } = event;
     if (!['ArrowDown', 'ArrowUp', 'Home', 'End', 'Escape'].includes(key)) return;
@@ -216,7 +188,6 @@ export default function Navbar({ activePage }) {
     if (item.id === activePage) return true;
     if (item.children) {
       const childActive = item.children.some((c) => c.id === activePage);
-      // A project or article page should still light up its section.
       const sectionActive = item.children.some(
         (c) => location.pathname.startsWith(c.to) && c.to !== '/'
       );

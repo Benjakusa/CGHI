@@ -1,22 +1,4 @@
-/**
- * Contact form enquiries.
- *
- * Public:  POST /api/contact            submit an enquiry
- * Admin:   GET  /api/contact            list (filter by status)
- *          PUT  /api/contact/:id        update status / notes
- *          DELETE /api/contact/:id      remove
- *          GET  /api/contact/stats      counts for the dashboard
- *
- * Spam handling is deliberately layered and all of it is server-side, because
- * anything enforced only in the browser can be skipped:
- *   1. honeypot field  - a hidden input a human never fills in
- *   2. minimum fill time - a form completed in under ~3s is a bot
- *   3. per-IP rate limit - sliding window, capped
- *   4. size and format validation on every field
- *
- * Bot submissions return HTTP 202 with a success-shaped body so the endpoint
- * gives nothing away, while still being recorded for review.
- */
+
 
 const express = require('express');
 const crypto = require('node:crypto');
@@ -26,10 +8,6 @@ const auth = require('../middleware/auth');
 const router = express.Router();
 const now = () => new Date().toISOString();
 
-// --- Spam controls -----------------------------------------------------------
-
-/** Sliding window per IP. 5 messages per 10 minutes is generous for a real
- *  enquirer (including someone filling the form twice) and tight for a bot. */
 const RATE_WINDOW_MS = 10 * 60 * 1000;
 const RATE_MAX = 5;
 const attempts = new Map();
@@ -52,7 +30,6 @@ function rateLimit(req, res, next) {
     next();
 }
 
-/** Keep the rate-limit map from growing without bound on a long-lived process. */
 setInterval(() => {
     const cutoff = Date.now() - RATE_WINDOW_MS;
     for (const [key, list] of attempts) {
@@ -62,10 +39,7 @@ setInterval(() => {
     }
 }, RATE_WINDOW_MS).unref();
 
-// --- Validation --------------------------------------------------------------
-
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-// Keep in sync with ENQUIRY_TYPES in frontend/src/pages/Contact.jsx.
 const TOPICS = new Set([
     'general',
     'partnership',
@@ -88,7 +62,6 @@ const LIMITS = {
 
 const str = (value) => (typeof value === 'string' ? value.trim() : '');
 
-/** Returns { errors, value } — errors is a field -> message map. */
 function validate(body) {
     const errors = {};
     const value = {};
@@ -99,8 +72,6 @@ function validate(body) {
     value.organisation = str(body.organisation);
     value.subject = str(body.subject);
     value.message = str(body.message);
-    // `topic` is the canonical field; `enquiryType` is accepted as an alias so
-    // an older or newer client cannot silently lose the category.
     value.topic = (str(body.topic) || str(body.enquiryType)).toLowerCase() || 'general';
 
     if (!value.name) {
@@ -134,13 +105,9 @@ function validate(body) {
     }
 
     if (!TOPICS.has(value.topic)) {
-        // An unknown topic is normalised rather than rejected, so a stale or
-        // tampered select value cannot block a genuine enquiry.
         value.topic = 'general';
     }
 
-    // Consent is required by the Privacy Policy; the browser also enforces it,
-    // but the server must not rely on that.
     value.consent = body.consent === true || body.consent === 'true' || body.consent === 'on' ? 1 : 0;
     if (!value.consent) {
         errors.consent = 'Please confirm you agree to be contacted about your enquiry.';
@@ -149,19 +116,14 @@ function validate(body) {
     return { errors, value };
 }
 
-/** Stable, non-reversible identifier so we can rate limit and spot repeats
- *  without storing visitors' IP addresses in the clear. */
 function hashIp(ip) {
     const salt = process.env.IP_HASH_SALT || process.env.JWT_SECRET || 'cgp-contact';
     return crypto.createHash('sha256').update(`${salt}:${ip || 'unknown'}`).digest('hex').slice(0, 32);
 }
 
-// --- Public: submit ----------------------------------------------------------
-
 router.post('/', rateLimit, (req, res) => {
     const body = req.body || {};
 
-    // 1. Honeypot: silently accept, do not store.
     if (str(body.website) !== '' || str(body.company_url) !== '') {
         return res.status(202).json({
             ok: true,
@@ -169,9 +131,6 @@ router.post('/', rateLimit, (req, res) => {
         });
     }
 
-    // 2. Minimum fill time. `formStartedAt` is a client timestamp; a missing or
-    //    unparseable value is treated as a human (the field is client-supplied
-    //    metadata, not a security control).
     const startedAt = Number(body.formStartedAt);
     if (Number.isFinite(startedAt) && startedAt > 0) {
         const elapsed = Date.now() - startedAt;
@@ -181,7 +140,6 @@ router.post('/', rateLimit, (req, res) => {
                 message: 'Thank you — your message has been received.',
             });
         }
-        // Clock far in the future: a tampered value, ignore the check.
     }
 
     const { errors, value } = validate(body);
@@ -221,8 +179,6 @@ router.post('/', rateLimit, (req, res) => {
         res.status(201).json({
             ok: true,
             id: result.lastInsertRowid,
-            // Shown to the enquirer on the success screen so a follow-up email
-            // can quote the same reference. Derived from the row id only.
             reference: `CGP-${String(result.lastInsertRowid).padStart(5, '0')}`,
             message:
                 'Thank you — your message has been received. Our team replies to enquiries within two working days.',
@@ -234,8 +190,6 @@ router.post('/', rateLimit, (req, res) => {
         });
     }
 });
-
-// --- Admin -------------------------------------------------------------------
 
 router.get('/stats', auth, (req, res) => {
     try {

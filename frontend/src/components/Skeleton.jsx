@@ -1,12 +1,4 @@
-/**
- * Skeleton loaders and a generic empty state.
- *
- * Every data-backed section (hero, partners, insights, projects, resources)
- * renders a skeleton while its request is in flight. The shapes mirror the
- * real card layout so nothing reflows when the data lands, and the containers
- * are marked `aria-busy` with a polite live region so assistive technology is
- * told the page is still loading.
- */
+
 
 import React from 'react';
 import SmartLink from './SmartLink';

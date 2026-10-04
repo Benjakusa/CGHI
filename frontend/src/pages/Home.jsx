@@ -7,7 +7,7 @@
  *                     "Partner With Us" CTAs
  *   2. Welcome       — what CGP is, with a link into the story
  *   3. What We Do    — the five capability cards
- *   4. CGP at a Glance — verified impact figures (placeholders marked)
+ *   4. CGP at a Glance — published impact figures only (never left blank)
  *   5. Projects      — outcome-led cards, not activity lists
  *   6. Initiatives   — the six active programmes
  *   7. Insights      — latest research and news
@@ -33,7 +33,7 @@ import {
   CtaStrip,
   InsightCard,
   InitiativeCard,
-  PartnerGrid,
+  PartnerMarquee,
   ProjectCard,
   SectionHeader,
 } from '../components/cards';
@@ -178,13 +178,10 @@ function HeroCarousel({ slides, loading }) {
 /* ------------------------------------------------------------------ */
 
 function GlanceFigure({ figure }) {
-  const hasValue = figure.value != null;
-  const [ref, counted] = useCountUp(hasValue ? figure.value : 0);
+  const [ref, counted] = useCountUp(figure.value);
 
   let display;
-  if (!hasValue) {
-    display = '—';
-  } else if (figure.display && !/^\d+$/.test(String(figure.display))) {
+  if (figure.display && !/^\d+$/.test(String(figure.display))) {
     // Prefixed/suffixed values (e.g. "$145M", "30%") are shown verbatim so no
     // figure is ever re-derived from an animated integer.
     display = figure.display;
@@ -196,20 +193,21 @@ function GlanceFigure({ figure }) {
     <div className="stat-cell" ref={ref}>
       <span className="stat-num">{display}</span>
       <span className="stat-lbl">{figure.label}</span>
-      {!hasValue && (
-        <span className="pill pill--pending">
-          <i className="bi bi-hourglass-split" aria-hidden="true" /> Figure pending
-        </span>
-      )}
     </div>
   );
 }
+
+/**
+ * Every figure on the homepage carries a published value — items still awaiting
+ * an official source are filtered out rather than rendered as a blank stat.
+ */
+const PUBLISHED_GLANCE = GLANCE.filter((figure) => figure.value != null);
 
 function GlanceGrid() {
   return (
     <div className="stats-single-card">
       <div className="stats-single-card-grid">
-        {GLANCE.map((figure) => (
+        {PUBLISHED_GLANCE.map((figure) => (
           <GlanceFigure key={figure.id} figure={figure} />
         ))}
       </div>
@@ -288,7 +286,7 @@ export default function Home() {
               </div>
             </div>
 
-            <figure className="frame-figure">
+            <figure className="frame-figure frame-figure--video">
               <div className="frame-figure-media">
                 <iframe
                   src="https://www.youtube-nocookie.com/embed/SxFaJhnb4Qw"
@@ -331,60 +329,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------------- Get Involved ---------------- */}
-      <section aria-labelledby="get-involved-heading">
-        <div className="wrap">
-          <SectionHeader
-            id="get-involved-heading"
-            align="center"
-            eyebrow="Get Involved"
-            title="Work with CGP"
-            lede="Join our expert network, or get in touch to discuss partnership opportunities."
-          />
-          <div className="grid-2 get-involved-grid">
-            <article className="icon-card">
-              <div className="card-icon" aria-hidden="true">
-                <i className="bi bi-people" />
-              </div>
-              <h3>
-                <SmartLink to="/careers">Careers</SmartLink>
-              </h3>
-              <p>Join our expert network.</p>
-              <SmartLink className="text-link card-link" to="/careers">
-                View careers <i className="bi bi-arrow-right" aria-hidden="true" />
-              </SmartLink>
-            </article>
-            <article className="icon-card">
-              <div className="card-icon" aria-hidden="true">
-                <i className="bi bi-chat-left-text" />
-              </div>
-              <h3>
-                <SmartLink to="/partner-with-us#contact-form">Partner With Us</SmartLink>
-              </h3>
-              <p>Get in touch to discuss partnership opportunities.</p>
-              <SmartLink className="text-link card-link" to="/partner-with-us#contact-form">
-                Start a conversation <i className="bi bi-arrow-right" aria-hidden="true" />
-              </SmartLink>
-            </article>
-          </div>
-        </div>
-      </section>
+
 
       {/* ---------------- CGP at a Glance ---------------- */}
-      <section className="section-dark" aria-labelledby="glance-heading">
+      <section className="section-glance" aria-labelledby="glance-heading">
         <div className="wrap">
           <SectionHeader
             id="glance-heading"
+            align="center"
             eyebrow="CGP at a Glance"
             title="Our impact in numbers"
-            lede="Figures below are taken from CGP’s published project record. Items still awaiting an approved source are marked as pending rather than estimated."
+            lede="Figures below are taken from CGP’s published project record."
           />
           <GlanceGrid />
-          <p className="section-trailing-link">
-            <SmartLink className="text-link text-link--light" to="/projects">
-              Explore Our Projects <i className="bi bi-arrow-right" aria-hidden="true" />
-            </SmartLink>
-          </p>
         </div>
       </section>
 
@@ -436,17 +393,19 @@ export default function Home() {
             loading={partners.loading}
             label="Loading partners"
             skeleton={
-              <div className="partner-grid partner-grid--md">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <div className="partner-tile" key={i} aria-hidden="true">
-                    <span className="skeleton" style={{ width: '70%', height: '2.4rem' }} />
-                  </div>
-                ))}
+              <div className="partner-marquee" aria-hidden="true">
+                <div className="partner-marquee-viewport">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div className="partner-marquee-card" key={i}>
+                      <span className="skeleton" style={{ width: '70%', height: '2.4rem' }} />
+                    </div>
+                  ))}
+                </div>
               </div>
             }
             onRetry={reloadPartners}
           >
-            <PartnerGrid partners={selectedPartners} />
+            <PartnerMarquee partners={selectedPartners} />
           </AsyncSection>
           <p className="section-trailing-link">
             <SmartLink className="text-link" to="/partners">

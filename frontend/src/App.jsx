@@ -1,24 +1,4 @@
-/**
- * Application shell and routes.
- *
- * Route structure follows the audit's information architecture:
- *
- *   Home → Who We Are (/about, /leadership, /partners, /careers)
- *        → What We Do (/what-we-do, /projects, /projects/:slug,
- *                      /initiatives, /resources)
- *        → Insights & Research (/insights, /insights/:slug)
- *        → Partner With Us (/partner-with-us)
- *
- * Additions vs the previous router:
- *  - `React.lazy` on every page, so the initial bundle is the shell plus the
- *    homepage rather than all 18 routes at once.
- *  - A `path="*"` 404 route with a branded recovery page.
- *  - `/news` is kept as a permanent redirect to `/insights` and article
- *    query-string URLs are redirected to their new indexable `/insights/:slug`
- *    equivalents, so no existing link 404s.
- *  - A `RouteAnnouncer` gives assistive technology a polite live region that
- *    names the new page after each client-side navigation.
- */
+
 
 import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom';
@@ -48,10 +28,7 @@ const Accessibility = lazy(() => import('./pages/Accessibility'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 const Login = lazy(() => import('./pages/admin/Login'));
-// Dashboard.jsx exports its layout as the default export and the page itself
-// as a named `Dashboard` export (the other admin pages are default exports).
-// React.lazy always resolves the module's default export, so map it here —
-// destructuring the lazy component would yield `undefined` and crash /admin.
+
 const Dashboard = lazy(() =>
   import('./pages/admin/Dashboard').then((m) => ({ default: m.Dashboard }))
 );
@@ -91,7 +68,6 @@ function RouteAnnouncer() {
       first.current = false;
       return;
     }
-    // Prefer the document title the Seo component has just written.
     const id = window.setTimeout(() => setMessage(document.title), 120);
     return () => window.clearTimeout(id);
   }, [location.pathname]);
@@ -180,6 +156,9 @@ function AppRoutes() {
         {/* The old Contact page became Partner With Us; keep the URL alive and
             preserve any #contact-form / #contact-details deep link. */}
         <Route path="/contact" element={<ContactRedirect />} />
+        <Route path="/contact-us" element={<ContactRedirect />} />
+        <Route path="/get-in-touch" element={<ContactRedirect />} />
+        <Route path="/reach-us" element={<ContactRedirect />} />
 
         {/* ---------- Admin ---------- */}
         <Route path="/admin/login" element={<Login />} />

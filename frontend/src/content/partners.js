@@ -1,36 +1,28 @@
-/**
- * Partners and collaborators.
- *
- * The authoritative list is the `partners` table served by `GET /api/partners`
- * and editable through /admin/partners — that is what /partners and the
- * homepage logo grid render. `FALLBACK_PARTNERS` below is only used when the
- * API is unreachable, so the page never renders an empty shell.
- *
- * PROVENANCE: the fallback list mirrors the 12 organisations seeded in
- * `backend/db.js` (seedIfEmpty) plus the collaborator types named in the
- * existing About page copy. No partner website URL has been invented —
- * entries render as plain, non-linking text unless the database supplies a
- * `website` value.
- */
 
+
+/**
+ * Offline fallback for the partner list. `website` is each institution's own
+ * site, so a logo card can still link out when the API is unreachable; the
+ * bundled copy carries no logos, so those tiles fall back to initials.
+ */
 export const FALLBACK_PARTNERS = [
-  'Ministry of Health, Kenya',
-  'Kenya National Public Health Institute',
-  'Africa CDC',
-  'University of Nairobi',
-  'Global Fund',
-  'UNICEF',
-  'FAO',
-  'WHO',
-  'UNEP',
-  'Taskforce for Global Health',
-  'GIZ',
-  'Palladium',
-].map((name, i) => ({
+  { name: 'Ministry of Health, Kenya', website: 'https://www.health.go.ke/' },
+  { name: 'Kenya National Public Health Institute', website: 'https://nphi.go.ke/' },
+  { name: 'Africa CDC', website: 'https://africacdc.org/' },
+  { name: 'University of Nairobi', website: 'https://www.uonbi.ac.ke/' },
+  { name: 'Global Fund', website: 'https://www.theglobalfund.org/' },
+  { name: 'UNICEF', website: 'https://www.unicef.org/' },
+  { name: 'FAO', website: 'https://www.fao.org/' },
+  { name: 'WHO', website: 'https://www.who.int/' },
+  { name: 'UNEP', website: 'https://www.unep.org/' },
+  { name: 'Taskforce for Global Health', website: 'https://www.taskforce.org/' },
+  { name: 'GIZ', website: 'https://www.giz.de/' },
+  { name: 'Palladium', website: 'https://thepalladiumgroup.com/' },
+].map((partner, i) => ({
   id: `fallback-${i + 1}`,
-  name,
+  name: partner.name,
   logo_url: null,
-  website: '',
+  website: partner.website,
   sort_order: i + 1,
 }));
 

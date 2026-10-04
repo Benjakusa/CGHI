@@ -19,7 +19,6 @@ const PORT = process.env.PORT || 4000;
 const uploadsDir = path.join(__dirname, 'data', 'uploads');
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
-    console.log(`[CGP API] Created uploads directory: ${uploadsDir}`);
 }
 
 const ALLOWED_ORIGINS = [
@@ -42,7 +41,6 @@ const corsOptions = {
         if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) {
             return callback(null, true);
         }
-        console.warn(`[CGP API] CORS blocked origin: ${origin}`);
         return callback(new Error(`Origin ${origin} not allowed by CORS`));
     },
     credentials: true
@@ -112,7 +110,6 @@ app.get('/api/admin/stats', authMiddleware, (req, res) => {
             const published = db.prepare(`SELECT COUNT(*) as c FROM ${table} WHERE published=1`).get().c;
             return { total, published, unpublished: total - published };
         } catch (err) {
-            console.error(`[CGP API] Error getting stats for ${table}:`, err.message);
             return { total: 0, published: 0, unpublished: 0 };
         }
     };
@@ -133,10 +130,7 @@ app.get('/api/admin/stats', authMiddleware, (req, res) => {
 });
 
 
-// Job Applications
 const applicationsDir = path.join(__dirname, 'data', 'uploads');
-// Ensure the applications upload directory exists before multer writes to it
-// (missing directory would crash/500 on Render's ephemeral filesystem).
 if (!fs.existsSync(applicationsDir)) {
     fs.mkdirSync(applicationsDir, { recursive: true });
     console.log(`[CGP API] Created applications directory: ${applicationsDir}`);
@@ -169,7 +163,6 @@ const applicationsUpload = multer({
     }
 });
 
-// Create applications table
 db.exec(`CREATE TABLE IF NOT EXISTS job_applications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -184,7 +177,6 @@ db.exec(`CREATE TABLE IF NOT EXISTS job_applications (
     status TEXT DEFAULT 'pending'
 )`);
 
-// POST /api/job-applications
 app.post('/api/job-applications', applicationsUpload.fields([
     { name: 'coverLetter', maxCount: 1 },
     { name: 'cv', maxCount: 1 },
@@ -245,7 +237,6 @@ app.post('/api/job-applications', applicationsUpload.fields([
     }
 });
 
-// GET /api/job-applications (admin only)
 app.get('/api/job-applications', authMiddleware, (req, res) => {
     try {
         const applications = db.prepare('SELECT * FROM job_applications ORDER BY created_at DESC').all();
@@ -260,7 +251,6 @@ app.get('/api/job-applications', authMiddleware, (req, res) => {
     }
 });
 
-// DELETE /api/job-applications/:id (admin only)
 app.delete('/api/job-applications/:id', authMiddleware, (req, res) => {
     try {
         const app = db.prepare('SELECT * FROM job_applications WHERE id=?').get(req.params.id);

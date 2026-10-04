@@ -7,10 +7,6 @@ const DB_DIR = path.join(__dirname, 'data');
 if (!fs.existsSync(DB_DIR)) {
   fs.mkdirSync(DB_DIR, { recursive: true });
 }
-// Filename deliberately keeps the legacy `cghi` spelling: on Render the data
-// directory is a persistent disk, so renaming this would silently start the
-// deployed API against an empty database and orphan every record already
-// managed through /admin. The name is internal and never user-facing.
 const DB_PATH = path.join(DB_DIR, 'cghi.db');
 const db = new Database(DB_PATH);
 
@@ -96,10 +92,6 @@ db.exec(`
     updated_at TEXT DEFAULT (datetime('now'))
   );
 
-  -- Enquiries submitted through the public contact form. Kept separate from
-  -- job_applications (which is defined in server.js alongside its upload
-  -- handling) because a contact message has no attachments and a different set
-  -- of fields: enquiry topic, organisation and an explicit consent flag.
   CREATE TABLE IF NOT EXISTS contact_messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -119,26 +111,18 @@ db.exec(`
   );
 `);
 
-// Enquiry volume is small but the admin list needs to find unread messages
-// quickly and stay responsive as the table grows.
 try {
   db.exec('CREATE INDEX IF NOT EXISTS idx_contact_messages_created ON contact_messages(created_at DESC)');
   db.exec("CREATE INDEX IF NOT EXISTS idx_contact_messages_status ON contact_messages(status, created_at DESC)");
 } catch (err) {
-  console.error('[DB] contact_messages index creation failed:', err.message);
 }
 
-// Idempotent migration: databases created before document_url existed on
-// jobs need the column added; fresh databases already get it from the
-// CREATE TABLE above.
 try {
   const jobCols = db.prepare('PRAGMA table_info(jobs)').all();
   if (!jobCols.some(c => c.name === 'document_url')) {
     db.exec('ALTER TABLE jobs ADD COLUMN document_url TEXT');
-    console.log('[DB] Migration: added jobs.document_url column.');
-  }
+    }
 } catch (err) {
-  console.error('[DB] jobs.document_url migration failed:', err.message);
 }
 
 /**
@@ -158,11 +142,7 @@ function warnOnLegacySeedPassword() {
     }
     for (const admin of admins) {
         if (!bcrypt.compareSync(LEGACY, admin.password_hash)) continue;
-        console.warn(
-            `[DB] SECURITY: admin "${admin.email}" still uses the published seed password. ` +
-            'Change it now: set a new SEED_ADMIN_PASSWORD, then update the account in /admin, ' +
-            'and rotate JWT_SECRET.'
-        );
+
     }
 }
 
@@ -170,21 +150,15 @@ function seedIfEmpty() {
     const adminCount = db.prepare('SELECT COUNT(*) as c FROM admins').get().c;
     if (adminCount === 0) {
         const seedEmail = process.env.SEED_ADMIN_EMAIL || 'admin@pandemicintelcenter.org';
-        // No default password: a hard-coded fallback would ship a known admin
-        // credential to every deployment that forgets to set the env var.
         const seedPassword = process.env.SEED_ADMIN_PASSWORD;
         if (!seedPassword) {
-            console.error(
-                '[DB] SEED_ADMIN_PASSWORD is not set — skipping admin seed. ' +
-                'Set it in .env (and in the Render dashboard) and restart to create the first admin.'
-            );
+
             return;
         }
         const hash = bcrypt.hashSync(seedPassword, 10);
         db.prepare("INSERT INTO admins (email, password_hash, name) VALUES (?, ?, ?)").run(
             seedEmail, hash, 'CGP Administrator'
         );
-        console.log(`[DB] Admin user seeded: ${seedEmail}`);
     }
 
     const heroCount = db.prepare('SELECT COUNT(*) as c FROM heroes').get().c;
@@ -241,7 +215,6 @@ function seedIfEmpty() {
             }
         ];
         heroes.forEach(h => insertHero.run(h.title, h.topic, h.description, h.btn1_text, h.btn1_link, h.btn2_text, h.btn2_link, h.image_url, h.sort));
-        console.log('[DB] 5 heroes seeded.');
     }
 
     const newsCount = db.prepare('SELECT COUNT(*) as c FROM news').get().c;
@@ -258,28 +231,26 @@ function seedIfEmpty() {
             'CGP Communications',
             'October 2025'
         );
-        console.log('[DB] 1 news article seeded.');
     }
 
     const partnerCount = db.prepare('SELECT COUNT(*) as c FROM partners').get().c;
     if (partnerCount === 0) {
         const insertPartner = db.prepare('INSERT INTO partners (name, logo_url, website, sort_order, published) VALUES (?, ?, ?, ?, 1)');
         const partners = [
-            { name: 'Ministry of Health, Kenya', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/ministry-of-health.jpg', website: '', sort: 1 },
-            { name: 'Kenya National Public Health Institute', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/nphi_logo_with_coat_of_arms.png', website: '', sort: 2 },
-            { name: 'Africa CDC', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/AfricaCDC_Logo.png', website: '', sort: 3 },
-            { name: 'University of Nairobi', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/UoN_Logo.png', website: '', sort: 4 },
-            { name: 'Global Fund', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/download.png', website: '', sort: 5 },
-            { name: 'UNICEF', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/download.jpeg', website: '', sort: 6 },
-            { name: 'FAO', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/download-1.png', website: '', sort: 7 },
-            { name: 'WHO', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/download-2.png', website: '', sort: 8 },
-            { name: 'UNEP', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/download-3.png', website: '', sort: 9 },
-            { name: 'Taskforce for Global Health', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/download-4.png', website: '', sort: 10 },
-            { name: 'GIZ', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/08/download-1.jpeg', website: '', sort: 11 },
-            { name: 'Palladium', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/08/WhatsApp-Image-2025-08-16-at-11.27.52_a35ed63e.jpg', website: '', sort: 12 }
+            { name: 'Ministry of Health, Kenya', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/ministry-of-health.jpg', website: 'https://www.health.go.ke/', sort: 1 },
+            { name: 'Kenya National Public Health Institute', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/nphi_logo_with_coat_of_arms.png', website: 'https://nphi.go.ke/', sort: 2 },
+            { name: 'Africa CDC', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/AfricaCDC_Logo.png', website: 'https://africacdc.org/', sort: 3 },
+            { name: 'University of Nairobi', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/UoN_Logo.png', website: 'https://www.uonbi.ac.ke/', sort: 4 },
+            { name: 'Global Fund', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/download.png', website: 'https://www.theglobalfund.org/', sort: 5 },
+            { name: 'UNICEF', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/download.jpeg', website: 'https://www.unicef.org/', sort: 6 },
+            { name: 'FAO', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/download-1.png', website: 'https://www.fao.org/', sort: 7 },
+            { name: 'WHO', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/download-2.png', website: 'https://www.who.int/', sort: 8 },
+            { name: 'UNEP', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/download-3.png', website: 'https://www.unep.org/', sort: 9 },
+            { name: 'Taskforce for Global Health', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/07/download-4.png', website: 'https://www.taskforce.org/', sort: 10 },
+            { name: 'GIZ', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/08/download-1.jpeg', website: 'https://www.giz.de/', sort: 11 },
+            { name: 'Palladium', logo_url: 'https://pandemicintelcenter.org/wp-content/uploads/2025/08/WhatsApp-Image-2025-08-16-at-11.27.52_a35ed63e.jpg', website: 'https://thepalladiumgroup.com/', sort: 12 }
         ];
         partners.forEach(p => insertPartner.run(p.name, p.logo_url, p.website, p.sort));
-        console.log('[DB] 12 partners seeded.');
     }
 
     const jobCount = db.prepare('SELECT COUNT(*) as c FROM jobs').get().c;
@@ -334,7 +305,6 @@ function seedIfEmpty() {
             'info@pandemicintelcenter.org',
             'Application – Research Associate',
         );
-        console.log('[DB] 2 jobs seeded.');
     }
 
     const resourceCount = db.prepare('SELECT COUNT(*) as c FROM resources').get().c;
@@ -355,7 +325,6 @@ function seedIfEmpty() {
             '',
             'September 2025'
         );
-        console.log('[DB] 2 resources seeded.');
     }
 }
 

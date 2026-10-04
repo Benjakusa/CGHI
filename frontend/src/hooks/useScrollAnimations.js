@@ -1,15 +1,4 @@
-/**
- * Scroll-triggered motion for the public site (GSAP + ScrollTrigger).
- *
- *  - Section headers and blocks fade in and slide up.
- *  - Card grids reveal with a stagger (delay by position within the grid).
- *  - Hero image drifts slightly slower than the page (parallax).
- *  - Header gains a stronger shadow once the page is scrolled.
- *
- * Content that loads after mount (API-backed grids) is picked up by a
- * MutationObserver. Everything is skipped when the visitor prefers reduced
- * motion, so nothing is ever left hidden.
- */
+
 
 import { useEffect } from 'react';
 import { gsap } from 'gsap';
@@ -42,10 +31,10 @@ export default function useScrollAnimations(routeKey) {
         el.dataset.revealed = '1';
         gsap.from(el, {
           autoAlpha: 0,
-          y: 36,
-          duration: 0.8,
+          y: 20,
+          duration: 0.7,
           delay,
-          ease: 'power3.out',
+          ease: 'power2.out',
           clearProps: 'transform,opacity,visibility',
           scrollTrigger: { trigger: el, start: 'top 90%', once: true },
         });
@@ -55,14 +44,13 @@ export default function useScrollAnimations(routeKey) {
         main.querySelectorAll(BLOCKS).forEach((el) => reveal(el));
         main.querySelectorAll(GRID_ITEMS).forEach((el) => {
           const index = Array.prototype.indexOf.call(el.parentElement.children, el);
-          reveal(el, Math.min(index, 5) * 0.09);
+          reveal(el, Math.min(index, 8) * 0.125);
         });
         ScrollTrigger.refresh();
       };
 
       scan();
 
-      // Hero parallax: only the first image, tied to scroll position.
       main.querySelectorAll('.hero-carousel').forEach((hero) => {
         gsap.to(hero.querySelectorAll('.hero-slide-img'), {
           yPercent: 6,

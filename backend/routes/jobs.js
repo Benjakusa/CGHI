@@ -5,7 +5,6 @@ const auth = require('../middleware/auth');
 const router = express.Router();
 const now = () => new Date().toISOString();
 
-// Public
 router.get('/', (req, res) => {
     const items = db.prepare('SELECT * FROM jobs WHERE published=1 ORDER BY id DESC').all();
     res.json(items.map(j => ({
@@ -15,7 +14,6 @@ router.get('/', (req, res) => {
     })));
 });
 
-// Admin: all
 router.get('/admin', auth, (req, res) => {
     const items = db.prepare('SELECT * FROM jobs ORDER BY id DESC').all();
     res.json(items.map(j => ({
@@ -25,7 +23,6 @@ router.get('/admin', auth, (req, res) => {
     })));
 });
 
-// Admin: create
 router.post('/admin', auth, (req, res) => {
     const { title, department, location, employment_type, description, qualifications, preferred_experience, apply_email, apply_subject, closing_date, document_url, published } = req.body;
     if (!title) return res.status(400).json({ error: 'Title is required.' });
@@ -40,7 +37,6 @@ router.post('/admin', auth, (req, res) => {
     res.json({ id: result.lastInsertRowid });
 });
 
-// Admin: update
 router.put('/admin/:id', auth, (req, res) => {
     const { title, department, location, employment_type, description, qualifications, preferred_experience, apply_email, apply_subject, closing_date, document_url, published } = req.body;
     const result = db.prepare(`
@@ -55,7 +51,6 @@ router.put('/admin/:id', auth, (req, res) => {
     res.json({ ok: true });
 });
 
-// Admin: toggle publish
 router.patch('/admin/:id/publish', auth, (req, res) => {
     const item = db.prepare('SELECT published FROM jobs WHERE id=?').get(req.params.id);
     if (!item) return res.status(404).json({ error: 'Not found.' });
@@ -63,7 +58,6 @@ router.patch('/admin/:id/publish', auth, (req, res) => {
     res.json({ published: !item.published });
 });
 
-// Admin: delete
 router.delete('/admin/:id', auth, (req, res) => {
     const result = db.prepare('DELETE FROM jobs WHERE id=?').run(req.params.id);
     if (result.changes === 0) return res.status(404).json({ error: 'Not found.' });

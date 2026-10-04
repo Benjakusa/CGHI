@@ -1,11 +1,4 @@
-/**
- * Shared card and section primitives.
- *
- * Projects, insights, initiatives, capabilities and partners all rendered
- * bespoke markup duplicated across four or five pages. These components make
- * each of those a single, consistently structured instance, which is what the
- * audit asked for ("consistent card/detail templates").
- */
+
 
 import React from 'react';
 import SmartLink from './SmartLink';
@@ -283,6 +276,82 @@ export function PartnerGrid({ partners, size = 'md' }) {
         );
       })}
     </ul>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Partner carousel                                                    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Partner logo carousel for the homepage.
+ *
+ * Logos only: the institution name is never printed on the card, it lives in
+ * the link's accessible name instead. Each logo links to that partner's own
+ * page (`website`) or, when no URL is recorded, to the site's /partners page.
+ * The row scrolls on a single line and loops seamlessly — the second copy of
+ * the list is hidden from assistive technology, motion pauses on hover/focus,
+ * and `prefers-reduced-motion` turns it into a plain horizontally scrollable row.
+ */
+export function PartnerMarquee({
+  partners,
+  duration = 48,
+  label = 'Our partners and collaborators',
+}) {
+  if (!partners || partners.length === 0) return null;
+
+  const renderTile = (partner) => {
+    const logo = partner.logo_url ? resolveAssetUrl(partner.logo_url) : null;
+    const name = partner.name;
+    const inner = (
+      <>
+        <span className="partner-card-logo">
+          {logo ? (
+            <SmartImage src={logo} alt="" width="200" height="80" />
+          ) : (
+            <span className="partner-initials" aria-hidden="true">
+              {name
+                .split(/\s+/)
+                .slice(0, 2)
+                .map((w) => w[0])
+                .join('')}
+            </span>
+          )}
+        </span>
+        <span className="sr-only">{name}</span>
+      </>
+    );
+
+    return (
+      <li key={partner.id ?? name} className="partner-marquee-item">
+        {partner.website ? (
+          <a href={partner.website} target="_blank" rel="noopener noreferrer" title={name}>
+            {inner}
+            <span className="sr-only">(opens in a new tab)</span>
+          </a>
+        ) : (
+          <SmartLink to={partner.to || '/partners'} title={name}>
+            {inner}
+          </SmartLink>
+        )}
+      </li>
+    );
+  };
+
+  return (
+    <div className="partner-marquee">
+      <div
+        className="partner-marquee-viewport"
+        style={{ animationDuration: `${duration}s` }}
+      >
+        <ul className="partner-marquee-track" aria-label={label}>
+          {partners.map(renderTile)}
+        </ul>
+        <ul className="partner-marquee-track" aria-hidden="true">
+          {partners.map(renderTile)}
+        </ul>
+      </div>
+    </div>
   );
 }
 

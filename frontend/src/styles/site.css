@@ -1,60 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap');
 
-/**
- * site.css — design system for the rebuilt public site.
- *
- * Imported after style.css in App.jsx, so these rules win over the legacy
- * stylesheet for the class names they share. style.css is retained because the
- * admin screens and the Careers page still depend on rules that have not been
- * migrated yet; the split is deliberate and temporary.
- *
- * Contents
- *   1.  Tokens
- *   2.  Accessibility utilities (skip link, sr-only, focus, reduced motion)
- *   3.  Layout primitives (shell, wrap, grids, sections, page header)
- *   4.  Buttons and links
- *   5.  Header / navigation / mobile menu
- *   6.  Footer
- *   7.  Hero and carousel
- *   8.  Cards (project, initiative, article, partner, capability, stat)
- *   9.  Filters, search and chips
- *   10. Forms
- *   11. Loading, empty and error states
- *   12. Content blocks (accordion, prose, policy docs, notices, pending data)
- *   13. Contact page
- *   14. Responsive behaviour (1024 / 768 / 480 / 375 / 320)
- *   15. Print
- */
+
 
 /* --------------------------------------------------------------------------
    1. Tokens
    -------------------------------------------------------------------------- */
 
 :root {
-  /* STRICT PALETTE. The public site uses the brand blue and white, plus black
-     for body text and the footer, and rgba() variants of black/white for
-     borders, shadows and muted text. No other hue is permitted and no gradients
-     are used.
 
-     Black is never a section or button background: the only large black surface
-     on the site is the footer. Feature bands (the stats band, the CTA strip, the
-     inner-page banner and the utility bar) use the darkened brand blue below,
-     which keeps white text readable (~8:1) where the bright #01abed would not
-     (~2.4:1). The pale tints are light blue accents, not white. */
   --sky: #01abed;
-  --sky-dark: #014a73;
-  --sky-deep: #014a73;
-  --sky-tint: #e8f6fe;
-  --sky-tint-strong: #cbeefe;
+  --sky-dark: #000000;
+  --sky-deep: #000000;
+
+  --sky-tint: rgba(0, 0, 0, 0.04);
+  --sky-tint-strong: rgba(0, 0, 0, 0.08);
 
   --ink: #000000;
   --ink-soft: #000000;
   --ink-muted: rgba(0, 0, 0, 0.6);
 
-  /* Plain sections are white — no black banding — and the only tinted surface
-     uses the brand blue. */
   --surface: #ffffff;
-  --surface-alt: #e8f6fe;
+  --surface-alt: rgba(0, 0, 0, 0.04);
   --border: rgba(0, 0, 0, 0.12);
   --border-ink: rgba(0, 0, 0, 0.35);
 
@@ -67,7 +33,6 @@
   --wrap: 1200px;
   --wrap-prose: 46rem;
 
-  /* Rectangular geometry: buttons are 0 and surfaces are 2px at most. */
   --radius-sm: 2px;
   --radius: 2px;
   --radius-lg: 2px;
@@ -77,8 +42,6 @@
   --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.14);
 
-  /* Minimum comfortable touch target (WCAG 2.2 SC 2.5.8 is 24px, but 44px is
-     the figure users expect on touch devices and is what the nav relies on). */
   --tap: 44px;
 
   --header-h: 4.5rem;
@@ -86,8 +49,6 @@
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Fluid type: one scale that responds continuously to the viewport instead of
-   jumping at breakpoints. Clamped so it never gets unreadably large or small. */
 :root {
   --step--1: clamp(0.82rem, 0.79rem + 0.14vw, 0.9rem);
   --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.09rem);
@@ -115,8 +76,6 @@
   border: 0;
 }
 
-/* Visually hidden until focused. `top` rather than `transform` so it cannot be
-   clipped by an ancestor's overflow, and it is the first tab stop on the page. */
 .skip-link {
   position: absolute;
   left: 0.75rem;
@@ -3697,7 +3656,7 @@ section {
   background: var(--white);
 }
 
-/* 9. Footer + newsletter -------------------------------------------------- */
+/* 9. Footer --------------------------------------------------------------- */
 .site-footer {
   /* The footer is the site's only black surface. */
   background: var(--black);
@@ -3725,53 +3684,6 @@ section {
   background: var(--sky);
   border-color: var(--sky);
   color: var(--black);
-}
-
-.footer-newsletter {
-  margin-top: clamp(2.5rem, 2rem + 2vw, 4rem);
-  padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-  gap: 1.5rem 3rem;
-  align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.footer-newsletter h2 {
-  margin: 0;
-  color: var(--white);
-  font-size: var(--step-2);
-}
-
-.footer-newsletter p {
-  margin: 0.4rem 0 0;
-  font-size: var(--step--1);
-}
-
-.footer-newsletter-form {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.footer-newsletter-form input {
-  flex: 1 1 auto;
-  min-width: 0;
-  min-height: var(--tap);
-  padding: 0.6rem 1rem;
-  border: 2px solid transparent;
-  border-radius: var(--radius);
-  background: var(--white);
-  color: var(--ink);
-}
-
-.footer-newsletter-form input:focus-visible {
-  outline: 3px solid var(--sky);
-  outline-offset: 2px;
-}
-
-.footer-newsletter-form .btn {
-  flex: none;
 }
 
 /* 10. Motion helpers ------------------------------------------------------ */
@@ -3802,9 +3714,6 @@ section {
   .footer-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .footer-newsletter {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 @media (max-width: 767px) {
@@ -3819,9 +3728,6 @@ section {
 @media (max-width: 599px) {
   .footer-grid {
     grid-template-columns: minmax(0, 1fr);
-  }
-  .footer-newsletter-form {
-    flex-direction: column;
   }
   .hero-ctas .btn {
     width: 100%;
@@ -3931,12 +3837,6 @@ section {
   .site-shell[data-hero] .site-header:not(.is-scrolled) .nav-profile-btn {
     color: var(--white);
   }
-}
-
-/* Get Involved split */
-.get-involved-grid {
-  max-width: 56rem;
-  margin-inline: auto;
 }
 
 /* Inner-page banner: solid brand band with breadcrumb, like the RC page titles */
@@ -4247,14 +4147,17 @@ section {
   }
 }
 
-/* 15. Inner-page banner + labels (legacy overrides) ------------------------ */
+/* 15. Inner-page banner + labels (legacy overrides) ------------------------ *
+ * The banner is the inner-page hero, so its content is centred exactly like
+ * the homepage hero: breadcrumb, label, H1, dek and any kickers are all
+ * centred in the band. */
 .page-header,
 .page-header .wrap {
-  text-align: left;
+  text-align: center;
 }
 
 .page-header .dek {
-  margin-inline: 0;
+  margin-inline: auto;
   max-width: 52rem;
 }
 
@@ -4272,7 +4175,7 @@ section {
 }
 
 .page-header .breadcrumb-list {
-  justify-content: flex-start;
+  justify-content: center;
   margin: 0;
   padding: 0;
 }
@@ -4290,18 +4193,35 @@ section {
 
 .page-header .wrap {
   display: block;
+  width: 100%;
 }
 
+/* The legacy banner painted a hot-linked photo plus a 60% black wash over the
+   band. The inner-page hero is the brand-blue band, so both layers are off. */
+.page-header::before,
+.page-header::after {
+  content: none;
+}
+
+/* Every inner-page hero is centred: the !important keeps the centred intent
+   above the legacy left-aligned block that used to live here, and the
+   auto margins centre the fixed-width H1 and dek inside the band. */
 .page-header,
 .page-header * {
-  text-align: left !important;
-  justify-content: flex-start;
-  align-items: flex-start;
+  text-align: center !important;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-header .kicker-list,
+.page-header .article-meta,
+.page-header .breadcrumb-list {
+  justify-content: center !important;
 }
 
 .page-header .dek,
 .page-header h1 {
-  margin-inline: 0 !important;
+  margin-inline: auto !important;
 }
 
 /* 16. Mission / vision cards ---------------------------------------------- *
@@ -4322,3 +4242,304 @@ section {
 .vm-card p {
   color: var(--ink-muted);
 }
+
+/* 17. Homepage brief ------------------------------------------------------ *
+ * Adjustments requested in the homepage review. Colours stay on the palette
+ * tokens: --sky is #01abed, --black is #000000 and --white is #FFFFFF. */
+
+/* Hero: one viewport tall, copy centred, title never larger than 22px. */
+.hero-carousel {
+  height: 100vh;
+  max-height: 100vh;
+}
+
+.hero-slide .wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-height: 100%;
+}
+
+/* Hero copy sits dead-centre in every slide, on both axes: the panel centres
+   its children as a flex column and the text itself is centred, so eyebrow,
+   title, description and CTA row all share one centre line. */
+.hero-slide-panel {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Symmetric padding at every breakpoint: the fixed transparent navbar's
+   clearance is mirrored top-to-bottom so the copy is centred in the band, and
+   !important outranks the legacy mobile paddings (56px top / 200px bottom,
+   then 24px 16px) that used to push the copy off the centre line. */
+.hero-slide-panel {
+  padding: calc(var(--header-h) + 3.5rem) clamp(1rem, 4vw, 1.5rem) !important;
+}
+
+.hero-slide-panel > *,
+.hero-slide-eyebrow {
+  align-self: center;
+}
+
+.hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.hero-slide h1,
+.hero-slide-panel h1 {
+  max-width: min(44rem, 100%);
+  font-size: clamp(1.15rem, 0.95rem + 0.9vw, 22px);
+}
+
+/* Welcome: the DMT-PHE video is never taller than the section that holds it. */
+.frame-figure--video {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
+.frame-figure--video .frame-figure-media {
+  position: relative;
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.frame-figure--video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* CGP at a Glance: brand-blue band, centred, one white card per figure. */
+.section-glance {
+  background: var(--sky);
+  color: var(--black);
+}
+
+.section-glance .section-label::before,
+.section-glance .section-label::after {
+  background: var(--black);
+}
+
+.section-glance .stats-single-card {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: center;
+}
+
+.section-glance .stats-single-card-grid {
+  gap: clamp(0.85rem, 0.6rem + 1vw, 1.5rem);
+}
+
+.section-glance .stat-cell {
+  align-items: center;
+  padding: clamp(1.25rem, 1rem + 1vw, 2rem) 1.15rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--black);
+  box-shadow: var(--shadow-sm);
+}
+
+.section-glance .stat-num {
+  color: var(--black);
+}
+
+.section-glance .stat-lbl {
+  color: var(--black);
+  opacity: 0.75;
+}
+
+/* Partner carousel: logos only, on a single line, looping continuously. */
+.partner-marquee {
+  --marquee-gap: clamp(0.85rem, 0.6rem + 1vw, 1.5rem);
+  position: relative;
+  /* Room for the card shadow before the row is clipped. */
+  padding-block: 0.35rem;
+  overflow: hidden;
+}
+
+.partner-marquee-viewport {
+  display: flex;
+  gap: var(--marquee-gap);
+  width: max-content;
+  animation: partner-marquee-scroll 48s linear infinite;
+}
+
+.partner-marquee:hover .partner-marquee-viewport,
+.partner-marquee:focus-within .partner-marquee-viewport {
+  animation-play-state: paused;
+}
+
+@keyframes partner-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50% - var(--marquee-gap) / 2));
+  }
+}
+
+.partner-marquee-track {
+  display: flex;
+  align-items: center;
+  flex: none;
+  gap: var(--marquee-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.partner-marquee-item {
+  display: flex;
+  flex: none;
+}
+
+.partner-marquee-item > a,
+.partner-marquee-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(9rem, 7rem + 5vw, 12rem);
+  height: clamp(4.5rem, 4rem + 2vw, 6rem);
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+
+.partner-marquee-item > a:hover,
+.partner-marquee-item > a:focus-visible {
+  border-color: var(--sky);
+  box-shadow: var(--shadow);
+}
+
+.partner-marquee .partner-card-logo {
+  height: 3rem;
+  max-width: 100%;
+}
+
+.partner-marquee-item > a:hover .partner-card-logo img,
+.partner-marquee-item > a:focus-visible .partner-card-logo img {
+  filter: none;
+  opacity: 1;
+}
+
+
+/* Closing CTA strip: brand blue with black buttons and white button labels. */
+.cta-strip {
+  background: var(--sky);
+  color: var(--black);
+}
+
+.cta-strip h2,
+.cta-strip p {
+  color: var(--black);
+}
+
+.cta-strip .btn-white {
+  border-color: var(--black);
+  background: var(--black);
+  color: var(--white);
+}
+
+.cta-strip .btn-white:hover,
+.cta-strip .btn-white:focus-visible {
+  border-color: var(--white);
+  background: var(--white);
+  color: var(--black);
+}
+
+/* Utility bar (email, address, social): brand blue, contents centred. */
+.utility-bar {
+  display: flex;
+  align-items: center;
+  height: 2.75rem;
+  max-height: 2.75rem;
+  background: var(--sky);
+  color: var(--white);
+}
+
+.utility-bar-inner {
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.utility-bar ul {
+  align-items: center;
+  height: 100%;
+}
+
+.utility-bar li {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.utility-bar a {
+  align-items: center;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Header CTA beside the account button: brand blue, black label. */
+.nav-cta,
+.primary-nav-item > .nav-cta {
+  border-color: var(--sky);
+  background: var(--sky);
+  color: var(--black) !important;
+}
+
+.nav-cta:hover,
+.nav-cta:focus-visible,
+.primary-nav-item > .nav-cta:hover,
+.primary-nav-item > .nav-cta:focus-visible {
+  border-color: var(--black);
+  background: var(--black);
+  color: var(--white) !important;
+}
+
+/* Footer: the newsletter block is gone, so the copyright reads on its own. */
+.footer-copyright {
+  color: var(--white);
+}
+
+@media (max-width: 768px) {
+  /* svh keeps the one-viewport hero honest on mobile browsers. */
+  .hero-carousel {
+    height: 100svh;
+    max-height: 100svh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* A still, scrollable row rather than motion nobody asked for. */
+  .partner-marquee {
+    overflow-x: auto;
+  }
+
+  .partner-marquee-viewport {
+    animation: none;
+  }
+
+  .partner-marquee-track[aria-hidden='true'] {
+    display: none;
+  }
+}
+

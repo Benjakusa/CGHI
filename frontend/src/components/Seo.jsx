@@ -1,17 +1,4 @@
-/**
- * SEO head manager.
- *
- * The site is a client-rendered Vite SPA, so metadata has to be written to the
- * document at runtime. `<Seo />` is the single place that happens: it sets a
- * per-route `<title>`, meta description, canonical URL, Open Graph and Twitter
- * card tags, robots directives and JSON-LD structured data, and cleans up any
- * tag it did not set on this render so a route can never inherit another
- * route's description or `og:image`.
- *
- * Every value is derived from `src/config/site.js` and `src/content/*` so the
- * canonical origin is always the configured production domain and never a
- * preview deployment host.
- */
+
 
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -111,8 +98,6 @@ export default function Seo({
   const pathname = path ?? location.pathname;
   const canonical = absoluteUrl(pathname);
   const ogImage = absoluteUrl(image);
-  // Serialised so callers can pass a fresh array literal on every render
-  // without re-running the effect and re-writing the head on each one.
   const jsonLdKey = jsonLd.length ? JSON.stringify(jsonLd) : '';
 
   useEffect(() => {
@@ -150,7 +135,6 @@ export default function Seo({
     setCanonical(pathname);
     setManagedJsonLd(jsonLdKey ? JSON.parse(jsonLdKey) : []);
 
-    // Routes rendered inside a route transition should start at the top.
     if (!location.hash) window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [
     title,

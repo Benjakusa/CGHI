@@ -73,7 +73,7 @@ export default function Privacy() {
               <div className="privacy-placeholder">
                 <i className="bi bi-pencil-square" aria-hidden="true"></i>
                 <span>
-                  Before publishing, add your Data Protection Contact here if one has been appointed,
+                  Before publishing, add your Data Protection contact here if one has been appointed,
                   otherwise delete this notice. The Kenya Data Protection Act uses the term Data Protection
                   Officer and it must be a named person with published contact details.
                 </span>
@@ -85,7 +85,7 @@ export default function Privacy() {
                 categories we collect depend on how you interact with us.
               </p>
               <p>
-                <strong>Information you give us directly.</strong> When you contact us through the Contact page
+                <strong>Information you give us directly.</strong> When you contact us through the Partner With Us page
                 or by email, we collect your name, email address, telephone number if you provide one, the name
                 of your organisation if relevant, and the content of your message.
               </p>
@@ -239,7 +239,7 @@ export default function Privacy() {
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Enquiries received through the Contact page or by email</td>
+                    <td>Enquiries received through the Partner With Us page or by email</td>
                     <td>24 months from the date of last contact</td>
                   </tr>
                   <tr>
