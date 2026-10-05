@@ -752,3 +752,38 @@ seedIfEmpty();
 warnOnLegacySeedPassword();
 
 module.exports = db;
+function reseedNewsOnce() {
+  db.exec(
+    "CREATE TABLE IF NOT EXISTS seed_meta (key TEXT PRIMARY KEY, applied_at TEXT)",
+  );
+  const done = db
+    .prepare("SELECT 1 FROM seed_meta WHERE key = ?")
+    .get("news_seed_v2");
+  if (done) return;
+
+  const insertNews = db.prepare(`
+      INSERT INTO news (title, category, excerpt, content, image_url, author, published_at, published)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+    `);
+  db.transaction(() => {
+    db.prepare("DELETE FROM news").run();
+    NEWS_SEED.forEach((n) =>
+      insertNews.run(
+        n.title,
+        n.category,
+        n.excerpt,
+        n.content,
+        n.image_url,
+        n.author,
+        n.published_at,
+      ),
+    );
+    db.prepare(
+      "INSERT INTO seed_meta (key, applied_at) VALUES (?, datetime('now'))",
+    ).run("news_seed_v2");
+  })();
+}
+
+seedIfEmpty();
+reseedNewsOnce();
+warnOnLegacySeedPassword();
