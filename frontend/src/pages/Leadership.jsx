@@ -2,37 +2,93 @@
  * Leadership & Team.
  *
  * The repository holds no leadership records of any kind, so `LEADERS` in
- * `src/content/leadership.js` is empty and `LEADERSHIP_PENDING` is true. This
- * page renders a complete, designed card template plus a visible "content
- * pending" state rather than inventing names, roles or photographs.
+ * `src/content/leadership.js` is empty and `LEADERSHIP_PENDING` is true.
+ * This page renders a complete, designed card template plus a loading
+ * skeleton instead of a "content pending" notice.
  *
  * To go live: populate `LEADERS` (see the shape documented in that file), or
  * add a `leadership` table + admin screen following the pattern used for
  * partners, then flip `LEADERSHIP_PENDING` to false.
  */
 
-import React, { useMemo } from 'react';
-import Layout from '../components/Layout';
-import PageHeader from '../components/PageHeader';
+import React, { useMemo } from "react";
+import Layout from "../components/Layout";
+import PageHeader from "../components/PageHeader";
 import Seo, {
   BASE_JSONLD,
   breadcrumbJsonLd,
   pageJsonLd,
-} from '../components/Seo';
-import SmartLink from '../components/SmartLink';
-import SmartImage from '../components/SmartImage';
-import { CtaStrip, SectionHeader } from '../components/cards';
-import { BRAND } from '../config/site';
-import { PAGE_META } from '../content/navigation';
+} from "../components/Seo";
+import SmartLink from "../components/SmartLink";
+import SmartImage from "../components/SmartImage";
+import { CtaStrip, SectionHeader } from "../components/cards";
+import { BRAND } from "../config/site";
+import { PAGE_META } from "../content/navigation";
 import {
   EXPERTISE_AREAS,
   LEADERS,
   LEADERSHIP_GROUPS,
   LEADERSHIP_PENDING,
-  LEADERSHIP_REQUIRED_FIELDS,
-} from '../content/leadership';
+} from "../content/leadership";
 
-const META = PAGE_META['/leadership'];
+const META = PAGE_META["/leadership"];
+
+/* ------------------------------------------------------------------ */
+/*  Skeleton primitives                                               */
+/* ------------------------------------------------------------------ */
+
+/** A single animated bar, used to fake lines of text. */
+function SkeletonLine({ width = "100%", height = "1rem", className = "" }) {
+  return (
+    <span
+      className={`skeleton skeleton--line ${className}`}
+      style={{ width, height }}
+      aria-hidden="true"
+    />
+  );
+}
+
+/** Placeholder card that mirrors the real <LeaderCard> layout. */
+function LeaderCardSkeleton() {
+  return (
+    <article className="leader-card leader-card--skeleton" aria-hidden="true">
+      <div className="leader-card-media">
+        <div className="skeleton skeleton--avatar" />
+      </div>
+      <div className="leader-card-body">
+        <SkeletonLine width="70%" height="1.25rem" />
+        <SkeletonLine
+          width="45%"
+          height="0.9rem"
+          className="skeleton--spaced"
+        />
+        <div className="skeleton-chips">
+          <span className="skeleton skeleton--chip" />
+          <span className="skeleton skeleton--chip" />
+          <span className="skeleton skeleton--chip" />
+        </div>
+        <SkeletonLine width="100%" />
+        <SkeletonLine width="92%" />
+        <SkeletonLine width="60%" />
+      </div>
+    </article>
+  );
+}
+
+/** A whole grid of skeleton cards for one leadership group. */
+function LeadershipGroupSkeleton({ count = 3 }) {
+  return (
+    <div className="grid-auto" aria-hidden="true">
+      {Array.from({ length: count }).map((_, i) => (
+        <LeaderCardSkeleton key={i} />
+      ))}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Real leader card (unchanged)                                      */
+/* ------------------------------------------------------------------ */
 
 function LeaderCard({ leader }) {
   return (
@@ -50,7 +106,10 @@ function LeaderCard({ leader }) {
         <h3>{leader.name}</h3>
         <p className="leader-card-position">{leader.position}</p>
         {leader.expertise?.length > 0 && (
-          <ul className="chip-list chip-list--static" aria-label="Areas of expertise">
+          <ul
+            className="chip-list chip-list--static"
+            aria-label="Areas of expertise"
+          >
             {leader.expertise.map((item) => (
               <li key={item}>{item}</li>
             ))}
@@ -64,8 +123,12 @@ function LeaderCard({ leader }) {
             target="_blank"
             rel="noopener noreferrer"
           >
-            View profile <i className="bi bi-box-arrow-up-right" aria-hidden="true" />
-            <span className="sr-only"> for {leader.name} (opens in a new tab)</span>
+            View profile{" "}
+            <i className="bi bi-box-arrow-up-right" aria-hidden="true" />
+            <span className="sr-only">
+              {" "}
+              for {leader.name} (opens in a new tab)
+            </span>
           </a>
         )}
       </div>
@@ -73,24 +136,39 @@ function LeaderCard({ leader }) {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Page                                                              */
+/* ------------------------------------------------------------------ */
+
 export default function Leadership() {
   const jsonLd = useMemo(
     () => [
       ...BASE_JSONLD,
-      pageJsonLd({ name: META.title, path: '/leadership', description: META.description }),
+      pageJsonLd({
+        name: META.title,
+        path: "/leadership",
+        description: META.description,
+      }),
       breadcrumbJsonLd(META.breadcrumb),
     ],
-    []
+    [],
   );
 
   const grouped = LEADERSHIP_GROUPS.map((group) => ({
     ...group,
-    members: LEADERS.filter((l) => (l.group ?? 'executive') === group.id),
+    members: LEADERS.filter((l) => (l.group ?? "executive") === group.id),
   })).filter((group) => group.members.length > 0);
+
+  const isLoading = LEADERSHIP_PENDING || LEADERS.length === 0;
 
   return (
     <Layout navId="leadership">
-      <Seo title={META.title} description={META.description} path="/leadership" jsonLd={jsonLd} />
+      <Seo
+        title={META.title}
+        description={META.description}
+        path="/leadership"
+        jsonLd={jsonLd}
+      />
 
       <PageHeader
         trail={META.breadcrumb}
@@ -99,27 +177,34 @@ export default function Leadership() {
         dek={`Meet the people behind ${BRAND.abbr}’s work in epidemic intelligence, One Health, preparedness and data science.`}
       />
 
-      {LEADERSHIP_PENDING || LEADERS.length === 0 ? (
-        <section aria-labelledby="pending-heading">
+      {/* ---------- leadership section ---------- */}
+      {isLoading ? (
+        /* Skeleton state – no "pending" copy is shown, just placeholders
+           that match the final layout. Screen readers get a short status. */
+        <section aria-labelledby="leadership-loading-heading">
           <div className="wrap">
-            <div className="notice-panel" role="note">
-              <h2 id="pending-heading">Leadership profiles are being published</h2>
-              <p>
-                We are preparing individual profiles for {BRAND.abbr}’s executive, technical and
-                advisory leadership, including each person’s role, areas of expertise and a link
-                to their professional profile.
-              </p>
-              <p>
-                In the meantime, the disciplines {BRAND.abbr} works across are listed below, and our
-                full partner and collaborator network is published on the{' '}
-                <SmartLink to="/partners">Partners page</SmartLink>.
-              </p>
-              <p className="notice-panel-meta">
-                <i className="bi bi-info-circle" aria-hidden="true" /> Content pending CGP
-                sign-off. Required fields per profile:{' '}
-                {LEADERSHIP_REQUIRED_FIELDS.join(', ')}.
-              </p>
-            </div>
+            <h2 id="leadership-loading-heading" className="sr-only">
+              Loading leadership profiles…
+            </h2>
+
+            {LEADERSHIP_GROUPS.map((group) => (
+              <div key={group.id} className="leadership-group-skeleton">
+                <SectionHeader
+                  id={`skeleton-group-${group.id}`}
+                  eyebrow="&nbsp;"
+                  title={group.title}
+                />
+                <LeadershipGroupSkeleton
+                  count={group.id === "executive" ? 3 : 2}
+                />
+              </div>
+            ))}
+
+            {/* If no groups are defined, show a generic grid so the page
+                never looks empty. */}
+            {LEADERSHIP_GROUPS.length === 0 && (
+              <LeadershipGroupSkeleton count={3} />
+            )}
           </div>
         </section>
       ) : (
@@ -128,7 +213,9 @@ export default function Leadership() {
             <div className="wrap">
               <SectionHeader
                 id={`group-${group.id}`}
-                eyebrow={`${group.members.length} ${group.members.length === 1 ? 'profile' : 'profiles'}`}
+                eyebrow={`${group.members.length} ${
+                  group.members.length === 1 ? "profile" : "profiles"
+                }`}
                 title={group.title}
               />
               <div className="grid-auto">
@@ -141,7 +228,11 @@ export default function Leadership() {
         ))
       )}
 
-      <section className="section-surface" aria-labelledby="disciplines-heading">
+      {/* ---------- expertise section (always real) ---------- */}
+      <section
+        className="section-surface"
+        aria-labelledby="disciplines-heading"
+      >
         <div className="wrap">
           <SectionHeader
             id="disciplines-heading"
@@ -156,7 +247,8 @@ export default function Leadership() {
           </ul>
           <p className="section-trailing-link">
             <SmartLink className="text-link" to="/careers">
-              See current openings <i className="bi bi-arrow-right" aria-hidden="true" />
+              See current openings{" "}
+              <i className="bi bi-arrow-right" aria-hidden="true" />
             </SmartLink>
           </p>
         </div>
@@ -166,8 +258,12 @@ export default function Leadership() {
         title="Want to work with our team?"
         body="We welcome collaborations with researchers, practitioners and institutions."
         actions={[
-          { label: 'Partner With Us', to: '/partner-with-us#contact-form', variant: 'white' },
-          { label: 'Careers', to: '/careers', variant: 'white' },
+          {
+            label: "Partner With Us",
+            to: "/partner-with-us#contact-form",
+            variant: "white",
+          },
+          { label: "Careers", to: "/careers", variant: "white" },
         ]}
       />
     </Layout>

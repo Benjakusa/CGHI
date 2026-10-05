@@ -4122,6 +4122,14 @@ section {
   background: var(--sky);
   color: var(--black);
   padding-block: clamp(2.5rem, 2rem + 3vw, 5rem);
+
+  /* Muted ink is 60% black, which is right on the white page but not on this
+     band: blending it over #01abed lands on #00445f, and 60% black against
+     cyan is 4.04:1 — just under the 4.5:1 AA threshold for 14px text.
+     70% gives #003347 and 5.14:1, still visibly secondary to the full black
+     above it. Reassigned as a token rather than per-selector so anything added
+     to a page header later inherits the safe value. */
+  --ink-muted: rgba(0, 0, 0, 0.7);
 }
 
 .page-header h1,
