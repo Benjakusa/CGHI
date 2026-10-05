@@ -1,10 +1,6 @@
 
 
 import { useEffect } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
 
 /**
  * Targets the reveal walks on every scan.
@@ -108,29 +104,70 @@ export default function useScrollAnimations(routeKey) {
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-    /* ---- Hero parallax stays on ScrollTrigger: it is a scrubbed effect tied to
-       the hero's own geometry (one trigger site-wide), not part of the reveal
-       system below. ---- */
-    let ctx = null;
+/* ---- Hero parallax.
+
+       This was the only thing in the codebase that needed GSAP: a scrubbed
+       6% vertical drift on the hero photograph, tied to the hero's own
+       geometry. GSAP and ScrollTrigger together were about 110KB of the build,
+       downloaded and parsed on every page, to compute one linear interpolation
+       that is about fifteen lines here.
+
+       The geometry matches what ScrollTrigger was doing: `start: 'top top'` is
+       the hero's top edge meeting the viewport top (rect.top === 0) and `end:
+       'bottom top'` is its bottom edge meeting it (rect.top === -rect.height),
+       so progress runs -rect.top / rect.height over 0..1. `yPercent: 6` is 6%
+       of the image's own height.
+
+       The shift is published as a custom property on `.hero-carousel` and
+       applied by CSS, rather than written to each image's style. The slide
+       images come from the API and are not in the DOM when this effect runs,
+       so writing to them directly raced the fetch — the parallax silently
+       never applied. A custom property on the container is picked up by
+       whatever slide image appears later, and by later carousel slides.
+
+       Reads are batched into a rAF so a fast scroll costs one layout read per
+       frame rather than one per scroll event, and both listeners are passive. */
+    let stopParallax = null;
     if (!reduceMotion.matches) {
-      ctx = gsap.context(() => {
-        document.querySelectorAll('.hero-carousel').forEach((hero) => {
-          // Only pages with a hero reach here; guard the inner query so GSAP is
-          // never handed an empty NodeList (it warns and, on some builds, throws).
-          const images = hero.querySelectorAll('.hero-slide-img');
-          if (images.length === 0) return;
-          gsap.to(images, {
-            yPercent: 6,
-            ease: 'none',
-            scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
-          });
-        });
-      });
+      const heroes = [...document.querySelectorAll('.hero-carousel')];
+
+      if (heroes.length) {
+        const clamp01 = (n) => (n < 0 ? 0 : n > 1 ? 1 : n);
+        let pending = 0;
+
+        const paint = () => {
+          pending = 0;
+          for (const hero of heroes) {
+            const rect = hero.getBoundingClientRect();
+            if (rect.height === 0) continue;
+            hero.style.setProperty(
+              '--hero-parallax',
+              `${(clamp01(-rect.top / rect.height) * 6).toFixed(3)}%`,
+            );
+          }
+        };
+
+        const schedule = () => {
+          if (!pending) pending = requestAnimationFrame(paint);
+        };
+
+        // Paint once up front: on a reload the hero is often already partly
+        // scrolled, and a zeroed property would snap it on the first frame.
+        paint();
+        window.addEventListener('scroll', schedule, { passive: true });
+        window.addEventListener('resize', schedule, { passive: true });
+        stopParallax = () => {
+          if (pending) cancelAnimationFrame(pending);
+          window.removeEventListener('scroll', schedule);
+          window.removeEventListener('resize', schedule);
+          for (const hero of heroes) hero.style.removeProperty('--hero-parallax');
+        };
+      }
     }
 
     const teardownBase = () => {
       window.removeEventListener('scroll', onScroll);
-      ctx?.revert();
+      stopParallax?.();
     };
 
     /* ---- Reveal setup.

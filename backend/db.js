@@ -1057,7 +1057,7 @@ function seedPartnersIfNeeded() {
       {
         name: "UNICEF",
         logo_url:
-          "https://pandemicintelcenter.org/wp-content/uploads/2025/07/download.jpeg",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShjd5ta-0tpn1YlJZuKoVWAYok2Kb_GxB6l1G-2YwFK6yEGaYMjABvJRlC&s=10",
         website: "https://www.unicef.org/",
         sort: 6,
       },
@@ -1078,14 +1078,14 @@ function seedPartnersIfNeeded() {
       {
         name: "UNEP",
         logo_url:
-          "https://pandemicintelcenter.org/wp-content/uploads/2025/07/download-3.png",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJL7EcU26G7fnyAGWZz2oAB1umIFqV5shcJx7skhOP4A&shttps://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjpdKssoEU-1ZuSu4Ja-7u1vveixbyvcjmUJMZXr2sBQ&s=10",
         website: "https://www.unep.org/",
         sort: 9,
       },
       {
         name: "Taskforce for Global Health",
         logo_url:
-          "https://pandemicintelcenter.org/wp-content/uploads/2025/07/download-4.png",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7KyWL-WaoBRkHHO-yEnLQgXZ8j1GefKta4eb8yfhG-w&s=10",
         website: "https://www.taskforce.org/",
         sort: 10,
       },
