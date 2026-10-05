@@ -48,7 +48,11 @@
 
   <style>
     /* Critical shell styles: prevents an unstyled flash while the CSS bundle
-       downloads, and gives keyboard users a working skip link immediately. */
+       downloads, and gives keyboard users a working skip link immediately.
+
+       The skip link is styled here AND in styles/site.css. This block uses the
+       same class so the two agree; it is off-screen until focused, then pinned
+       to the top-left above everything else. */
     html {
       -webkit-text-size-adjust: 100%;
     }
@@ -60,18 +64,18 @@
       font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
     }
 
-    .app-boot-skip {
+    .skip-link {
       position: absolute;
       left: -9999px;
       top: 0;
-      z-index: 999;
+      z-index: 1200;
       padding: 0.75rem 1.25rem;
       background: #000000;
       color: #ffffff;
       font-weight: 600;
     }
 
-    .app-boot-skip:focus {
+    .skip-link:focus {
       left: 0.5rem;
       top: 0.5rem;
     }
@@ -79,7 +83,13 @@
 </head>
 
 <body>
-  <a class="app-boot-skip" href="#main-content">Skip to main content</a>
+  <!--
+    The site's only skip link, and deliberately outside #root so it survives
+    hydration untouched. Layout.jsx does not render a second one: two identical
+    "Skip to main content" links put the control in the tab order twice and
+    announce the same thing twice.
+  -->
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <div id="root"></div>
   <noscript>
     <div style="max-width: 44rem; margin: 4rem auto; padding: 0 1.5rem; line-height: 1.6;">
