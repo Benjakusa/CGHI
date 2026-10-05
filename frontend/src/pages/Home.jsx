@@ -28,6 +28,7 @@ import Seo, {
 } from '../components/Seo';
 import SmartLink from '../components/SmartLink';
 import SmartImage from '../components/SmartImage';
+import VideoEmbed from '../components/VideoEmbed';
 import {
   CapabilityCard,
   CtaStrip,
@@ -292,22 +293,11 @@ export default function Home() {
               </div>
             </div>
 
-            <figure className="frame-figure frame-figure--video">
-              <div className="frame-figure-media">
-                <iframe
-                  src="https://www.youtube-nocookie.com/embed/SxFaJhnb4Qw"
-                  title="Decision Making Tool for Public Health Emergencies (DMT-PHE) in Kenya"
-                  loading="lazy"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                />
-              </div>
-              <figcaption>
-                Kenya’s Decision-Making Tool for Public Health Emergencies (DMT-PHE), validated
-                October 2025.
-              </figcaption>
-            </figure>
+            <VideoEmbed
+              videoId="SxFaJhnb4Qw"
+              title="Decision Making Tool for Public Health Emergencies (DMT-PHE) in Kenya"
+              caption="Kenya’s Decision-Making Tool for Public Health Emergencies (DMT-PHE), validated October 2025."
+            />
           </div>
         </div>
       </section>

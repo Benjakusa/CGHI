@@ -109,6 +109,11 @@ db.exec(`
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS meta (
+    key TEXT PRIMARY KEY,
+    value TEXT
+  );
 `);
 
 try {
@@ -128,11 +133,7 @@ try {
 } catch (err) {}
 
 /**
- * The seed password that used to be hard-coded in this file is also present in
- * the repository's .env.example, so it must be treated as compromised: warn at
- * boot if any admin still authenticates with it. Cheap enough to run once per
- * process start, and it turns a silent, invisible compromise into a log line
- * somebody will actually see.
+ * Warn if any admin still authenticates with the legacy seed password.
  */
 function warnOnLegacySeedPassword() {
   const LEGACY = "Admin@CGHI2025!";
@@ -143,27 +144,73 @@ function warnOnLegacySeedPassword() {
     return;
   }
   for (const admin of admins) {
-    if (!bcrypt.compareSync(LEGACY, admin.password_hash)) continue;
+    if (bcrypt.compareSync(LEGACY, admin.password_hash)) {
+      console.warn(
+        `[seed] WARNING: admin ${admin.email} still uses the legacy seed password. Rotate immediately.`,
+      );
+    }
   }
 }
 
-function seedIfEmpty() {
-  const adminCount = db.prepare("SELECT COUNT(*) as c FROM admins").get().c;
-  if (adminCount === 0) {
+/* ------------------------------------------------------------------ */
+/*  Versioned seed helpers                                             */
+/* ------------------------------------------------------------------ */
+
+function getMeta(key) {
+  const row = db.prepare("SELECT value FROM meta WHERE key = ?").get(key);
+  return row ? row.value : null;
+}
+
+function setMeta(key, value) {
+  db.prepare("INSERT OR REPLACE INTO meta (key, value) VALUES (?, ?)").run(
+    key,
+    String(value),
+  );
+}
+
+// Bump these constants whenever you change the corresponding seed content.
+const SEED_VERSION_ADMINS = "1";
+const SEED_VERSION_HEROES = "1";
+const SEED_VERSION_NEWS = "2"; // bumped — full content from source links
+const SEED_VERSION_PARTNERS = "1";
+const SEED_VERSION_JOBS = "1";
+const SEED_VERSION_RESOURCES = "1";
+
+/* ------------------------------------------------------------------ */
+/*  Admins                                                             */
+/* ------------------------------------------------------------------ */
+
+function seedAdminsIfNeeded() {
+  if (getMeta("seed_version_admins") === SEED_VERSION_ADMINS) return;
+
+  const count = db.prepare("SELECT COUNT(*) as c FROM admins").get().c;
+  if (count === 0) {
     const seedEmail =
       process.env.SEED_ADMIN_EMAIL || "admin@pandemicintelcenter.org";
     const seedPassword = process.env.SEED_ADMIN_PASSWORD;
     if (!seedPassword) {
-      return;
+      console.warn("[seed] SEED_ADMIN_PASSWORD not set — skipping admin seed.");
+    } else {
+      const hash = bcrypt.hashSync(seedPassword, 10);
+      db.prepare(
+        "INSERT INTO admins (email, password_hash, name) VALUES (?, ?, ?)",
+      ).run(seedEmail, hash, "CGP Administrator");
+      console.log("[seed] Admin user created:", seedEmail);
     }
-    const hash = bcrypt.hashSync(seedPassword, 10);
-    db.prepare(
-      "INSERT INTO admins (email, password_hash, name) VALUES (?, ?, ?)",
-    ).run(seedEmail, hash, "CGP Administrator");
   }
 
-  const heroCount = db.prepare("SELECT COUNT(*) as c FROM heroes").get().c;
-  if (heroCount === 0) {
+  setMeta("seed_version_admins", SEED_VERSION_ADMINS);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Heroes                                                             */
+/* ------------------------------------------------------------------ */
+
+function seedHeroesIfNeeded() {
+  if (getMeta("seed_version_heroes") === SEED_VERSION_HEROES) return;
+
+  const count = db.prepare("SELECT COUNT(*) as c FROM heroes").get().c;
+  if (count === 0) {
     const insertHero = db.prepare(`
       INSERT INTO heroes (title, topic, description, btn1_text, btn1_link, btn2_text, btn2_link, image_url, sort_order, published)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
@@ -248,21 +295,53 @@ function seedIfEmpty() {
         h.sort,
       ),
     );
+    console.log("[seed] Heroes seeded:", heroes.length);
   }
 
-  const newsCount = db.prepare("SELECT COUNT(*) as c FROM news").get().c;
-  if (newsCount === 0) {
-    const insertNews = db.prepare(`
-      INSERT INTO news (title, category, excerpt, content, image_url, author, published_at, published)
-      VALUES (?, ?, ?, ?, ?, ?, ?, 1)
-    `);
+  setMeta("seed_version_heroes", SEED_VERSION_HEROES);
+}
 
-    // Article 1: medRxiv Preprint - AI-Assisted Decision Support System
-    insertNews.run(
-      "Development and Evaluation of an Artificial Intelligence–Assisted Decision Support System for Public Health Emergency Classification and Escalation in Kenya",
-      "Research",
-      "A new preprint manuscript describes the development and evaluation of the DMT-PHE AI Agent, an artificial intelligence–assisted decision support system designed to operationalize Kenya's nationally validated Decision-Making Tool for Public Health Emergencies. The pilot evaluation demonstrated high concordance with expert assessments, strong usability, and no major safety concerns.",
-      `Background
+/* ------------------------------------------------------------------ */
+/*  News                                                               */
+/* ------------------------------------------------------------------ */
+
+function seedNewsIfNeeded() {
+  const current = getMeta("seed_version_news");
+  if (current === SEED_VERSION_NEWS) {
+    console.log(
+      "[seed] News already at version",
+      SEED_VERSION_NEWS,
+      "— skipping.",
+    );
+    return;
+  }
+
+  console.log(
+    `[seed] Seeding news (version ${current || "none"} -> ${SEED_VERSION_NEWS})`,
+  );
+
+  // Wipe existing news and reset autoincrement so IDs start at 1
+  db.prepare("DELETE FROM news").run();
+  try {
+    db.prepare("DELETE FROM sqlite_sequence WHERE name='news'").run();
+  } catch (_) {
+    /* table may not exist yet on first run */
+  }
+
+  const insertNews = db.prepare(`
+    INSERT INTO news (title, category, excerpt, content, image_url, author, published_at, published)
+    VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+  `);
+
+  const articles = [
+    /* -------- 1. medRxiv Preprint: AI-Assisted Decision Support System -------- */
+    {
+      title:
+        "Development and Evaluation of an Artificial Intelligence–Assisted Decision Support System for Public Health Emergency Classification and Escalation in Kenya",
+      category: "Research",
+      excerpt:
+        "A new preprint manuscript describes the development and evaluation of the DMT-PHE AI Agent, an artificial intelligence–assisted decision support system designed to operationalize Kenya's nationally validated Decision-Making Tool for Public Health Emergencies. The pilot evaluation demonstrated high concordance with expert assessments, strong usability, and no major safety concerns.",
+      content: `Background
 
 Timely assessment, classification, and escalation of public health events are essential for effective outbreak response, yet decision-making after event detection remains challenging because of fragmented guidance and variable interpretation of escalation criteria. To strengthen public health emergency management, Kenya developed the Decision-Making Tool for Public Health Emergencies (DMT-PHE), a framework for event assessment, classification, notification, and escalation. An artificial intelligence (AI)-enabled version, the DMT-PHE AI Agent, was subsequently developed to operationalize the framework through decision support. This study describes the development of the DMT-PHE AI Agent and evaluates its performance, usability, safety, and user acceptability.
 
@@ -291,17 +370,20 @@ Thirty-three scenario evaluations were completed. The AI Agent achieved an overa
 Conclusions
 
 The DMT-PHE AI Agent demonstrated that a nationally validated public health emergency decision framework can be successfully translated into an AI-enabled decision-support system. These findings provide early evidence that AI can augment public health emergency decision-making by delivering structured, transparent, and context-specific recommendations while maintaining human oversight, offering a practical model for operationalizing national public health guidance.`,
-      null,
-      "Mark Nanyingi, Eric Osoro, Geoffrey H. Siwo, Isaac Ngere, Samuel Kadivane, James Magige, Joseph Kamau, Shreya Jain, Bryan O. Nyawanda, Joseph Njoroge, Ian Njeru, Kadondi Kasera, Victoria Kanana, Kamene Kimenye",
-      "July 2026",
-    );
+      image_url: null,
+      author:
+        "Mark Nanyingi, Eric Osoro, Geoffrey H. Siwo, Isaac Ngere, Samuel Kadivane, James Magige, Joseph Kamau, Shreya Jain, Bryan O. Nyawanda, Joseph Njoroge, Ian Njeru, Kadondi Kasera, Victoria Kanana, Kamene Kimenye",
+      published_at: "July 2026",
+    },
 
-    // Article 2: Advancing Epidemic Intelligence in Kenya (KNPHI Strategic Plan Launch)
-    insertNews.run(
-      "Kenya Launches NAPHS II and KNPHI Strategic Plan to Strengthen Epidemic Intelligence and Digital Public Health Systems",
-      "News",
-      "Kenya has launched the KNPHI Strategic Plan 2026–2030 and NAPHS II 2026–2030, establishing a comprehensive blueprint for transitioning toward integrated, data-driven, and intelligence-led public health systems. The launch signals a decisive shift from fragmented and reactive approaches toward institutionalized epidemic intelligence, underpinned by digital transformation, interoperability, and advanced analytics.",
-      `Kenya has reached a critical milestone in strengthening its national health security architecture with the launch of the Kenya National Public Health Institute (KNPHI) Strategic Plan 2026–2030 and the National Action Plan for Health Security (NAPHS II) 2026–2030. These frameworks establish a comprehensive blueprint for transitioning toward integrated, data-driven, and intelligence-led public health systems. The launch signals a decisive shift from fragmented and reactive approaches toward institutionalized epidemic intelligence, underpinned by digital transformation, interoperability, and advanced analytics. In supporting this transition, the Centre for Global Health (CGH) provided key technical contributions to the KNPHI Strategic Plan and NAPHS II, aligning with international frameworks for epidemic intelligence and health security. These contributions ensured that both frameworks are grounded in globally aligned, evidence-based approaches while remaining responsive to Kenya's national context and operational priorities.
+    /* -------- 2. Advancing Epidemic Intelligence in Kenya (KNPHI Strategic Plan Launch) -------- */
+    {
+      title:
+        "Kenya Launches NAPHS II and KNPHI Strategic Plan to Strengthen Epidemic Intelligence and Digital Public Health Systems",
+      category: "News",
+      excerpt:
+        "Kenya has launched the KNPHI Strategic Plan 2026–2030 and NAPHS II 2026–2030, establishing a comprehensive blueprint for transitioning toward integrated, data-driven, and intelligence-led public health systems. The launch signals a decisive shift from fragmented and reactive approaches toward institutionalized epidemic intelligence, underpinned by digital transformation, interoperability, and advanced analytics.",
+      content: `Kenya has reached a critical milestone in strengthening its national health security architecture with the launch of the Kenya National Public Health Institute (KNPHI) Strategic Plan 2026–2030 and the National Action Plan for Health Security (NAPHS II) 2026–2030. These frameworks establish a comprehensive blueprint for transitioning toward integrated, data-driven, and intelligence-led public health systems. The launch signals a decisive shift from fragmented and reactive approaches toward institutionalized epidemic intelligence, underpinned by digital transformation, interoperability, and advanced analytics. In supporting this transition, the Centre for Global Health (CGH) provided key technical contributions to the KNPHI Strategic Plan and NAPHS II, aligning with international frameworks for epidemic intelligence and health security. These contributions ensured that both frameworks are grounded in globally aligned, evidence-based approaches while remaining responsive to Kenya's national context and operational priorities.
 
 Speaking at the historic event, Cabinet Secretary for Health, Hon. Aden Duale, noted that "The launch of these strategic frameworks marks a significant step in strengthening Kenya's capacity to prevent, detect, and respond to public health threats. By investing in integrated systems and digital innovation, we are building a resilient health security architecture that safeguards our population and contributes to global health security."
 
@@ -331,17 +413,19 @@ Partnerships Supporting the Agenda
 The development and launch of these strategic frameworks were made possible through strong collaboration between the Government of Kenya and its partners. In particular, the Tackling Deadly Diseases in Africa Programme 2 (TDDAP2) funded by the Foreign, Commonwealth & Development Office (FCDO), played a critical role in supporting the development of the NAPHS II and associated frameworks, as well as strengthening systems for data-driven public health decision-making.
 
 Speaking at the event, Dr. Kadondi Kasera highlighted the programme's contribution, noting that: "TDDAP2 has delivered targeted technical assistance across four critical pillars—planning and financing, workforce, data and surveillance, and emergency preparedness and response—contributing to Kenya's strengthened health security architecture."`,
-      null,
-      "Dr. Mark Nanyingi",
-      "March 2026",
-    );
+      image_url: null,
+      author: "Dr. Mark Nanyingi",
+      published_at: "March 2026",
+    },
 
-    // Article 3: The First 100 Days: DRC Ebola Epidemic
-    insertNews.run(
-      "The First 100 Days: Why the DRC Ebola Epidemic is Still Accelerating",
-      "Analysis",
-      "One hundred days after the DRC declared an outbreak of Bundibugyo virus disease, the epidemic is still spreading, with approximately 5,515 confirmed cases and 2,642 deaths reported, representing a case-fatality ratio of nearly 48%. The outbreak has already exceeded the DRC's 2018–2020 outbreak in confirmed cases.",
-      `One hundred days after the Democratic Republic of the Congo declared an outbreak of Bundibugyo virus disease on 15 May 2026, the epidemic is still spreading. It is expanding geographically, overwhelming parts of the health system and exposing persistent weaknesses in the world's ability to contain outbreaks in fragile and conflict-affected settings.
+    /* -------- 3. The First 100 Days: DRC Ebola Epidemic -------- */
+    {
+      title:
+        "The First 100 Days: Why the DRC Ebola Epidemic is Still Accelerating",
+      category: "Analysis",
+      excerpt:
+        "One hundred days after the DRC declared an outbreak of Bundibugyo virus disease, the epidemic is still spreading, with approximately 5,515 confirmed cases and 2,642 deaths reported, representing a case-fatality ratio of nearly 48%. The outbreak has already exceeded the DRC's 2018–2020 outbreak in confirmed cases.",
+      content: `One hundred days after the Democratic Republic of the Congo declared an outbreak of Bundibugyo virus disease on 15 May 2026, the epidemic is still spreading. It is expanding geographically, overwhelming parts of the health system and exposing persistent weaknesses in the world's ability to contain outbreaks in fragile and conflict-affected settings.
 
 By the end of the first 100 days, approximately 5,515 confirmed cases and 2,642 deaths had been reported, representing a case-fatality ratio of nearly 48%. The epidemic has already exceeded the DRC's 2018–2020 outbreak, which recorded 3,317 confirmed cases over almost two years.
 
@@ -362,17 +446,19 @@ Despite these challenges, the response has grown considerably in scale and capac
 Dr. Javid Abdelmoneim, international president of MSF, emphasized the need for community-centered approaches: "This outbreak continues to spread at a rate that the response cannot keep up with. Treatment centres remain essential to save lives, but this response requires much more than additional beds. It requires better screening, safe isolation of sick people and their contacts, and support for health professionals. It is essential that the response be developed with communities and not without their participation."
 
 The current outbreak trajectory underscores the urgent need to continue to scale up evidence-based Ebola control measures, such as rapid case and contact identification, expansion of diagnostic capacity, improvement of infection prevention and control in health care settings, adoption of safe and dignified burials, strengthening of cross-border surveillance and coordination, and community engagement.`,
-      null,
-      "CGP Analysis",
-      "August 2026",
-    );
+      image_url: null,
+      author: "CGP Analysis",
+      published_at: "August 2026",
+    },
 
-    // Article 4: From Detection to Decision: AI in Kenya
-    insertNews.run(
-      "From Detection to Decision: How Kenya is Transforming Public Health Emergency Response with Artificial Intelligence",
-      "News",
-      "The DMT-PHE AI Agent translates the nationally validated decision framework into an interactive AI-enabled system capable of assisting public health professionals in interpreting outbreak information, applying escalation logic, and recommending response pathways. The pilot evaluation demonstrated a high degree of agreement between expert assessments and AI-generated recommendations.",
-      `The framework underwent extensive stakeholder consultations, technical reviews, simulation exercises, and national validation workshops involving epidemiologists, emergency preparedness specialists, laboratory experts, risk communication practitioners, and public health managers from across Kenya. Through these processes, the DMT-PHE was refined and tested using realistic scenarios reflecting some of the country's most significant public health threats, including viral haemorrhagic fevers, zoonotic outbreaks, cholera outbreaks, chemical incidents, and public health events of unknown etiology.
+    /* -------- 4. From Detection to Decision: AI in Kenya -------- */
+    {
+      title:
+        "From Detection to Decision: How Kenya is Transforming Public Health Emergency Response with Artificial Intelligence",
+      category: "News",
+      excerpt:
+        "The DMT-PHE AI Agent translates the nationally validated decision framework into an interactive AI-enabled system capable of assisting public health professionals in interpreting outbreak information, applying escalation logic, and recommending response pathways. The pilot evaluation demonstrated a high degree of agreement between expert assessments and AI-generated recommendations.",
+      content: `The framework underwent extensive stakeholder consultations, technical reviews, simulation exercises, and national validation workshops involving epidemiologists, emergency preparedness specialists, laboratory experts, risk communication practitioners, and public health managers from across Kenya. Through these processes, the DMT-PHE was refined and tested using realistic scenarios reflecting some of the country's most significant public health threats, including viral haemorrhagic fevers, zoonotic outbreaks, cholera outbreaks, chemical incidents, and public health events of unknown etiology.
 
 What distinguishes the DMT-PHE is its ability to translate complex technical guidance into a practical decision-making pathway that can be used by public health professionals operating at national and subnational levels. Rather than relying solely on individual interpretation, the framework provides clear criteria for assessing risks, escalating events, activating response mechanisms, and coordinating actions across multiple sectors.
 
@@ -399,17 +485,19 @@ The recent Ebola outbreak in East Africa was a reminder of the stakes. Early sig
 "The real innovation is not artificial intelligence itself," Nanyingi reflects. "It is the combination of public health expertise, operational experience, and technology working together to help decision-makers act faster and more confidently when lives are at stake."
 
 That, more than the technology, is the part worth paying attention to. AI is arriving in global health faster than most institutions can evaluate it, often built far from the places it's meant to serve. This project took the slower route: years of Kenyan-led framework-building before a line of AI code was written, and a rigorous evaluation before anyone called it ready. It's a quieter story than "AI predicts the next pandemic", but it may be the more honest version of what responsible AI in public health actually looks like: not a shortcut, but a tool built patiently, by the people who'll be the ones relying on it when the next warning sign appears.`,
-      null,
-      "CGP Communications",
-      "July 2026",
-    );
+      image_url: null,
+      author: "CGP Communications",
+      published_at: "July 2026",
+    },
 
-    // Article 5: U.S. Advancing Global Health Initiative
-    insertNews.run(
-      'What the U.S. "Advancing Global Health" Initiative Means for Africa\'s Health Security and Sovereignty',
-      "Analysis",
-      "The U.S. Department of State has launched a major global funding initiative titled Advancing Global Health, establishing a flexible financing framework designed to support global health security priorities over the coming years. The initiative arrives at a pivotal moment as African countries accelerate efforts to modernize national health security systems.",
-      `The U.S. Department of State, through its Bureau of Global Health Security and Diplomacy (GHSD), has launched a major global funding initiative titled Advancing Global Health. Structured as an Annual Program Statement (APS) with rolling Addenda, the initiative establishes a flexible financing framework designed to support global health security priorities over the coming years. With award sizes ranging from USD 500,000 to USD 250 million, the program represents one of the most substantial diplomatic financing mechanisms currently available for strengthening pandemic preparedness, surveillance systems, and outbreak response capacity worldwide.
+    /* -------- 5. U.S. Advancing Global Health Initiative -------- */
+    {
+      title:
+        'What the U.S. "Advancing Global Health" Initiative Means for Africa\'s Health Security and Sovereignty',
+      category: "Analysis",
+      excerpt:
+        "The U.S. Department of State has launched a major global funding initiative titled Advancing Global Health, establishing a flexible financing framework designed to support global health security priorities over the coming years. The initiative arrives at a pivotal moment as African countries accelerate efforts to modernize national health security systems.",
+      content: `The U.S. Department of State, through its Bureau of Global Health Security and Diplomacy (GHSD), has launched a major global funding initiative titled Advancing Global Health. Structured as an Annual Program Statement (APS) with rolling Addenda, the initiative establishes a flexible financing framework designed to support global health security priorities over the coming years. With award sizes ranging from USD 500,000 to USD 250 million, the program represents one of the most substantial diplomatic financing mechanisms currently available for strengthening pandemic preparedness, surveillance systems, and outbreak response capacity worldwide.
 
 For African countries, the initiative arrives at a pivotal moment. Following the COVID-19 pandemic and successive outbreaks of Ebola, cholera, and Mpox, governments across the continent are accelerating efforts to modernize national health security systems and address structural vulnerabilities exposed by recent crises.
 
@@ -455,17 +543,19 @@ The AHSS agenda emphasizes several core priorities:
 The GHSD APS could complement these priorities by supporting country-level preparedness investments that feed into regional surveillance and response networks coordinated by Africa CDC. If aligned effectively, this financing mechanism could reinforce the broader AHSS objective of building a more autonomous and resilient African health security ecosystem capable of managing emerging threats with greater independence and coordination.
 
 However, the initiative has also drawn scrutiny from African governments and civil society organizations concerned about data sovereignty, intellectual property, and the broader geopolitical implications of U.S.-led global health financing. Several African countries, including Zimbabwe, Ghana, and Zambia, have rejected or stalled bilateral health agreements due to concerns over data-sharing requirements and the linking of health assistance to mineral access. These developments underscore the importance of ensuring that financing mechanisms respect national sovereignty and are aligned with domestically defined health security priorities.`,
-      null,
-      "Dr. Mark Nanyingi",
-      "March 2026",
-    );
+      image_url: null,
+      author: "Dr. Mark Nanyingi",
+      published_at: "March 2026",
+    },
 
-    // Article 6: Kenya Advances Public Health Emergency Response Systems (Risk-Based Decision-Making Tool)
-    insertNews.run(
-      "Kenya Advances Public Health Emergency Response Systems through Validation of a Risk-Based Decision-Making Tool",
-      "News",
-      "The National Validation Workshop for the DMT-PHE training curriculum marks a significant advancement in Kenya's public health emergency governance and reinforces the country's compliance with the International Health Regulations. The curriculum validation marked the institutionalization phase of DMT-PHE transitioning from framework validation to applied national rollout readiness.",
-      `From Ad Hoc Response to Structured Activation: Operationalizing a Standardized Escalation Framework to Improve Speed, Clarity, and Accountability in Emergency Response
+    /* -------- 6. Kenya Advances Public Health Emergency Response Systems (Risk-Based Decision-Making Tool) -------- */
+    {
+      title:
+        "Kenya Advances Public Health Emergency Response Systems through Validation of a Risk-Based Decision-Making Tool",
+      category: "News",
+      excerpt:
+        "The National Validation Workshop for the DMT-PHE training curriculum marks a significant advancement in Kenya's public health emergency governance and reinforces the country's compliance with the International Health Regulations. The curriculum validation marked the institutionalization phase of DMT-PHE transitioning from framework validation to applied national rollout readiness.",
+      content: `From Ad Hoc Response to Structured Activation: Operationalizing a Standardized Escalation Framework to Improve Speed, Clarity, and Accountability in Emergency Response
 
 The Center for Global Health and Pandemic Intelligence (CGP) in collaboration with the Kenya National Public Health Institute (KNPHI), with support from Tackling Deadly Diseases Programme (TDDAP2) provided technical leadership in the National Validation Workshop for the Decision-Making Tool for Public Health Emergencies (DMT-PHE) training curriculum. This milestone represents a significant advancement in Kenya's public health emergency governance and reinforces the country's compliance with the International Health Regulations (IHR 2005).
 
@@ -516,17 +606,19 @@ Pillar 3 – Systems Integration: embeds DMT-PHE within routine surveillance and
 Pillar 4 – Digitization & AI Support: advances digital trigger matrices within DHIS2/IDSR platforms, introduces automated severity scoring and escalation prompts, enables real-time dashboards for decision latency monitoring, and applies AI-supported anomaly detection. This transforms the tool into a dynamic decision-support system.
 
 Pillar 5 – NAPHS II & 7-1-7 Alignment: strengthens measurable compliance with IHR core capacities. The framework aligns indicators to SPAR/JEE benchmarks, institutionalizes 7-1-7 performance monitoring, reinforces One Health coordination metrics, and ensures integration with the broader public health emergency management architecture.`,
-      null,
-      "CGP Communications",
-      "February 2026",
-    );
+      image_url: null,
+      author: "CGP Communications",
+      published_at: "February 2026",
+    },
 
-    // Article 7: Kenya's SPAR 2025
-    insertNews.run(
-      "Kenya's States Parties Self-Assessment Annual Reporting (SPAR 2025) Signals a Strategic Shift in Health Security Preparedness",
-      "News",
-      "The Kenya National Public Health Institute convened a three-day national stakeholders' consultative workshop to undertake Kenya's 2025 States Parties Self-Assessment Annual Reporting (SPAR), a core obligation under the International Health Regulations. The assessment brought together over 50 multidisciplinary experts to reflect on national preparedness performance and identify priority areas for action.",
-      `"The SPAR 2025 process provided Kenya with a critical opportunity to reflect honestly on our preparedness strengths and system gaps. By linking assessment findings directly to NAPHS II implementation, we are strengthening national readiness through evidence-based prioritization and coordinated action across sectors."
+    /* -------- 7. Kenya's SPAR 2025 -------- */
+    {
+      title:
+        "Kenya's States Parties Self-Assessment Annual Reporting (SPAR 2025) Signals a Strategic Shift in Health Security Preparedness",
+      category: "News",
+      excerpt:
+        "The Kenya National Public Health Institute convened a three-day national stakeholders' consultative workshop to undertake Kenya's 2025 States Parties Self-Assessment Annual Reporting (SPAR), a core obligation under the International Health Regulations. The assessment brought together over 50 multidisciplinary experts to reflect on national preparedness performance and identify priority areas for action.",
+      content: `"The SPAR 2025 process provided Kenya with a critical opportunity to reflect honestly on our preparedness strengths and system gaps. By linking assessment findings directly to NAPHS II implementation, we are strengthening national readiness through evidence-based prioritization and coordinated action across sectors."
 — Dr. Kanana Kimonye, Ag. Director, Emergency Preparedness and Response (EPR), Kenya National Public Health Institute (KNPHI)
 
 Aligning SPAR with NAPHS II Implementation to Strengthen Sustainable National Preparedness Systems
@@ -565,17 +657,19 @@ Financing Fragility: Technical progress continued, but uneven financing mechanis
 Workforce Institutionalization: Sustained performance improvements increasingly depended on stable and well-trained public health workforce systems.
 
 One Health Integration Trajectory: Cross-sectoral engagement strengthened, although climate-sensitive surveillance and environmental health indicators required further integration.`,
-      null,
-      "Dr. Mark Nanyingi",
-      "February 2026",
-    );
+      image_url: null,
+      author: "Dr. Mark Nanyingi",
+      published_at: "February 2026",
+    },
 
-    // Article 8: Strengthening Kenya's Health Security through NAPHS II
-    insertNews.run(
-      "Strengthening Kenya's Health Security through Validation of the National Action Plan for Health Security (NAPHS II)",
-      "News",
-      "The validation convened over 70 multidisciplinary stakeholders to rigorously assess the technical soundness, strategic coherence, and implementability of NAPHS II, Kenya's five-year roadmap for strengthening prevention, detection, and response to public health threats in alignment with the International Health Regulations.",
-      `"The validation of NAPHS II marks a critical shift from planning to execution. By grounding the Plan in evidence, One Health principles, and national ownership, Kenya is positioning itself to translate investments into sustained health security impact. TDDAP2 is proud to support this process as it strengthens the systems that matter most before, during, and after health emergencies."
+    /* -------- 8. Strengthening Kenya's Health Security through NAPHS II -------- */
+    {
+      title:
+        "Strengthening Kenya's Health Security through Validation of the National Action Plan for Health Security (NAPHS II)",
+      category: "News",
+      excerpt:
+        "The validation convened over 70 multidisciplinary stakeholders to rigorously assess the technical soundness, strategic coherence, and implementability of NAPHS II, Kenya's five-year roadmap for strengthening prevention, detection, and response to public health threats in alignment with the International Health Regulations.",
+      content: `"The validation of NAPHS II marks a critical shift from planning to execution. By grounding the Plan in evidence, One Health principles, and national ownership, Kenya is positioning itself to translate investments into sustained health security impact. TDDAP2 is proud to support this process as it strengthens the systems that matter most before, during, and after health emergencies."
 — Dr. Kadondi Kasera, TDDAP2 Team Lead
 
 The Center for Global Health and Pandemic Intelligence (CGP), through its Division of Global Health Security, provided technical leadership and facilitation for the National Action Plan for Health Security II (NAPHS II) Validation Workshop.
@@ -624,17 +718,19 @@ Through a post-validation convention of the NAPHS II Secretariat, consolidated i
 Positioning NAPHS II for Implementation and Financing
 
 The validation confirmed that NAPHS II provides a credible platform for resource mobilisation, aligned with ongoing and prospective bilateral and multilateral investments. In particular, the Plan positions Kenya to operationalise the US–Kenya health cooperation agreement and other partnerships that support national health security priorities.`,
-      null,
-      "Dr. Mark Nanyingi",
-      "February 2026",
-    );
+      image_url: null,
+      author: "Dr. Mark Nanyingi",
+      published_at: "February 2026",
+    },
 
-    // Article 9: Strengthening Africa's Pandemic Preparedness (HARMONIZE and SCOPE)
-    insertNews.run(
-      "Strengthening Africa's Pandemic Preparedness: A Harmonised One Health Response",
-      "News",
-      "CGP-supported HARMONIZE and SCOPE initiatives unlock USD 80M in coordinated investment for Africa's health security through the Pandemic Fund's Third Call proposals. The initiatives represent a landmark coordinated investment in Africa's pandemic prevention, preparedness and response capacity.",
-      `The Center for Global Health and Pandemic Intelligence (CGP)–supported HARMONIZE and SCOPE initiatives unlock USD 80M in coordinated investment for Africa's health security. The CGP proudly welcomes the Pandemic Fund's announcement of two landmark initiatives approved under the Pandemic Fund Third Call proposals that CGP supported technically, strategically, and methodologically.
+    /* -------- 9. Strengthening Africa's Pandemic Preparedness (HARMONIZE and SCOPE) -------- */
+    {
+      title:
+        "Strengthening Africa's Pandemic Preparedness: A Harmonised One Health Response",
+      category: "News",
+      excerpt:
+        "CGP-supported HARMONIZE and SCOPE initiatives unlock USD 80M in coordinated investment for Africa's health security through the Pandemic Fund's Third Call proposals. The initiatives represent a landmark coordinated investment in Africa's pandemic prevention, preparedness and response capacity.",
+      content: `The Center for Global Health and Pandemic Intelligence (CGP)–supported HARMONIZE and SCOPE initiatives unlock USD 80M in coordinated investment for Africa's health security. The CGP proudly welcomes the Pandemic Fund's announcement of two landmark initiatives approved under the Pandemic Fund Third Call proposals that CGP supported technically, strategically, and methodologically.
 
 The AU-IBAR led "Strengthening One Health Capacities for Enhanced Pandemic Preparedness and Response in the Lake Chad Basin" (SCOPE) and Africa CDC led "Harmonizing Continental Networks and Systems for Pandemic Prevention Preparedness and Response in Africa" (HARMONIZE) initiatives represent a USD 80 million coordinated investment in Africa's pandemic prevention, preparedness and response (PPR) capacity intentionally designed to avoid duplication and maximize synergy through an aligned, harmonised, and mutually reinforcing approach.
 
@@ -656,17 +752,19 @@ CGP's technical contributions to both initiatives included:
 - Support for monitoring, evaluation, and learning frameworks
 
 The approval of these initiatives marks a milestone in Africa's collective efforts to build resilient, integrated health security systems capable of managing emerging threats with greater independence and coordination.`,
-      null,
-      "CGP Communications",
-      "November 2025",
-    );
+      image_url: null,
+      author: "CGP Communications",
+      published_at: "November 2025",
+    },
 
-    // Article 10: Leveraging One Health to Strengthen Pandemic Preparedness in Kenya
-    insertNews.run(
-      "Leveraging One Health to Strengthen Pandemic Preparedness in Kenya",
-      "News",
-      "At the inaugural Kenya One Health Conference, CGP's Technical Director delivered the opening keynote address on leveraging One Health to strengthen pandemic preparedness in Kenya. He traced Kenya's journey from responding to zoonotic outbreaks to building integrated systems for pandemic prevention, preparedness, and resilience.",
-      `At the inaugural Kenya One Health Conference (KOH 2025) jointly organized by the Kenya Medical Association (KMA) and Kenya Veterinary Association (KVA) under the global theme "By Protecting One, We Help Protect All", CGP's Technical Director for Global Health Security, Dr. Mark Nanyingi, delivered the opening keynote address on "Leveraging One Health to Strengthen Pandemic Preparedness in Kenya."
+    /* -------- 10. Leveraging One Health to Strengthen Pandemic Preparedness in Kenya -------- */
+    {
+      title:
+        "Leveraging One Health to Strengthen Pandemic Preparedness in Kenya",
+      category: "News",
+      excerpt:
+        "At the inaugural Kenya One Health Conference, CGP's Technical Director delivered the opening keynote address on leveraging One Health to strengthen pandemic preparedness in Kenya. He traced Kenya's journey from responding to zoonotic outbreaks to building integrated systems for pandemic prevention, preparedness, and resilience.",
+      content: `At the inaugural Kenya One Health Conference (KOH 2025) jointly organized by the Kenya Medical Association (KMA) and Kenya Veterinary Association (KVA) under the global theme "By Protecting One, We Help Protect All", CGP's Technical Director for Global Health Security, Dr. Mark Nanyingi, delivered the opening keynote address on "Leveraging One Health to Strengthen Pandemic Preparedness in Kenya."
 
 Speaking before over 200 distinguished delegates drawn from human medicine, veterinary medicine, public health, environmental health, research, and academia, Dr. Nanyingi traced Kenya's journey from responding to zoonotic outbreaks to building integrated systems for pandemic prevention, preparedness, and resilience.
 
@@ -709,17 +807,19 @@ Kenya's One Health workforce development ecosystem aims to be transformative in 
 - Field Epidemiology and Laboratory Training Program (FELTP) – builds the front line of evidence-based action, turning surveillance data into decisions that save lives
 - In-Service Applied Veterinary Epidemiology Training (ISAVET) and AFROHUN (Africa One Health University Network) – next generation of animal and human health professionals through joint learning and field experience, building a culture of collaboration from the classroom to the community
 - AVOHC SURGE – embodies Africa's collective readiness, a trained corps of responders ready to deploy during outbreaks`,
-      null,
-      "Dr. Mark Nanyingi",
-      "November 2025",
-    );
+      image_url: null,
+      author: "Dr. Mark Nanyingi",
+      published_at: "November 2025",
+    },
 
-    // Article 11: Kenya Advances One Health and Pandemic Preparedness (RVF Contingency Plan and Brucellosis Guidelines)
-    insertNews.run(
-      "Kenya Advances One Health and Pandemic Preparedness with Launch of Rift Valley Fever Contingency Plan and Human Brucellosis Testing Guidelines",
-      "News",
-      "Kenya has launched two strategic public health frameworks: the National Contingency Plan for Rift Valley Fever (2025) and the Human Brucellosis Testing Guidelines. These frameworks represent a major advance in Kenya's One Health and pandemic preparedness agenda, providing standardized procedures and clear decision-support tools for tackling zoonotic threats.",
-      `"Standardizing surveillance and diagnostics for priority zoonoses is a critical step toward faster detection, earlier response, and reduced outbreak impact, and the emergence of epidemics and pandemics."
+    /* -------- 11. Kenya Advances One Health and Pandemic Preparedness (RVF Contingency Plan and Brucellosis Guidelines) -------- */
+    {
+      title:
+        "Kenya Advances One Health and Pandemic Preparedness with Launch of Rift Valley Fever Contingency Plan and Human Brucellosis Testing Guidelines",
+      category: "News",
+      excerpt:
+        "Kenya has launched two strategic public health frameworks: the National Contingency Plan for Rift Valley Fever (2025) and the Human Brucellosis Testing Guidelines. These frameworks represent a major advance in Kenya's One Health and pandemic preparedness agenda, providing standardized procedures and clear decision-support tools for tackling zoonotic threats.",
+      content: `"Standardizing surveillance and diagnostics for priority zoonoses is a critical step toward faster detection, earlier response, and reduced outbreak impact, and the emergence of epidemics and pandemics."
 — Dr. Mark Nanyingi, (CGP)
 
 Kenya has taken a significant step forward in strengthening its national systems for early detection and coordinated response to zoonotic diseases with the official launch of two strategic public health frameworks: the National Contingency Plan for Rift Valley Fever (2025) and the Human Brucellosis Testing Guidelines. The launch event, convened by the Zoonotic Disease Unit (ZDU) under the joint leadership of the Ministry of Health, the Ministry of Agriculture & Livestock Development, and the Ministry of Environment, Climate Change & Forestry, Kenya National Public Health Institute (KNPHI) brought together national agencies, 19 county representatives, laboratory networks, research institutions—Kenya Medical Research Institute, International Livestock Research Institute—and international partners including the Center for Global Health and Pandemic Intelligence (CGP), Washington State University (WSU), Amref Health Africa-Kenya, University of Liverpool, University of Nairobi.
@@ -782,17 +882,19 @@ The Center for Global Health and Pandemic Intelligence (CGP) provided technical 
 - County-level readiness assessments and policy translation
 
 CGP's contribution builds on more than a decade of technical work in zoonotic disease preparedness in Kenya, including support to RVF hotspot mapping and early warning systems.`,
-      null,
-      "CGP Communications",
-      "November 2025",
-    );
+      image_url: null,
+      author: "CGP Communications",
+      published_at: "November 2025",
+    },
 
-    // Article 12: Kenya Validates Groundbreaking Decision-Making Tool for Public Health Emergencies (DMT-PHE)
-    insertNews.run(
-      "Kenya Validates Groundbreaking Decision-Making Tool for Public Health Emergencies (DMT-PHE)",
-      "News",
-      "Kenya has taken a major step toward institutionalizing rapid, evidence-based outbreak response with the successful validation of the Decision-Making Tool for Public Health Emergencies (DMT-PHE) – the country's first standardized framework for guiding escalation, coordination, and decision-making during public health crises.",
-      `A new era of evidence-based, decentralized, and One Health–aligned emergency decision-making is taking shape under KNPHI leadership with technical support from CGP and Palladium's TDDAP2 programme.
+    /* -------- 12. Kenya Validates Groundbreaking Decision-Making Tool (DMT-PHE) -------- */
+    {
+      title:
+        "Kenya Validates Groundbreaking Decision-Making Tool for Public Health Emergencies (DMT-PHE)",
+      category: "News",
+      excerpt:
+        "Kenya has taken a major step toward institutionalizing rapid, evidence-based outbreak response with the successful validation of the Decision-Making Tool for Public Health Emergencies (DMT-PHE) – the country's first standardized framework for guiding escalation, coordination, and decision-making during public health crises.",
+      content: `A new era of evidence-based, decentralized, and One Health–aligned emergency decision-making is taking shape under KNPHI leadership with technical support from CGP and Palladium's TDDAP2 programme.
 
 Kenya has taken a major step toward institutionalizing rapid, evidence-based outbreak response with the successful validation of the Decision-Making Tool for Public Health Emergencies (DMT-PHE) – the country's first standardized framework for guiding escalation, coordination, and decision-making during public health crises.
 
@@ -822,17 +924,20 @@ It provides:
 - Linkage to the 7-1-7 performance model, ensuring early detection (7 days), notification (1 day), and effective response (7 days).
 - Integration with IDSR, IHR (2005), and NAPHS frameworks for seamless data-driven decision-making.
 - Accountability, coordination, and speed of action—transforming Kenya's emergency management from reactive to predictive and structured.`,
-      null,
-      "CGP Communications",
-      "October 2025",
-    );
+      image_url:
+        "https://pandemicintelcenter.org/wp-content/uploads/2025/10/WhatsApp-Image-2025-10-22-at-12.17.44-1-1024x683.jpeg",
+      author: "CGP Communications",
+      published_at: "October 2025",
+    },
 
-    // Article 13: Operationalizing 7-1-7: Kenya's Shift from Metrics and Timelines to Decision Intelligence
-    insertNews.run(
-      "Operationalizing 7-1-7: Kenya's Shift from Metrics and Timelines to Decision Intelligence",
-      "Analysis",
-      "The Kenya National Public Health Institute, supported by AFENET and with technical guidance from CGP, convened a national workshop to operationalize 7-1-7. The emphasis was not on introducing the framework, but on interrogating its application. A key innovation within this process was the pilot integration of AI-assisted decision support within the DMT-PHE.",
-      `Designing Systems That Deliver Speed in Outbreak Response
+    /* -------- 13. Operationalizing 7-1-7: Kenya's Shift from Metrics to Decision Intelligence -------- */
+    {
+      title:
+        "Operationalizing 7-1-7: Kenya's Shift from Metrics and Timelines to Decision Intelligence",
+      category: "Analysis",
+      excerpt:
+        "The Kenya National Public Health Institute, supported by AFENET and with technical guidance from CGP, convened a national workshop to operationalize 7-1-7. The emphasis was not on introducing the framework, but on interrogating its application. A key innovation within this process was the pilot integration of AI-assisted decision support within the DMT-PHE.",
+      content: `Designing Systems That Deliver Speed in Outbreak Response
 
 The Kenya National Public Health Institute (KNPHI), supported by the African Field Epidemiology Network (AFENET) and with technical guidance from the Center for Global Health and Pandemic Intelligence (CGP), convened a national workshop to operationalize 7-1-7. The emphasis was not on introducing the framework, but on interrogating its application. Through simulation exercises, early action reviews, and hands-on engagement with national dashboards, participants explored how decisions are made in real time and where delays emerge. A key innovation within this process was the pilot integration of AI-assisted decision support within the Decision-Making Tool for Public Health Emergencies (DMT-PHE), marking a shift toward embedding intelligence directly into operational workflows.
 
@@ -872,14 +977,37 @@ A One Health Imperative
 Outbreaks are increasingly shaped by complex interactions across human, animal, and environmental systems. Signals often emerge simultaneously across these domains, requiring integrated interpretation and coordinated response. Kenya's operationalization of 7-1-7 reflects a One Health approach that recognizes the interconnectedness of these systems and builds decision pathways that span sectors.
 
 The workshop demonstrated that operationalizing 7-1-7 is not merely a technical exercise but a governance transformation. It requires institutionalizing decision intelligence, building workforce capacity, and embedding AI-assisted tools within routine workflows. Kenya's approach offers a model for other countries seeking to translate global health security frameworks into operational reality.`,
-      null,
-      "Dr. Mark Nanyingi",
-      "April 2026",
+      image_url: null,
+      author: "Dr. Mark Nanyingi",
+      published_at: "April 2026",
+    },
+  ];
+
+  for (const a of articles) {
+    insertNews.run(
+      a.title,
+      a.category,
+      a.excerpt,
+      a.content,
+      a.image_url,
+      a.author,
+      a.published_at,
     );
   }
 
-  const partnerCount = db.prepare("SELECT COUNT(*) as c FROM partners").get().c;
-  if (partnerCount === 0) {
+  console.log("[seed] News seeded:", articles.length, "articles.");
+  setMeta("seed_version_news", SEED_VERSION_NEWS);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Partners                                                           */
+/* ------------------------------------------------------------------ */
+
+function seedPartnersIfNeeded() {
+  if (getMeta("seed_version_partners") === SEED_VERSION_PARTNERS) return;
+
+  const count = db.prepare("SELECT COUNT(*) as c FROM partners").get().c;
+  if (count === 0) {
     const insertPartner = db.prepare(
       "INSERT INTO partners (name, logo_url, website, sort_order, published) VALUES (?, ?, ?, ?, 1)",
     );
@@ -972,10 +1100,21 @@ The workshop demonstrated that operationalizing 7-1-7 is not merely a technical 
     partners.forEach((p) =>
       insertPartner.run(p.name, p.logo_url, p.website, p.sort),
     );
+    console.log("[seed] Partners seeded:", partners.length);
   }
 
-  const jobCount = db.prepare("SELECT COUNT(*) as c FROM jobs").get().c;
-  if (jobCount === 0) {
+  setMeta("seed_version_partners", SEED_VERSION_PARTNERS);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Jobs                                                               */
+/* ------------------------------------------------------------------ */
+
+function seedJobsIfNeeded() {
+  if (getMeta("seed_version_jobs") === SEED_VERSION_JOBS) return;
+
+  const count = db.prepare("SELECT COUNT(*) as c FROM jobs").get().c;
+  if (count === 0) {
     const insertJob = db.prepare(`
       INSERT INTO jobs (title, department, location, employment_type, description, qualifications, preferred_experience, apply_email, apply_subject, published)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
@@ -1026,12 +1165,21 @@ The workshop demonstrated that operationalizing 7-1-7 is not merely a technical 
       "info@pandemicintelcenter.org",
       "Application – Research Associate",
     );
+    console.log("[seed] Jobs seeded: 2");
   }
 
-  const resourceCount = db
-    .prepare("SELECT COUNT(*) as c FROM resources")
-    .get().c;
-  if (resourceCount === 0) {
+  setMeta("seed_version_jobs", SEED_VERSION_JOBS);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Resources                                                          */
+/* ------------------------------------------------------------------ */
+
+function seedResourcesIfNeeded() {
+  if (getMeta("seed_version_resources") === SEED_VERSION_RESOURCES) return;
+
+  const count = db.prepare("SELECT COUNT(*) as c FROM resources").get().c;
+  if (count === 0) {
     const insertResource = db.prepare(`
       INSERT INTO resources (title, description, document_url, date, published)
       VALUES (?, ?, ?, ?, 1)
@@ -1048,10 +1196,30 @@ The workshop demonstrated that operationalizing 7-1-7 is not merely a technical 
       "",
       "September 2025",
     );
+    console.log("[seed] Resources seeded: 2");
+  }
+
+  setMeta("seed_version_resources", SEED_VERSION_RESOURCES);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Run all seeders                                                    */
+/* ------------------------------------------------------------------ */
+
+function runAllSeeders() {
+  try {
+    seedAdminsIfNeeded();
+    seedHeroesIfNeeded();
+    seedNewsIfNeeded();
+    seedPartnersIfNeeded();
+    seedJobsIfNeeded();
+    seedResourcesIfNeeded();
+  } catch (err) {
+    console.error("[seed] Seeding error:", err);
   }
 }
 
-seedIfEmpty();
+runAllSeeders();
 warnOnLegacySeedPassword();
 
 module.exports = db;
