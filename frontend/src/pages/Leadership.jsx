@@ -7,6 +7,7 @@
  * skeleton instead of a "content pending" notice.
  *
  * All page content is centre-aligned via the `page--centered` wrapper class.
+ * All required CSS is inlined below so no external stylesheet changes are needed.
  *
  * To go live: populate `LEADERS` (see the shape documented in that file), or
  * add a `leadership` table + admin screen following the pattern used for
@@ -34,6 +35,149 @@ import {
 } from "../content/leadership";
 
 const META = PAGE_META["/leadership"];
+
+/* ------------------------------------------------------------------ */
+/*  Inlined CSS                                                       */
+/* ------------------------------------------------------------------ */
+
+const PAGE_CSS = `
+  /* ---------- Centred page layout ---------- */
+  .page--centered {
+    text-align: center;
+  }
+
+  .page--centered h1,
+  .page--centered h2,
+  .page--centered h3,
+  .page--centered h4,
+  .page--centered h5,
+  .page--centered h6 {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .page--centered p,
+  .page--centered .section-header,
+  .page--centered .section-header__lede,
+  .page--centered .page-header__dek {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ---------- Chip list ---------- */
+  .page--centered .chip-list,
+  .chip-list--centered {
+    justify-content: center;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0;
+    margin: 0.5rem auto;
+    list-style: none;
+  }
+
+  /* ---------- Leader card body ---------- */
+  .page--centered .leader-card-body {
+    text-align: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page--centered .leader-card-body h3,
+  .page--centered .leader-card-body p {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .page--centered .leader-card-body .chip-list {
+    justify-content: center;
+  }
+
+  /* ---------- Trailing links ---------- */
+  .page--centered .section-trailing-link {
+    text-align: center;
+  }
+
+  /* ---------- CTA strip ---------- */
+  .page--centered .cta-strip {
+    text-align: center;
+    align-items: center;
+  }
+
+  .page--centered .cta-strip__actions {
+    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  /* ---------- Skeleton card internals ---------- */
+  .leader-card--skeleton .leader-card-body {
+    text-align: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .leader-card--skeleton .skeleton-chips {
+    justify-content: center;
+  }
+
+  /* ---------- Skeleton base styles ---------- */
+  .skeleton {
+    display: block;
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.06) 25%,
+      rgba(0, 0, 0, 0.12) 37%,
+      rgba(0, 0, 0, 0.06) 63%
+    );
+    background-size: 400% 100%;
+    animation: skeleton-shimmer 1.4s ease infinite;
+    border-radius: 4px;
+  }
+
+  .skeleton--line {
+    margin: 0 auto 0.5rem;
+    border-radius: 4px;
+  }
+
+  .skeleton--spaced {
+    margin-top: 0.35rem;
+  }
+
+  .skeleton--avatar {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+  }
+
+  .skeleton--chip {
+    display: inline-block;
+    width: 4.5rem;
+    height: 1.5rem;
+    border-radius: 999px;
+    margin: 0.15rem;
+  }
+
+  .skeleton-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.35rem;
+    margin: 0.5rem 0;
+  }
+
+  @keyframes skeleton-shimmer {
+    0%   { background-position: 100% 50%; }
+    100% { background-position: 0 50%; }
+  }
+`;
 
 /* ------------------------------------------------------------------ */
 /*  Skeleton primitives                                               */
@@ -171,6 +315,9 @@ export default function Leadership() {
         path="/leadership"
         jsonLd={jsonLd}
       />
+
+      {/* Inlined styles scoped to this page */}
+      <style>{PAGE_CSS}</style>
 
       {/* page--centered applies text-align:center to all descendant text
           and centres flex/grid children where applicable. */}
