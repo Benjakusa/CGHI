@@ -10,6 +10,9 @@ import { normaliseArticle } from './content/insights';
 // component references a family, so the preloads in index.html and the first
 // paint are asking for the same files.
 import './fonts.css';
+// Self-hosted Bootstrap Icons subset; was a jsdelivr <link>. Loaded before the
+// layout stylesheets so nothing overrides the ::before content rules.
+import './icons.css';
 import './style.css';
 import './styles/site.css';
 

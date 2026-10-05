@@ -327,7 +327,7 @@ export default function Careers() {
                                     {submitting ? (
                                         <><span className="loading-spinner"></span>Compressing &amp; uploading...</>
                                     ) : (
-                                        <><i className="bi bi-paper-plane"></i>Submit Application</>
+                                        <><i className="bi bi-send"></i>Submit Application</>
                                     )}
                                 </button>
                             </form>
@@ -442,7 +442,7 @@ export default function Careers() {
                                                     className="btn job-card-apply-btn"
                                                     onClick={(e) => openApplyModal(j, e.currentTarget)}
                                                 >
-                                                    <i className="bi bi-paper-plane" aria-hidden="true" /> Apply Now
+                                                    <i className="bi bi-send" aria-hidden="true" /> Apply Now
                                                 </button>
                                             </div>
                                         </article>

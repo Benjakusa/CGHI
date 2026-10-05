@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node scripts/generate-sitemap.mjs",
+    "prebuild": "node scripts/generate-sitemap.mjs && npm run check:icons",
     "build": "vite build",
+    "check:icons": "node scripts/check-icons.mjs",
     "lint": "oxlint",
     "preview": "vite preview",
     "sitemap": "node scripts/generate-sitemap.mjs"
