@@ -1,0 +1,98 @@
+/* --------------------------------------------------------------------------
+   Self-hosted web fonts.
+
+   These three families were previously pulled from Google Fonts with a
+   `@import` inside style.css and styles/site.css. That is the slowest way to
+   load a font: the browser has to download the site's own render-blocking CSS
+   bundle first, parse it, discover the @import, then fetch a second
+   stylesheet from fonts.googleapis.com, and only then fetch the font files
+   from fonts.gstatic.com — three origins and two extra round trips before
+   any text can render.
+
+   Self-hosting removes two third-party origins from the critical path and
+   lets the files be served from the same connection as everything else.
+
+   Latin subsets only, and only the weights the type scale actually uses
+   (400/500/600/700 — --fw-regular through --fw-bold). That is the entire
+   site: 101KB in six files, against ~114KB pulled from Google at runtime.
+   Inter ships as a variable font, so one file covers all four weights.
+
+   `font-display: swap` on every face: text paints immediately in the
+   system fallback and swaps in, rather than leaving a blank box while the
+   font is fetched. The metrics of Inter and the system stack are close
+   enough at 16px that the swap is barely perceptible.
+
+   The family names are unchanged, so nothing downstream had to move.
+
+   Added 2026-10. Files came from the Google Fonts CDN (Inter v20, Poppins
+   v24, IBM Plex Mono v20), latin subset, woff2.
+   -------------------------------------------------------------------------- */
+
+/* Inter — variable, covers the whole 400-700 range the design uses. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/inter-latin-var.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Poppins — display face, headings and buttons. */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/poppins-latin-500.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/poppins-latin-600.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/poppins-latin-700.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* IBM Plex Mono — eyebrows, labels, the 404 code. */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/plex-mono-latin-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/plex-mono-latin-500.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}

@@ -40,6 +40,15 @@
   <link rel="apple-touch-icon" href="/Assets/icon-192.png" />
   <link rel="manifest" href="/site.webmanifest" />
 
+  <!-- Web fonts, self-hosted (src/fonts.css). Inter is the body face and is
+       on the critical path for the first painted text, so it is preloaded to
+       start the fetch alongside the CSS bundle instead of after it. Poppins is
+       the display face for headings and buttons; it is preloaded for the same
+       reason. crossorigin is required — fonts are always fetched in CORS
+       mode, and a preload without it is fetched twice. -->
+  <link rel="preload" href="/fonts/inter-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/poppins-latin-600.woff2" as="font" type="font/woff2" crossorigin />
+
   <!-- Bootstrap Icons: the CDN file is cached across page loads, so it costs
        one connection but nothing after the first. dns-prefetch removes the DNS
        round trip from the critical path. -->

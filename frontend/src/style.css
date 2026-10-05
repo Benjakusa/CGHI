@@ -1,4 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
+/* Web fonts are self-hosted; see src/fonts.css, imported first from App.jsx.
+   They used to be a Google Fonts @import here, which put two extra origins
+   and two extra round trips in front of the first painted text. */
 
 #root { min-height: 100vh; }
 

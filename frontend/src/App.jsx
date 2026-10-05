@@ -6,6 +6,10 @@ import { AuthProvider, API_BASE } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Skeleton, SkeletonCard } from './components/Skeleton';
 import { normaliseArticle } from './content/insights';
+// fonts.css first: the @font-face rules should be in the bundle before any
+// component references a family, so the preloads in index.html and the first
+// paint are asking for the same files.
+import './fonts.css';
 import './style.css';
 import './styles/site.css';
 
