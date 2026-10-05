@@ -279,15 +279,22 @@ export default function Navbar({ activePage }) {
       </div>
       <div className="wrap site-header-main">
         <NavLink className="brand" to="/" aria-label={`${BRAND.abbr} home`} onClick={closeAll}>
-          <img
-            className="brand-logo"
-            src={BRAND.logo}
-            alt={BRAND.logoAlt}
-            width="220"
-            height="72"
-            fetchPriority="high"
-            decoding="async"
-          />
+          {/* Display-sized crop of BRAND.logo: the full-size 600x334 original
+              renders at 69x38 CSS pixels, so it was carrying about four times
+              the pixels it could ever show. WebP first, PNG as the fallback —
+              the stylesheet targets `.brand-logo`, which sits on the <img>. */}
+          <picture>
+            <source srcSet={BRAND.logoDisplayWebp} type="image/webp" />
+            <img
+              className="brand-logo"
+              src={BRAND.logoDisplay}
+              alt={BRAND.logoAlt}
+              width="220"
+              height="72"
+              fetchPriority="high"
+              decoding="async"
+            />
+          </picture>
         </NavLink>
 
         <button

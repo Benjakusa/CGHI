@@ -23,7 +23,21 @@ export const BRAND = {
   /** Legal entity name used in footers and policy documents. */
   legalName: 'The Center for Global Health and Pandemic Intelligence',
   tagline: 'Building Intelligence for a Safer World',
+  /**
+   * Full-size logo, 600x334. Used for Open Graph and JSON-LD only — nothing
+   * renders it in the page, so browsers never download it.
+   */
   logo: '/Assets/logo.png',
+  /**
+   * Display-sized logo, 300x167 — a bit over 4x the 69x38 CSS pixels the
+   * navbar actually paints it at, which leaves room for 2x displays without
+   * shipping the four extra megapixels the original carried.
+   *
+   * The WebP is what a browser gets; the PNG is the fallback for anything
+   * without WebP support. Same artwork, same colours, 8KB against 89KB.
+   */
+  logoDisplay: '/Assets/logo-display.png',
+  logoDisplayWebp: '/Assets/logo-display.webp',
   logoAlt:
     'Center for Global Health & Pandemic Intelligence (CGP) logo',
   wordmark: 'CGP',
