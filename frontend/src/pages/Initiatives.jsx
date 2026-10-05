@@ -139,7 +139,11 @@ export default function Initiatives() {
                       <i className={`bi ${initiative.icon}`} />
                     </span>
                     <span className="accordion-summary-text">
-                      <span className="accordion-summary-title">{initiative.title}</span>
+                      {/* An h3, not a span: each disclosure is a section of the
+                          "Initiative detail" h2, and the h4s inside the panel
+                          need an h3 above them. Previously the panel headings
+                          jumped h2 -> h4, which axe reports as heading-order. */}
+                      <h3 className="accordion-summary-title">{initiative.title}</h3>
                       <span className="accordion-summary-meta">
                         {initiative.status}
                         {initiative.location ? ` · ${initiative.location}` : ''}

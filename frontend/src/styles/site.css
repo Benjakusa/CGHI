@@ -2383,10 +2383,15 @@ select.input {
   min-width: 0;
 }
 
+/* An <h3> for heading-order, so it has to opt out of the global heading
+   treatment (margins, colour and family all come from the summary row). */
 .accordion-summary-title {
+  margin: 0;
+  font-family: inherit;
   font-size: var(--fs-lead);
   font-weight: var(--fw-semibold);
   line-height: 1.25;
+  color: inherit;
 }
 
 .accordion-summary-meta {
