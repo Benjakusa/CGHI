@@ -350,7 +350,15 @@ export function PartnerMarquee({
         <ul className="partner-marquee-track" aria-label={label}>
           {partners.map(renderTile)}
         </ul>
-        <ul className="partner-marquee-track" aria-hidden="true">
+        {/*
+          The second track exists only so the CSS scroll loop has no seam. It
+          repeats every partner, so without `inert` a keyboard user tabs
+          through eight invisible duplicates of the row above. aria-hidden
+          already hides it from screen readers; inert also removes it from the
+          tab order and from sequential focus navigation, which is what WCAG
+          2.4.3 asks for.
+        */}
+        <ul className="partner-marquee-track" aria-hidden="true" inert>
           {partners.map(renderTile)}
         </ul>
       </div>
