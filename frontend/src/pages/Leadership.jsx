@@ -6,6 +6,8 @@
  * This page renders a complete, designed card template plus a loading
  * skeleton instead of a "content pending" notice.
  *
+ * All page content is centre-aligned via the `page--centered` wrapper class.
+ *
  * To go live: populate `LEADERS` (see the shape documented in that file), or
  * add a `leadership` table + admin screen following the pattern used for
  * partners, then flip `LEADERSHIP_PENDING` to false.
@@ -170,102 +172,102 @@ export default function Leadership() {
         jsonLd={jsonLd}
       />
 
-      <PageHeader
-        trail={META.breadcrumb}
-        eyebrow="Who We Are"
-        h1="Leadership & Team"
-        dek={`Meet the people behind ${BRAND.abbr}’s work in epidemic intelligence, One Health, preparedness and data science.`}
-      />
+      {/* page--centered applies text-align:center to all descendant text
+          and centres flex/grid children where applicable. */}
+      <div className="page--centered">
+        <PageHeader
+          trail={META.breadcrumb}
+          eyebrow="Who We Are"
+          h1="Leadership & Team"
+          dek={`Meet the people behind ${BRAND.abbr}’s work in epidemic intelligence, One Health, preparedness and data science.`}
+        />
 
-      {/* ---------- leadership section ---------- */}
-      {isLoading ? (
-        /* Skeleton state – no "pending" copy is shown, just placeholders
-           that match the final layout. Screen readers get a short status. */
-        <section aria-labelledby="leadership-loading-heading">
-          <div className="wrap">
-            <h2 id="leadership-loading-heading" className="sr-only">
-              Loading leadership profiles…
-            </h2>
-
-            {LEADERSHIP_GROUPS.map((group) => (
-              <div key={group.id} className="leadership-group-skeleton">
-                <SectionHeader
-                  id={`skeleton-group-${group.id}`}
-                  eyebrow="&nbsp;"
-                  title={group.title}
-                />
-                <LeadershipGroupSkeleton
-                  count={group.id === "executive" ? 3 : 2}
-                />
-              </div>
-            ))}
-
-            {/* If no groups are defined, show a generic grid so the page
-                never looks empty. */}
-            {LEADERSHIP_GROUPS.length === 0 && (
-              <LeadershipGroupSkeleton count={3} />
-            )}
-          </div>
-        </section>
-      ) : (
-        grouped.map((group) => (
-          <section key={group.id} aria-labelledby={`group-${group.id}`}>
+        {/* ---------- leadership section ---------- */}
+        {isLoading ? (
+          <section aria-labelledby="leadership-loading-heading">
             <div className="wrap">
-              <SectionHeader
-                id={`group-${group.id}`}
-                eyebrow={`${group.members.length} ${
-                  group.members.length === 1 ? "profile" : "profiles"
-                }`}
-                title={group.title}
-              />
-              <div className="grid-auto">
-                {group.members.map((leader) => (
-                  <LeaderCard key={leader.id} leader={leader} />
-                ))}
-              </div>
+              <h2 id="leadership-loading-heading" className="sr-only">
+                Loading leadership profiles…
+              </h2>
+
+              {LEADERSHIP_GROUPS.map((group) => (
+                <div key={group.id} className="leadership-group-skeleton">
+                  <SectionHeader
+                    id={`skeleton-group-${group.id}`}
+                    eyebrow="&nbsp;"
+                    title={group.title}
+                  />
+                  <LeadershipGroupSkeleton
+                    count={group.id === "executive" ? 3 : 2}
+                  />
+                </div>
+              ))}
+
+              {LEADERSHIP_GROUPS.length === 0 && (
+                <LeadershipGroupSkeleton count={3} />
+              )}
             </div>
           </section>
-        ))
-      )}
+        ) : (
+          grouped.map((group) => (
+            <section key={group.id} aria-labelledby={`group-${group.id}`}>
+              <div className="wrap">
+                <SectionHeader
+                  id={`group-${group.id}`}
+                  eyebrow={`${group.members.length} ${
+                    group.members.length === 1 ? "profile" : "profiles"
+                  }`}
+                  title={group.title}
+                />
+                <div className="grid-auto">
+                  {group.members.map((leader) => (
+                    <LeaderCard key={leader.id} leader={leader} />
+                  ))}
+                </div>
+              </div>
+            </section>
+          ))
+        )}
 
-      {/* ---------- expertise section (always real) ---------- */}
-      <section
-        className="section-surface"
-        aria-labelledby="disciplines-heading"
-      >
-        <div className="wrap">
-          <SectionHeader
-            id="disciplines-heading"
-            eyebrow="Expertise"
-            title="Disciplines on our team"
-            lede={`${BRAND.abbr} brings together expertise across the following areas.`}
-          />
-          <ul className="chip-list chip-list--static">
-            {EXPERTISE_AREAS.map((area) => (
-              <li key={area.id}>{area.label}</li>
-            ))}
-          </ul>
-          <p className="section-trailing-link">
-            <SmartLink className="text-link" to="/careers">
-              See current openings{" "}
-              <i className="bi bi-arrow-right" aria-hidden="true" />
-            </SmartLink>
-          </p>
-        </div>
-      </section>
+        {/* ---------- expertise section (always real) ---------- */}
+        <section
+          className="section-surface"
+          aria-labelledby="disciplines-heading"
+        >
+          <div className="wrap">
+            <SectionHeader
+              id="disciplines-heading"
+              eyebrow="Expertise"
+              title="Disciplines on our team"
+              lede={`${BRAND.abbr} brings together expertise across the following areas.`}
+            />
+            <ul className="chip-list chip-list--static chip-list--centered">
+              {EXPERTISE_AREAS.map((area) => (
+                <li key={area.id}>{area.label}</li>
+              ))}
+            </ul>
+            <p className="section-trailing-link">
+              <SmartLink className="text-link" to="/careers">
+                See current openings{" "}
+                <i className="bi bi-arrow-right" aria-hidden="true" />
+              </SmartLink>
+            </p>
+          </div>
+        </section>
 
-      <CtaStrip
-        title="Want to work with our team?"
-        body="We welcome collaborations with researchers, practitioners and institutions."
-        actions={[
-          {
-            label: "Partner With Us",
-            to: "/partner-with-us#contact-form",
-            variant: "white",
-          },
-          { label: "Careers", to: "/careers", variant: "white" },
-        ]}
-      />
+        <CtaStrip
+          title="Want to work with our team?"
+          body="We welcome collaborations with researchers, practitioners and institutions."
+          actions={[
+            {
+              label: "Partner With Us",
+              to: "/partner-with-us#contact-form",
+              variant: "white",
+            },
+            { label: "Careers", to: "/careers", variant: "white" },
+          ]}
+        />
+      </div>
     </Layout>
   );
 }
