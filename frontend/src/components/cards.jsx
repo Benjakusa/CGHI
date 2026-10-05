@@ -93,7 +93,8 @@ export function CapabilityCard({ capability, variant = 'icon' }) {
       <p>{capability.summary}</p>
       {variant === 'icon' && (
         <SmartLink className="text-link card-link" to={capability.cta?.to || '/what-we-do'}>
-          Learn more <i className="bi bi-arrow-right" aria-hidden="true" />
+          Learn more<span className="sr-only"> about {capability.title}</span>{' '}
+          <i className="bi bi-arrow-right" aria-hidden="true" />
         </SmartLink>
       )}
     </article>
@@ -141,7 +142,8 @@ export function ProjectCard({ project }) {
       )}
 
       <SmartLink className="text-link card-link" to={`/projects/${project.slug}`}>
-        Learn more <i className="bi bi-arrow-right" aria-hidden="true" />
+        Learn more<span className="sr-only"> about {project.title}</span>{' '}
+        <i className="bi bi-arrow-right" aria-hidden="true" />
       </SmartLink>
     </article>
   );
@@ -172,7 +174,8 @@ export function InitiativeCard({ initiative }) {
         </p>
       )}
       <SmartLink className="text-link card-link" to={`/initiatives#${initiative.id}`}>
-        Learn more <i className="bi bi-arrow-right" aria-hidden="true" />
+        Learn more<span className="sr-only"> about {initiative.title}</span>{' '}
+        <i className="bi bi-arrow-right" aria-hidden="true" />
       </SmartLink>
     </article>
   );
@@ -217,7 +220,8 @@ export function InsightCard({ article }) {
         </h3>
         <p>{article.excerpt}</p>
         <SmartLink className="text-link card-link" to={to}>
-          Read more <i className="bi bi-arrow-right" aria-hidden="true" />
+          Read more<span className="sr-only">: {article.title}</span>{' '}
+          <i className="bi bi-arrow-right" aria-hidden="true" />
         </SmartLink>
       </div>
     </article>

@@ -1092,14 +1092,14 @@ function seedPartnersIfNeeded() {
       {
         name: "GIZ",
         logo_url:
-          "https://pandemicintelcenter.org/wp-content/uploads/2025/08/download-1.jpeg",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTq7MepC7KtEChNc80AXPg8IGfxlWjPLFha7diql_bkyvTRIAvJo-ynTLw&s=10",
         website: "https://www.giz.de/",
         sort: 11,
       },
       {
         name: "Palladium",
         logo_url:
-          "https://pandemicintelcenter.org/wp-content/uploads/2025/08/WhatsApp-Image-2025-08-16-at-11.27.52_a35ed63e.jpg",
+          "https://pandemicintelcenter.org/wp-content/uploads/2025/08/download-1.jpeg",
         website: "https://thepalladiumgroup.com/",
         sort: 12,
       },
