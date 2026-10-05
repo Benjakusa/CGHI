@@ -106,3 +106,34 @@ export function absoluteUrl(path = '/') {
 }
 
 export const DEFAULT_OG_IMAGE = '/og/cgp-og-default.png';
+
+/**
+ * Dimensions and MIME type of every Open Graph image this site can emit.
+ *
+ * Facebook, LinkedIn, WhatsApp and Slack all read og:image:width and
+ * og:image:height to lay the card out before fetching the image, and without
+ * them the card renders at whatever size the first few bytes suggest. They are
+ * only emitted when an image is registered here, because a wrong number is
+ * worse than none — see the note on adding page-specific images below.
+ *
+ * To add a card for a page: drop a 1200x630 image in public/og/, register it
+ * with its real dimensions, and pass its path as the `image` prop to Seo.
+ * There is no per-page card for most routes yet; that needs approved artwork,
+ * not a guessed layout. One default card for the whole site is the honest
+ * state of it until then.
+ */
+export const OG_IMAGES = {
+  [DEFAULT_OG_IMAGE]: {
+    width: 1200,
+    height: 630,
+    type: 'image/png',
+    alt: 'Center for Global Health & Pandemic Intelligence (CGP)',
+  },
+};
+
+/** Looks up OG metadata for an image path, or null if it is not registered. */
+export function ogImageMeta(path) {
+  if (!path) return null;
+  const clean = path.startsWith(SITE_URL) ? path.slice(SITE_URL.length) || '/' : path;
+  return OG_IMAGES[clean] ?? null;
+}

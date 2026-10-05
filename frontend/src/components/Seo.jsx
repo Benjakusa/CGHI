@@ -9,6 +9,7 @@ import {
   SITE_DESCRIPTION,
   SITE_URL,
   absoluteUrl,
+  ogImageMeta,
 } from '../config/site';
 
 /** Tags managed by this component, so they can be removed when unset. */
@@ -23,6 +24,9 @@ const MANAGED = [
   ['property', 'og:url'],
   ['property', 'og:image'],
   ['property', 'og:image:alt'],
+  ['property', 'og:image:width'],
+  ['property', 'og:image:height'],
+  ['property', 'og:image:type'],
   ['property', 'og:locale'],
   ['name', 'twitter:card'],
   ['name', 'twitter:title'],
@@ -98,6 +102,7 @@ export default function Seo({
   const pathname = path ?? location.pathname;
   const canonical = absoluteUrl(pathname);
   const ogImage = absoluteUrl(image);
+  const ogMeta = ogImageMeta(image);
   const jsonLdKey = jsonLd.length ? JSON.stringify(jsonLd) : '';
 
   useEffect(() => {
@@ -121,6 +126,10 @@ export default function Seo({
     upsertMeta('property', 'og:url', canonical);
     upsertMeta('property', 'og:image', ogImage);
     upsertMeta('property', 'og:image:alt', imageAlt || title);
+    // Only for images with registered dimensions — see OG_IMAGES in config/site.
+    upsertMeta('property', 'og:image:width', ogMeta?.width);
+    upsertMeta('property', 'og:image:height', ogMeta?.height);
+    upsertMeta('property', 'og:image:type', ogMeta?.type);
     upsertMeta('property', 'og:locale', 'en_GB');
     if (publishedTime) upsertMeta('property', 'article:published_time', publishedTime);
     if (modifiedTime) upsertMeta('property', 'article:modified_time', modifiedTime);
@@ -142,6 +151,7 @@ export default function Seo({
     pathname,
     canonical,
     ogImage,
+    ogMeta,
     imageAlt,
     type,
     noIndex,
