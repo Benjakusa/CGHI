@@ -423,7 +423,10 @@ section {
    permitted colours fills the background, border and text; hover states swap
    between them rather than changing border thickness or tinting the blue.
    `.btn-white` and `.btn-outline-light` are declared standalone (not as `.btn`
-   modifiers) because call sites such as cards.jsx render them on their own. */
+   modifiers) because call sites such as cards.jsx render them on their own.
+
+   The default fill is the darkened `--brand`, not `--sky`: white text on
+   `--sky` is only 2.6:1, which fails WCAG AA. */
 .btn,
 .btn-white,
 .btn-outline,
@@ -437,10 +440,10 @@ section {
      touch target, including the icon-only variants. */
   min-height: var(--tap);
   padding: 0.6rem 1.4rem;
-  border: 2px solid var(--sky);
+  border: 2px solid var(--brand);
   border-radius: var(--radius-btn);
-  background: var(--sky);
-  color: var(--black);
+  background: var(--brand);
+  color: var(--white);
   font-size: var(--fs-body);
   font-weight: var(--fw-semibold);
   line-height: 1.2;
@@ -492,17 +495,17 @@ section {
   transform: translateY(-2px);
 }
 
-/* Ghost / outline: transparent fill, brand-blue text and border. */
+/* Ghost / outline: transparent fill, accessible brand-blue text and border. */
 .btn-ghost {
   background: transparent;
-  border-color: var(--sky);
-  color: var(--sky);
+  border-color: var(--brand);
+  color: var(--brand);
 }
 
 .btn-ghost:hover {
-  background: var(--sky);
-  border-color: var(--sky);
-  color: var(--black);
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--white);
   transform: translateY(-2px);
 }
 
@@ -2182,7 +2185,7 @@ select.input {
   font-size: var(--fs-stat);
   font-weight: var(--fw-bold);
   line-height: 1;
-  color: var(--sky);
+  color: var(--brand);
 }
 
 .error-page h1 {
@@ -4038,12 +4041,13 @@ section {
   align-items: center;
   min-height: 2.5rem;
   padding-inline: 0.25rem;
-  color: var(--white);
+  color: var(--black);
   text-decoration: none;
 }
 
 .utility-bar a:hover {
-  color: var(--white);
+  color: var(--black);
+  opacity: 0.75;
 }
 
 .utility-bar-info li {
@@ -4224,9 +4228,10 @@ section {
   justify-content: center;
 }
 
+/* Black on the brand-cyan utility bar: 8:1. White here was 2.6:1. */
 .utility-bar li,
 .utility-bar i {
-  color: var(--white);
+  color: var(--black);
 }
 
 @media (min-width: 901px) {
@@ -4777,8 +4782,10 @@ section {
   align-items: center;
   height: 2.75rem;
   max-height: 2.75rem;
+  /* Solid brand cyan carries black text, not white: black on #01abed is
+     8:1, white on #01abed only 2.6:1. Same reasoning as .page-header below. */
   background: var(--sky);
-  color: var(--white);
+  color: var(--black);
 }
 
 .utility-bar-inner {

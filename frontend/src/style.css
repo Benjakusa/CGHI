@@ -5,7 +5,18 @@
 :root {
   --sky: #01abed;
   --sky-dark: #000000;
-  --brand: #01abed;
+  /* Two blues, deliberately.
+
+     `--sky` is the bright brand cyan. It is decorative by default: borders,
+     rules, and text on the site's black surfaces (where it measures 8:1
+     against black). It must never carry white text on a light fill and never
+     carry text on white — at 2.6:1 it fails WCAG AA either way.
+
+     `--brand` is the darkened sibling used everywhere text or a button fill is
+     involved: white text on `--brand` measures 5.2:1 and `--brand` text on
+     white also measures 5.2:1, so one token satisfies AA in both directions
+     without a second "link blue". */
+  --brand: #0175a2;
   --brand-dark: #000000;
   --black: #000000;
   --white: #FFFFFF;
@@ -1479,7 +1490,7 @@ section > .wrap:not(:has(.grid-2, .grid-3, .grid-4, .grid-auto, .accordion-item)
   font-family: var(--mono);
   font-size: var(--fs-caption);
   font-weight: var(--fw-semibold);
-  color: var(--sky);
+  color: var(--brand);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -2190,7 +2201,7 @@ button.btn-primary:hover,
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: var(--sky);
+  color: var(--brand);
   text-decoration: none;
   font-size: var(--fs-small);
   padding: 6px 12px;
@@ -2511,7 +2522,8 @@ button.btn-primary:hover,
   color: var(--ink-muted);
 }
 
-.file-badge.has-files { background: var(--sky); border-color: var(--sky); color: white; }
+/* White label on the darker brand blue: `--sky` here would only reach 2.6:1. */
+.file-badge.has-files { background: var(--brand); border-color: var(--brand); color: var(--white); }
 
 .admin-modal {
   background: white;
