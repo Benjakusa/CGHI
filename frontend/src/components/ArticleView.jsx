@@ -18,10 +18,10 @@ export function ShareBar({ article, onCopy }) {
   const encodedUrl = encodeURIComponent(url);
   const title = encodeURIComponent(article.title || 'CGHI article');
   const links = [
-    ['X', `https://twitter.com/intent/tweet?text=${title}&url=${encodedUrl}`],
-    ['Facebook', `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`],
-    ['LinkedIn', `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`],
-    ['WhatsApp', `https://wa.me/?text=${title}%20${encodedUrl}`],
+    ['X', 'bi-twitter-x', `https://twitter.com/intent/tweet?text=${title}&url=${encodedUrl}`],
+    ['Facebook', 'bi-facebook', `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`],
+    ['LinkedIn', 'bi-linkedin', `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`],
+    ['WhatsApp', 'whatsapp', `https://wa.me/?text=${title}%20${encodedUrl}`],
   ];
   async function copy() {
     if (navigator.share && window.matchMedia('(max-width: 700px)').matches) {
@@ -37,8 +37,8 @@ export function ShareBar({ article, onCopy }) {
   }
   return <div className="article-share" aria-label="Share article">
     <span>Share</span>
-    {links.map(([label, href]) => <a key={label} href={href} target="_blank" rel="noopener noreferrer">{label}</a>)}
-    <button type="button" onClick={copy}>Copy link</button>
+    {links.map(([label, icon, href]) => <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={`Share on ${label}`} title={label}>{icon === 'whatsapp' ? <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11.8 11.8 0 0 0 2 17.7L.5 23.5l6-1.6A11.8 11.8 0 0 0 20.5 3.5ZM12 21a9.8 9.8 0 0 1-5-1.4l-.4-.2-3.5.9.9-3.4-.2-.4A9.8 9.8 0 1 1 12 21Zm5.4-7.3c-.3-.2-1.7-.9-2-.9s-.5-.2-.7.2-.8.9-1 1.1-.4.2-.7.1a8 8 0 0 1-2.4-1.5 9 9 0 0 1-1.7-2.1c-.2-.3 0-.5.1-.7l.5-.6c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.6s-.7-1.7-1-2.3c-.2-.5-.5-.4-.7-.4h-.6c-.2 0-.6.1-.9.4s-1.2 1.1-1.2 2.7 1.2 3.1 1.4 3.3a12 12 0 0 0 4.6 4.1c.6.3 1.1.5 1.5.6.6.2 1.2.2 1.7.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.1-1.4s-.2-.2-.5-.3Z" /></svg> : <i className={`bi ${icon}`} aria-hidden="true" />}</a>)}
+    <button type="button" onClick={copy} aria-label="Copy article link" title="Copy link"><i className="bi bi-link-45deg" aria-hidden="true" /></button>
   </div>;
 }
 

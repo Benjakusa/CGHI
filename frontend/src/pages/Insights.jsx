@@ -1,17 +1,27 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import Seo from '../components/Seo';
-import ArticleView from '../components/ArticleView';
+import { ShareBar } from '../components/ArticleView';
+import SmartLink from '../components/SmartLink';
 import useApi from '../hooks/useApi';
 import { FALLBACK_ARTICLES, normaliseArticles } from '../content/insights';
 import { resolveAssetUrl } from '../context/AuthContext';
 
+function NewsCard({ article }) {
+  return <article className="news-story">
+    {(article.cover_image || article.image_url) && <div className="news-cover"><img src={resolveAssetUrl(article.cover_image || article.image_url)} alt={article.title} loading="lazy" /></div>}
+    <div className="news-story-body">
+      <p className="news-meta"><span>{article.category || (article.type === 'research' ? 'Research' : 'News')}</span>{article.author && <span>{article.author}</span>}{article.published_at && <time>{new Date(article.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</time>}</p>
+      <h2>{article.title}</h2>{article.excerpt && <p className="news-excerpt">{article.excerpt}</p>}
+      <div className="news-card-actions"><SmartLink className="news-more" to={`/news/${article.slug}`}>Read more</SmartLink><ShareBar article={article} /></div>
+    </div>
+  </article>;
+}
+
 export default function Insights() {
   const [params, setParams] = useSearchParams();
   const api = useApi('/api/news', FALLBACK_ARTICLES);
-  const [opened, setOpened] = useState(null);
-  const [toast, setToast] = useState('');
   const type = params.get('type') || 'all';
   const articles = useMemo(() => {
     const values = api.data?.length ? api.data : FALLBACK_ARTICLES;
@@ -19,12 +29,6 @@ export default function Insights() {
   }, [api.data]);
   const categories = useMemo(() => ['all', 'news', 'research', ...new Set(articles.map((a) => a.category).filter(Boolean))], [articles]);
   const list = articles.filter((article) => type === 'all' || article.type === type || article.category?.toLowerCase() === type);
-  const toggle = (slug) => {
-    setOpened((current) => current === slug ? null : slug);
-    if (opened !== slug) window.history.replaceState(null, '', `/news/${slug}`);
-    else window.history.replaceState(null, '', '/insights');
-  };
-  const notify = (message) => { setToast(message); window.setTimeout(() => setToast(''), 2000); };
   const lead = list[0];
   return <Layout navId="insights">
     <Seo title="News & Research | CGHI" description="Latest news, research, analysis and field reports from CGHI." path="/insights" />
@@ -42,26 +46,19 @@ export default function Insights() {
       <div className="news-wrap news-feed">
         {list.length === 0 ? <p>No articles are available in this category yet.</p> : <>
           {lead && (list.length === 1 ? <div className="news-lead"><div className="news-lead-card">
-            <div className="news-lead-cover">{(lead.cover_image || lead.image_url) && <img src={resolveAssetUrl(lead.cover_image || lead.image_url)} alt={lead.title} />}</div>
-            <div className="news-lead-info"><ArticleView article={{ ...lead, hideCover: true }} expanded={opened === lead.slug} onCopy={notify} /><button className="news-more" type="button" aria-expanded={opened === lead.slug} onClick={() => toggle(lead.slug)}>{opened === lead.slug ? 'Show less' : 'Read more'}</button></div>
+            <div className="news-lead-cover">{(lead.cover_image || lead.image_url) && <img src={resolveAssetUrl(lead.cover_image || lead.image_url)} alt={lead.title} loading="lazy" />}</div>
+            <div className="news-lead-info"><NewsCard article={lead} /></div>
           </div></div> : <div className="news-lead">
             <div className="news-lead-card">
-              <div className="news-lead-cover">{(lead.cover_image || lead.image_url) && <img src={resolveAssetUrl(lead.cover_image || lead.image_url)} alt={lead.title} />}</div>
-              <div className="news-lead-info">
-                <ArticleView article={{ ...lead, hideCover: true }} expanded={opened === lead.slug} onCopy={notify} />
-                <button className="news-more" type="button" aria-expanded={opened === lead.slug} onClick={() => toggle(lead.slug)}>{opened === lead.slug ? 'Show less' : 'Read more'}</button>
-              </div>
+              <div className="news-lead-cover">{(lead.cover_image || lead.image_url) && <img src={resolveAssetUrl(lead.cover_image || lead.image_url)} alt={lead.title} loading="lazy" />}</div>
+              <div className="news-lead-info"><NewsCard article={lead} /></div>
             </div>
           </div>)}
           {list.length > 1 && <div className="news-grid">
-            {list.slice(1).map((article) => <div className={`news-card${opened === article.slug ? ' is-expanded' : ''}`} key={article.id}>
-              <ArticleView article={article} expanded={opened === article.slug} onCopy={notify} />
-              <button className="news-more" type="button" aria-expanded={opened === article.slug} onClick={() => toggle(article.slug)}>{opened === article.slug ? 'Show less' : 'Read more'}</button>
-            </div>)}
+            {list.slice(1).map((article) => <div className="news-card" key={article.id}><NewsCard article={article} /></div>)}
           </div>}
         </>}
       </div>
-      {toast && <div className="news-toast" role="status">{toast}</div>}
     </section>
   </Layout>;
 }
