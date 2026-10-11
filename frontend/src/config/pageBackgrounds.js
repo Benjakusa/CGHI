@@ -18,6 +18,7 @@ const PAGE_BACKGROUNDS = {
   'project-detail': imageBackground(oneHealthForum, 'center 42%'),
   partners: imageBackground(partnerForum, 'center 35%'),
   leadership: imageBackground(intelligenceForum, 'center 35%'),
+  'leadership-detail': imageBackground(intelligenceForum, 'center 35%'),
   resources: imageBackground(preparednessForum, 'center 55%'),
   careers: imageBackground(partnerForum, 'center 58%'),
   'partner-with-us': imageBackground(partnerForum, 'center 38%'),

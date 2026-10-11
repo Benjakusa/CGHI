@@ -1560,6 +1560,20 @@ section {
   color: var(--sky-dark);
   font-weight: var(--fw-semibold);
 }
+.leader-card-body h3 a { color: inherit; text-decoration: none; }
+.team-read-more { display: inline-flex; align-self: flex-start; margin-top: .45rem; color: var(--sky-dark); font-size: var(--fs-small); font-weight: var(--fw-semibold); text-decoration: underline; text-underline-offset: .2em; }
+.team-profile { display: grid; grid-template-columns: minmax(240px, .8fr) minmax(0, 1.2fr); gap: clamp(24px, 5vw, 64px); align-items: start; }
+.team-profile-photo { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: var(--surface-alt); }
+.team-profile-copy { min-width: 0; }
+.team-profile-copy h1 { margin-bottom: .4rem; }
+.team-profile-role { margin: 0 0 1.5rem; color: var(--sky-dark); font-size: var(--fs-lead); font-weight: var(--fw-semibold); }
+.team-profile-bio { white-space: pre-line; line-height: 1.8; }
+.team-profile-contacts, .team-profile-socials { display: flex; flex-wrap: wrap; gap: 12px 20px; margin-top: 1.5rem; }
+.team-profile-contacts a, .team-profile-socials a { overflow-wrap: anywhere; }
+.team-profile-share { display: inline-grid; place-items: center; width: 44px; height: 44px; margin-top: 1.75rem; color: var(--ink); background: var(--surface); border: 1px solid var(--border); cursor: pointer; }
+.team-profile-share svg { width: 20px; height: 20px; }
+.team-profile-share-status { margin-left: 10px; font-size: var(--fs-small); }
+@media (max-width: 680px) { .team-profile { grid-template-columns: 1fr; } .team-profile-photo { max-height: 520px; } }
 
 /* Approach cards (About): a graphical five-stage flow. Numbered badges, icon
    tiles and chevron connectors show how one stage leads to the next — stacked

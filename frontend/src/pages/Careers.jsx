@@ -19,17 +19,18 @@ export default function Careers() {
 
     const jobs = jobsApi.data ?? [];
     const modalRef = useRef(null);
+    const applyDialogOpen = Boolean(applyModal && !applyModal.success);
 
     // Move focus into the dialog when it opens so keyboard and screen reader
     // users are not left behind on the page behind the modal.
     useEffect(() => {
-        if (!applyModal) return undefined;
+        if (!applyDialogOpen) return undefined;
         const node = modalRef.current;
         if (!node) return undefined;
         const focusTarget = node.querySelector('input:not([type="hidden"]), button, [href]');
         focusTarget?.focus();
         return undefined;
-    }, [applyModal]);
+    }, [applyDialogOpen]);
 
     const closeApplyModal = () => {
         setApplyModal(null);

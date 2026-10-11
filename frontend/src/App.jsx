@@ -27,6 +27,7 @@ const NewsDetail = lazy(() => import('./pages/NewsDetail'));
 const InsightDetail = lazy(() => import('./pages/InsightDetail'));
 const Partners = lazy(() => import('./pages/Partners'));
 const Leadership = lazy(() => import('./pages/Leadership'));
+const TeamProfile = lazy(() => import('./pages/TeamProfile'));
 const Resources = lazy(() => import('./pages/Resources'));
 const PartnerWithUs = lazy(() => import('./pages/PartnerWithUs'));
 const Careers = lazy(() => import('./pages/Careers'));
@@ -144,6 +145,7 @@ function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/leadership" element={<Leadership />} />
+        <Route path="/leadership/:id" element={<TeamProfile />} />
         <Route path="/what-we-do" element={<WhatWeDo />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/projects/:slug" element={<ProjectDetail />} />

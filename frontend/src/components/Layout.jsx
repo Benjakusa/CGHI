@@ -11,7 +11,7 @@ export default function Layout({ children, navId, pageId }) {
   const location = useLocation();
   useScrollAnimations(location.pathname);
   const baseRoute = location.pathname.split('/')[1] || 'home';
-  const routeId = pageId || (baseRoute === 'projects' && location.pathname.split('/')[2] ? 'project-detail' : baseRoute === 'insights' && location.pathname.split('/')[2] ? 'insights-detail' : baseRoute) || 'home';
+  const routeId = pageId || (baseRoute === 'projects' && location.pathname.split('/')[2] ? 'project-detail' : baseRoute === 'insights' && location.pathname.split('/')[2] ? 'insights-detail' : baseRoute === 'leadership' && location.pathname.split('/')[2] ? 'leadership-detail' : baseRoute) || 'home';
   const background = PAGE_BACKGROUNDS[routeId] || PAGE_BACKGROUNDS.notFound;
 
   return (

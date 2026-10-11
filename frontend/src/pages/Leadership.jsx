@@ -8,23 +8,19 @@ import { AsyncSection, EmptyState } from '../components/Skeleton';
 import useApi from '../hooks/useApi';
 import { PAGE_META } from '../content/navigation';
 import { resolveAssetUrl } from '../context/AuthContext';
+import SmartLink from '../components/SmartLink';
 
 const META = PAGE_META['/leadership'];
 
 function TeamCard({ member }) {
-  const links = Array.isArray(member.social_links) ? member.social_links : [];
   return <article className="leader-card">
-    <div className="leader-card-media">
+    <SmartLink className="leader-card-media" to={`/leadership/${member.id}`} aria-label={`View ${member.name}'s profile`}>
       {member.image_url ? <SmartImage className="leader-card-photo" src={resolveAssetUrl(member.image_url)} alt={`Portrait of ${member.name}`} width="480" height="480" /> : <div className="team-image-fallback" aria-hidden="true"><i className="bi bi-person" /></div>}
-    </div>
+    </SmartLink>
     <div className="leader-card-body">
-      <h3>{member.name}</h3><p className="leader-card-position">{member.role}</p>
-      {member.biography && <p>{member.biography}</p>}
-      {(member.email || member.phone || links.length > 0) && <div className="team-contact">
-        {member.email && <a href={`mailto:${member.email}`}>{member.email}</a>}
-        {member.phone && <a href={`tel:${member.phone.replace(/[^+\d]/g, '')}`}>{member.phone}</a>}
-        {links.map((link) => <a key={`${link.label}-${link.url}`} href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>)}
-      </div>}
+      <h3><SmartLink to={`/leadership/${member.id}`}>{member.name}</SmartLink></h3>
+      <p className="leader-card-position">{member.role}</p>
+      <SmartLink className="team-read-more" to={`/leadership/${member.id}`}>Read more</SmartLink>
     </div>
   </article>;
 }
