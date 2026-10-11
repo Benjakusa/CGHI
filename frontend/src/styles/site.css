@@ -1554,6 +1554,14 @@ section {
   gap: 0.3rem;
   padding: 1.15rem 1.25rem 1.4rem;
 }
+.team-card-meta, .team-card-actions { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 12px; }
+.team-card-meta h3 { min-width: 0; margin: 0; }
+.team-card-meta h3 a { color: var(--sky-dark); text-decoration: none; }
+.team-card-meta h3 a:hover { text-decoration: underline; text-underline-offset: .2em; }
+.team-card-meta .leader-card-position { margin: 0; text-align: right; }
+.team-card-actions { margin-top: .35rem; }
+.team-card-actions .team-share-control { justify-self: start; }
+.team-card-actions .team-read-more { justify-self: end; align-self: center; margin: 0; }
 
 .leader-card-position {
   font-size: var(--fs-small);
@@ -1571,8 +1579,18 @@ section {
 .team-profile-contacts, .team-profile-socials { display: flex; flex-wrap: wrap; gap: 12px 20px; margin-top: 1.5rem; }
 .team-profile-contacts a, .team-profile-socials a { overflow-wrap: anywhere; }
 .team-profile-share { display: inline-grid; place-items: center; width: 44px; height: 44px; margin-top: 1.75rem; color: var(--ink); background: var(--surface); border: 1px solid var(--border); cursor: pointer; }
+.team-share-control { display: inline-flex; align-items: center; min-width: 0; }
+.team-share-control .team-profile-share { flex: 0 0 auto; }
+.team-share-control.is-compact .team-profile-share { width: 38px; height: 38px; margin: 0; }
+.team-share-control.is-compact .team-profile-share-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .team-profile-share svg { width: 20px; height: 20px; }
 .team-profile-share-status { margin-left: 10px; font-size: var(--fs-small); }
+.team-profile-socials a { display: inline-grid; place-items: center; width: 42px; height: 42px; color: var(--ink); border: 1px solid var(--border); text-decoration: none; }
+.team-profile-socials a:hover { color: var(--sky-dark); border-color: var(--sky); }
+.team-profile-socials i, .team-profile-socials svg { width: 20px; height: 20px; font-size: 20px; }
+.team-profile-socials svg { fill: none; stroke: currentColor; stroke-width: 1.8; }
+.team-profile-socials .social-symbol-fill { fill: currentColor; stroke: none; }
+.team-profile-socials .social-symbol-dot { fill: currentColor; stroke: none; }
 @media (max-width: 680px) { .team-profile { grid-template-columns: 1fr; } .team-profile-photo { max-height: 520px; } }
 
 /* Approach cards (About): a graphical five-stage flow. Numbered badges, icon

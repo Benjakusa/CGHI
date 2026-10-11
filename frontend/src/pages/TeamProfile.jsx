@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import Seo, { BASE_JSONLD, breadcrumbJsonLd, pageJsonLd } from '../components/Seo';
@@ -7,34 +7,18 @@ import SmartLink from '../components/SmartLink';
 import useApi from '../hooks/useApi';
 import { resolveAssetUrl } from '../context/AuthContext';
 import { PAGE_META } from '../content/navigation';
+import ShareProfileButton from '../components/ShareProfileButton';
 
 const META = PAGE_META['/leadership'];
 
-function ProfileShare({ name }) {
-  const [status, setStatus] = useState('');
-  const share = async () => {
-    const url = window.location.href;
-    try {
-      if (navigator.share) await navigator.share({ title: `${name} | CGHI`, url });
-      else {
-        await navigator.clipboard.writeText(url);
-        setStatus('Profile link copied');
-        window.setTimeout(() => setStatus(''), 2500);
-      }
-    } catch (error) {
-      if (error?.name !== 'AbortError') setStatus('Could not share profile');
-    }
-  };
-
-  return <div>
-    <button className="team-profile-share" type="button" onClick={share} aria-label={`Share ${name}'s profile`} title="Share profile">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
-        <path d="m8.7 10.6 6.6-4.2M8.7 13.4l6.6 4.2" />
-      </svg>
-    </button>
-    <span className="team-profile-share-status" role="status" aria-live="polite">{status}</span>
-  </div>;
+function getSocialSymbol(label, url) {
+  const value = `${label || ''} ${url || ''}`.toLowerCase();
+  if (value.includes('facebook') || value.includes('fb.com')) return <i className="bi bi-facebook" aria-hidden="true" />;
+  if (value.includes('linkedin')) return <i className="bi bi-linkedin" aria-hidden="true" />;
+  if (value.includes('twitter') || value.includes('x.com')) return <i className="bi bi-twitter-x" aria-hidden="true" />;
+  if (value.includes('instagram')) return <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle className="social-symbol-dot" cx="18" cy="6" r="1" /></svg>;
+  if (value.includes('youtube') || value.includes('youtu.be')) return <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="4" /><path className="social-symbol-fill" d="m10 9 6 3-6 3z" /></svg>;
+  return <i className="bi bi-link-45deg" aria-hidden="true" />;
 }
 
 export default function TeamProfile() {
@@ -43,14 +27,14 @@ export default function TeamProfile() {
   const member = (team.data || []).find((person) => String(person.id) === id);
   const links = Array.isArray(member?.social_links) ? member.social_links : [];
   const canonicalPath = `/leadership/${id}`;
-  const jsonLd = useMemo(() => [
+  const jsonLd = [
     ...BASE_JSONLD,
     pageJsonLd({ name: member?.name || 'Team profile', path: canonicalPath, description: member?.biography || META.description }),
     breadcrumbJsonLd([
       ...META.breadcrumb,
       { label: member?.name || 'Team profile', to: canonicalPath },
     ]),
-  ], [canonicalPath, member?.biography, member?.name]);
+  ];
 
   return <Layout navId="leadership" pageId="leadership-detail">
     {member && <Seo
@@ -91,9 +75,9 @@ export default function TeamProfile() {
               {member.phone && <a href={`tel:${member.phone.replace(/[^+\d]/g, '')}`}>{member.phone}</a>}
             </div>}
             {links.length > 0 && <nav className="team-profile-socials" aria-label="Social media links">
-              {links.map((link) => <a key={`${link.label}-${link.url}`} href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>)}
+              {links.map((link) => <a key={`${link.label}-${link.url}`} href={link.url} target="_blank" rel="noopener noreferrer" aria-label={`${link.label} profile`} title={link.label}>{getSocialSymbol(link.label, link.url)}</a>)}
             </nav>}
-            <ProfileShare name={member.name} />
+            <ShareProfileButton name={member.name} url={canonicalPath} />
             <p><SmartLink className="text-link" to="/leadership">← Back to Leadership &amp; Team</SmartLink></p>
           </div>
         </article> : team.loading

@@ -9,6 +9,7 @@ import useApi from '../hooks/useApi';
 import { PAGE_META } from '../content/navigation';
 import { resolveAssetUrl } from '../context/AuthContext';
 import SmartLink from '../components/SmartLink';
+import ShareProfileButton from '../components/ShareProfileButton';
 
 const META = PAGE_META['/leadership'];
 
@@ -18,15 +19,20 @@ function TeamCard({ member }) {
       {member.image_url ? <SmartImage className="leader-card-photo" src={resolveAssetUrl(member.image_url)} alt={`Portrait of ${member.name}`} width="480" height="480" /> : <div className="team-image-fallback" aria-hidden="true"><i className="bi bi-person" /></div>}
     </SmartLink>
     <div className="leader-card-body">
-      <h3><SmartLink to={`/leadership/${member.id}`}>{member.name}</SmartLink></h3>
-      <p className="leader-card-position">{member.role}</p>
-      <SmartLink className="team-read-more" to={`/leadership/${member.id}`}>Read more</SmartLink>
+      <div className="team-card-meta">
+        <h3><SmartLink to={`/leadership/${member.id}`}>{member.name}</SmartLink></h3>
+        <p className="leader-card-position">{member.role}</p>
+      </div>
+      <div className="team-card-actions">
+        <ShareProfileButton compact name={member.name} url={`/leadership/${member.id}`} />
+        <SmartLink className="team-read-more" to={`/leadership/${member.id}`}>Read more</SmartLink>
+      </div>
     </div>
   </article>;
 }
 
 function TeamSkeleton() {
-  return <div className="grid-auto" aria-hidden="true">{[0, 1, 2].map((item) => <article className="leader-card" key={item}><div className="leader-card-media skeleton" /><div className="leader-card-body"><span className="skeleton" /><span className="skeleton" /><span className="skeleton" /></div></article>)}</div>;
+  return <div className="grid-auto" aria-hidden="true">{[0, 1, 2].map((item) => <article className="leader-card" key={item}><div className="leader-card-media skeleton" /><div className="leader-card-body"><span className="skeleton" /><span className="skeleton" /></div></article>)}</div>;
 }
 
 export default function Leadership() {
