@@ -61,12 +61,14 @@ export default function WhatWeDo() {
         jsonLd={jsonLd}
       />
 
-      <PageHeader
-        trail={META.breadcrumb}
-        h1="What We Do"
-        dek="CGP strengthens global health security and IHR compliance, integrates One Health data streams for early warning, builds AI-driven outbreak forecasting, and equips frontline responders with real-time tools and training."
-        kickers={CAPABILITIES.map((c) => c.short)}
-      />
+      <div className="wwd-overview-header">
+        <PageHeader
+          trail={META.breadcrumb}
+          h1="What We Do"
+          dek="CGP strengthens global health security and IHR compliance, integrates One Health data streams for early warning, builds AI-driven outbreak forecasting, and equips frontline responders with real-time tools and training."
+          kickers={CAPABILITIES.map((c) => c.short)}
+        />
+      </div>
 
       {/* ---------------- Headline figures ---------------- */}
       <section
