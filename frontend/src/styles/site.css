@@ -4249,13 +4249,19 @@ section {
     justify-content: flex-end;
   }
   .utility-bar-social {
-    flex: 0 0 auto;
-    gap: 0.25rem;
+    flex: 0 1 auto;
+    gap: 0;
+    margin-left: auto;
   }
   .utility-bar-social a {
     justify-content: center;
-    width: 2.5rem;
+    width: 2rem;
     padding-inline: 0;
+  }
+  .utility-bar-social i,
+  .utility-bar-social .social-icon-youtube {
+    flex: 0 0 auto;
+    font-size: 1rem;
   }
   .footer-grid {
     grid-template-columns: minmax(0, 1fr);
