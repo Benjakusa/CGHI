@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { API_BASE } from '../context/AuthContext';
 
+async function readApiResponse(response) {
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.toLowerCase().includes('application/json')) {
+    throw new Error('The comments service returned a webpage instead of data. Deploy or restart the backend so the comments API is available, then try again.');
+  }
+  return response.json();
+}
+
 function displayDate(value) {
   const date = new Date(value);
   return Number.isNaN(date.getTime())
@@ -21,7 +29,7 @@ export default function NewsComments({ slug }) {
     setLoading(true);
     fetch(`${API_BASE}/api/news/slug/${encodeURIComponent(slug)}/comments`)
       .then(async (response) => {
-        const data = await response.json();
+        const data = await readApiResponse(response);
         if (!response.ok) throw new Error(data.error || 'Could not load comments.');
         if (active) setComments(Array.isArray(data) ? data : []);
       })
@@ -44,7 +52,7 @@ export default function NewsComments({ slug }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, comment }),
       });
-      const data = await response.json();
+      const data = await readApiResponse(response);
       if (!response.ok) throw new Error(data.error || 'Could not post your comment.');
       setComments((current) => [...current, data]);
       setName('');
