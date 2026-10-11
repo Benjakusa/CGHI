@@ -237,7 +237,7 @@ export default function HeroesAdmin() {
                                             <i className={h.published ? 'bi bi-toggle-off' : 'bi bi-toggle-on'} style={{ marginRight: '4px' }}></i>
                                             {h.published ? 'Unpublish' : 'Publish'}
                                         </button>
-                                        <button onClick={() => { setCurrent(h); setModalOpen(true); }} style={{ 
+                                        <button type="button" aria-label={`Edit hero: ${h.title}`} title="Edit hero" onClick={() => { setCurrent({ ...h }); setModalOpen(true); }} style={{ 
                                             background: 'none', 
                                             border: '1px solid var(--border)', 
                                             borderRadius: '4px', 
@@ -245,7 +245,7 @@ export default function HeroesAdmin() {
                                             cursor: 'pointer',
                                             fontSize: 'var(--fs-small)'
                                         }}>
-                                            <i className="bi bi-pencil" style={{ marginRight: '4px' }}></i>
+                                            <i className="bi bi-pencil-square" style={{ marginRight: '4px' }}></i>
                                             Edit
                                         </button>
                                         <button onClick={() => handleDelete(h.id)} style={{ 

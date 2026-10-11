@@ -218,7 +218,7 @@ export default function ResourcesAdmin() {
                                             <i className={item.published ? 'bi bi-toggle-off' : 'bi bi-toggle-on'} style={{ marginRight: '4px' }}></i>
                                             {item.published ? 'Unpublish' : 'Publish'}
                                         </button>
-                                        <button onClick={() => { setCurrent(item); setModalOpen(true); }} style={{
+                                        <button type="button" aria-label={`Edit resource: ${item.title}`} title="Edit resource" onClick={() => { setCurrent({ ...item }); setModalOpen(true); }} style={{
                                             background: 'none',
                                             border: '1px solid var(--border)',
                                             borderRadius: '4px',
@@ -226,7 +226,7 @@ export default function ResourcesAdmin() {
                                             cursor: 'pointer',
                                             fontSize: 'var(--fs-small)'
                                         }}>
-                                            <i className="bi bi-pencil" style={{ marginRight: '4px' }}></i>
+                                            <i className="bi bi-pencil-square" style={{ marginRight: '4px' }}></i>
                                             Edit
                                         </button>
                                         <button onClick={() => handleDelete(item.id)} style={{
