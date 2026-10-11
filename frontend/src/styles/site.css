@@ -4245,14 +4245,18 @@ section {
   .utility-bar-info {
     display: none;
   }
+  .utility-bar {
+    overflow: visible;
+  }
   .utility-bar-inner {
     justify-content: flex-end;
   }
   .utility-bar-social {
-    flex: 0 1 auto;
+    flex: 0 0 auto;
     gap: 0;
     margin-left: auto;
     column-gap: 0;
+    padding-inline: 0;
   }
   .utility-bar-social li {
     margin: 0;
@@ -4260,10 +4264,11 @@ section {
   }
   .utility-bar-social a {
     justify-content: center;
-    width: auto;
+    width: 1.75rem;
     min-width: 0;
     margin: 0;
     padding-inline: 0;
+    overflow: visible;
   }
   .utility-bar-social i,
   .utility-bar-social .social-icon-youtube {
