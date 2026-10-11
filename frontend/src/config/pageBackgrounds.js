@@ -1,19 +1,28 @@
+import intelligenceForum from '../Assets/569216347_122098062855084791_1251837625259459798_n.jpg';
+import preparednessForum from '../Assets/571242884_122098061637084791_6856730123211462823_n.jpg';
+import oneHealthForum from '../Assets/574016059_122103367773084791_5896764519969786179_n.jpg';
+import researchForum from '../Assets/579432600_122106057741084791_5709000695062609898_n.jpg';
+import partnerForum from '../Assets/581196268_122106058011084791_1001770831442132854_n.jpg';
+
+const imageBackground = (image, position = 'center') => ({ image, position, treatment: 'image' });
+
 const PAGE_BACKGROUNDS = {
-  home: { treatment: 'home', fallback: 'linear-gradient(135deg, #e9f7fc 0%, #ffffff 58%, #dff2f9 100%)' },
-  about: { treatment: 'editorial', fallback: 'radial-gradient(ellipse at 85% 12%, #dff2f9 0, transparent 44%), #ffffff' },
-  'what-we-do': { treatment: 'editorial', fallback: 'linear-gradient(150deg, #f0f8fb, #ffffff 52%, #e5f4fa)' },
-  projects: { treatment: 'editorial', fallback: 'radial-gradient(ellipse at 12% 30%, #e5f4fa 0, transparent 42%), #ffffff' },
-  initiatives: { treatment: 'editorial', fallback: 'linear-gradient(120deg, #ffffff, #edf8fc 65%, #e4f3f8)' },
-  insights: { treatment: 'editorial', fallback: 'radial-gradient(ellipse at 78% 18%, #e1f3fa 0, transparent 40%), #ffffff' },
-  partners: { treatment: 'editorial', fallback: 'linear-gradient(145deg, #eaf7fb, #ffffff 58%, #e1f2f8)' },
-  leadership: { treatment: 'image', image: '/Assets/leadership-background.png', fallback: 'radial-gradient(ellipse at 50% 0, #e2f3f9 0, transparent 46%), #ffffff' },
-  resources: { treatment: 'editorial', fallback: 'linear-gradient(110deg, #ffffff, #eef8fb 55%, #e4f3f8)' },
-  careers: { treatment: 'editorial', fallback: 'radial-gradient(ellipse at 90% 20%, #e3f4f9 0, transparent 42%), #ffffff' },
-  'partner-with-us': { treatment: 'editorial', fallback: 'linear-gradient(135deg, #e5f4f9, #ffffff 50%, #edf8fb)' },
-  privacy: { treatment: 'texture', fallback: 'radial-gradient(ellipse at 85% 12%, #e6f5fa 0, transparent 44%), #fff' },
-  terms: { treatment: 'texture', fallback: 'linear-gradient(140deg, #fff, #f0f8fb)' },
-  accessibility: { treatment: 'texture', fallback: 'radial-gradient(ellipse at 15% 15%, #e3f4f9 0, transparent 42%), #fff' },
-  notFound: { treatment: 'texture', fallback: 'linear-gradient(135deg, #eaf7fb, #fff 60%, #e3f4f9)' },
+  home: imageBackground(preparednessForum, 'center 38%'),
+  about: imageBackground(intelligenceForum, 'center 35%'),
+  'what-we-do': imageBackground(researchForum, 'center 40%'),
+  projects: imageBackground(oneHealthForum, 'center 38%'),
+  initiatives: imageBackground(oneHealthForum, 'center 58%'),
+  insights: imageBackground(researchForum, 'center 35%'),
+  news: imageBackground(researchForum, 'center 35%'),
+  partners: imageBackground(partnerForum, 'center 35%'),
+  leadership: imageBackground(intelligenceForum, 'center 35%'),
+  resources: imageBackground(preparednessForum, 'center 55%'),
+  careers: imageBackground(partnerForum, 'center 58%'),
+  'partner-with-us': imageBackground(partnerForum, 'center 38%'),
+  privacy: imageBackground(intelligenceForum, 'center 62%'),
+  terms: imageBackground(researchForum, 'center 60%'),
+  accessibility: imageBackground(oneHealthForum, 'center 62%'),
+  notFound: imageBackground(preparednessForum, 'center 48%'),
 };
 
 export default PAGE_BACKGROUNDS;

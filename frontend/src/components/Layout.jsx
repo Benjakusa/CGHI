@@ -14,7 +14,7 @@ export default function Layout({ children, navId, pageId }) {
   const background = PAGE_BACKGROUNDS[routeId] || PAGE_BACKGROUNDS.notFound;
 
   return (
-    <div className="site-shell" data-page={routeId} data-bg-treatment={background.treatment} data-hero={location.pathname === '/' ? 'true' : undefined} style={{ '--page-bg-fallback': background.fallback, ...(background.image ? { '--page-bg-image': `url("${background.image}")` } : {}) }}>
+    <div className="site-shell" data-page={routeId} data-bg-treatment={background.treatment} data-hero={location.pathname === '/' ? 'true' : undefined} style={{ '--page-bg-image': `url("${background.image}")`, '--page-bg-position': background.position || 'center' }}>
       {/*
         Route announcements: the <main> landmark is re-keyed on navigation so
         screen readers announce the new page instead of silently swapping
