@@ -4248,6 +4248,15 @@ section {
   .utility-bar-inner {
     justify-content: flex-end;
   }
+  .utility-bar-social {
+    flex: 0 0 auto;
+    gap: 0.25rem;
+  }
+  .utility-bar-social a {
+    justify-content: center;
+    width: 2.5rem;
+    padding-inline: 0;
+  }
   .footer-grid {
     grid-template-columns: minmax(0, 1fr);
   }
