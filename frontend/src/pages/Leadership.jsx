@@ -2,14 +2,11 @@ import React, { useMemo } from 'react';
 import Layout from '../components/Layout';
 import PageHeader from '../components/PageHeader';
 import Seo, { BASE_JSONLD, breadcrumbJsonLd, pageJsonLd } from '../components/Seo';
-import SmartLink from '../components/SmartLink';
 import SmartImage from '../components/SmartImage';
-import { CtaStrip, SectionHeader } from '../components/cards';
+import { SectionHeader } from '../components/cards';
 import { AsyncSection, EmptyState } from '../components/Skeleton';
 import useApi from '../hooks/useApi';
-import { BRAND } from '../config/site';
 import { PAGE_META } from '../content/navigation';
-import { EXPERTISE_AREAS } from '../content/leadership';
 import { resolveAssetUrl } from '../context/AuthContext';
 
 const META = PAGE_META['/leadership'];
@@ -46,18 +43,12 @@ export default function Leadership() {
   ], []);
   return <Layout navId="leadership" pageId="leadership">
     <Seo title={META.title} description={META.description} path="/leadership" jsonLd={jsonLd} />
-    <PageHeader trail={META.breadcrumb} eyebrow="Who We Are" h1="Leadership & Team" dek={`Meet the people behind ${BRAND.abbr}’s work in epidemic intelligence, One Health, preparedness and data science.`} />
+    <PageHeader trail={META.breadcrumb} eyebrow="Who We Are" h1="Leadership & Team" dek="Meet the people behind our work in epidemic intelligence, One Health, preparedness and data science." />
     <section aria-labelledby="team-heading"><div className="wrap">
       <SectionHeader id="team-heading" title="Our team" eyebrow={team.loading ? 'Loading profiles' : `${people.length} ${people.length === 1 ? 'profile' : 'profiles'}`} />
       <AsyncSection loading={team.loading} error={team.error ? 'Team profiles could not be loaded.' : null} onRetry={team.retry} label="Loading team profiles" skeleton={<TeamSkeleton />}>
         {people.length ? <div className="grid-auto">{people.map((member) => <TeamCard key={member.id} member={member} />)}</div> : <EmptyState icon="bi-people" title="Team profiles are being prepared" />}
       </AsyncSection>
     </div></section>
-    <section className="section-surface" aria-labelledby="disciplines-heading"><div className="wrap">
-      <SectionHeader id="disciplines-heading" eyebrow="Expertise" title="Disciplines on our team" lede={`${BRAND.abbr} brings together expertise across the following areas.`} />
-      <ul className="chip-list chip-list--static">{EXPERTISE_AREAS.map((area) => <li key={area.id}>{area.label}</li>)}</ul>
-      <p className="section-trailing-link"><SmartLink className="text-link" to="/careers">See current openings <i className="bi bi-arrow-right" aria-hidden="true" /></SmartLink></p>
-    </div></section>
-    <CtaStrip title="Want to work with our team?" body="We welcome collaborations with researchers, practitioners and institutions." actions={[{ label: 'Partner With Us', to: '/partner-with-us#contact-form', variant: 'white' }, { label: 'Careers', to: '/careers', variant: 'white' }]} />
   </Layout>;
 }

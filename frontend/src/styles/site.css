@@ -171,17 +171,19 @@ summary:focus-visible,
   min-height: 100vh;
 }
 
-.site-shell[data-bg-treatment='image'] { background: var(--surface); isolation: isolate; }
+.site-shell[data-bg-treatment='image'] { background: var(--surface); position: relative; isolation: isolate; }
 .site-shell[data-bg-treatment='image']::before {
   content: '';
-  position: fixed;
+  position: absolute;
   inset: 0;
+  min-height: 100%;
   z-index: -1;
   pointer-events: none;
-  background-image: linear-gradient(rgba(255,255,255,.91), rgba(255,255,255,.94)), var(--page-bg-image, none);
-  background-position: center, var(--page-bg-position, center);
+  background-image: linear-gradient(rgba(255,255,255,.82), rgba(255,255,255,.82)), var(--page-bg-image, var(--page-bg-fallback));
+  background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 .site-shell[data-bg-treatment='home'] { background: var(--page-bg-fallback); }
 .site-shell[data-bg-treatment='image'] .section-surface,
