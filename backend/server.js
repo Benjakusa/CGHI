@@ -98,6 +98,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/heroes', require('./routes/heroes'));
 app.use('/api/news', require('./routes/news'));
 app.use('/api/partners', require('./routes/partners'));
+app.use('/api/team', require('./routes/team'));
 app.use('/api/jobs', require('./routes/jobs'));
 app.use('/api/resources', require('./routes/resources'));
 app.use('/api/receipts', require('./routes/receipts'));

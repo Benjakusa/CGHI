@@ -5,13 +5,16 @@ import { useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import useScrollAnimations from '../hooks/useScrollAnimations';
+import PAGE_BACKGROUNDS from '../config/pageBackgrounds';
 
-export default function Layout({ children, navId }) {
+export default function Layout({ children, navId, pageId }) {
   const location = useLocation();
   useScrollAnimations(location.pathname);
+  const routeId = pageId || location.pathname.split('/')[1] || 'home';
+  const background = PAGE_BACKGROUNDS[routeId] || PAGE_BACKGROUNDS.notFound;
 
   return (
-    <div className="site-shell" data-hero={location.pathname === '/' ? 'true' : undefined}>
+    <div className="site-shell" data-page={routeId} data-bg-treatment={background.treatment} data-hero={location.pathname === '/' ? 'true' : undefined} style={{ '--page-bg-fallback': background.fallback, ...(background.image ? { '--page-bg-image': `url("${background.image}")` } : {}) }}>
       {/*
         Route announcements: the <main> landmark is re-keyed on navigation so
         screen readers announce the new page instead of silently swapping

@@ -25,13 +25,13 @@ export function ShareBar({ article, onCopy }) {
   ];
   async function copy() {
     if (navigator.share && window.matchMedia('(max-width: 700px)').matches) {
-      try { await navigator.share({ title: article.title, url }); } catch (_) { /* user dismissed */ }
+      try { await navigator.share({ title: article.title, url }); } catch { /* user dismissed */ }
       return;
     }
     try {
       await navigator.clipboard.writeText(url);
       onCopy?.('Link copied');
-    } catch (_) {
+    } catch {
       onCopy?.(url);
     }
   }
@@ -42,7 +42,7 @@ export function ShareBar({ article, onCopy }) {
   </div>;
 }
 
-export default function ArticleView({ article, preview = false, expanded = true, onCopy }) {
+export default function ArticleView({ article, expanded = true, onCopy }) {
   const blocks = article.blocks || [];
   const cover = article.cover_image || article.image_url;
   return <article className={`news-story${expanded ? ' is-open' : ''}`}>

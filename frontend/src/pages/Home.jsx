@@ -109,7 +109,7 @@ function HeroSlide({ slide, isActive, priority }) {
   );
 }
 
-function HeroCarousel({ slides, loading }) {
+function HeroCarousel({ slides }) {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -128,14 +128,6 @@ function HeroCarousel({ slides, loading }) {
     );
     return () => window.clearInterval(timer);
   }, [paused, slidesToRender.length]);
-
-  if (loading) {
-    return (
-      <section className="hero-carousel hero-carousel--loading" aria-busy="true">
-        <span className="sr-only">Loading featured content…</span>
-      </section>
-    );
-  }
 
   return (
     <section
@@ -267,7 +259,7 @@ export default function Home() {
         jsonLd={jsonLd}
       />
 
-      <HeroCarousel slides={heroes.data} loading={heroes.loading} />
+      <HeroCarousel slides={heroes.data} />
 
       {/* ---------------- Welcome ---------------- */}
       <section>

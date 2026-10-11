@@ -43,6 +43,7 @@ const Dashboard = lazy(() =>
 const HeroesAdmin = lazy(() => import('./pages/admin/Heroes'));
 const NewsAdmin = lazy(() => import('./pages/admin/NewsAdmin'));
 const PartnersAdmin = lazy(() => import('./pages/admin/PartnersAdmin'));
+const TeamAdmin = lazy(() => import('./pages/admin/TeamAdmin'));
 const CareersAdmin = lazy(() => import('./pages/admin/CareersAdmin'));
 const ResourcesAdmin = lazy(() => import('./pages/admin/ResourcesAdmin'));
 const JobApplications = lazy(() => import('./pages/admin/JobApplications'));
@@ -175,6 +176,7 @@ function AppRoutes() {
         <Route path="/admin/heroes" element={<ProtectedRoute><HeroesAdmin /></ProtectedRoute>} />
         <Route path="/admin/news" element={<ProtectedRoute><NewsAdmin /></ProtectedRoute>} />
         <Route path="/admin/partners" element={<ProtectedRoute><PartnersAdmin /></ProtectedRoute>} />
+        <Route path="/admin/team" element={<ProtectedRoute><TeamAdmin /></ProtectedRoute>} />
         <Route path="/admin/careers" element={<ProtectedRoute><CareersAdmin /></ProtectedRoute>} />
         <Route path="/admin/resources" element={<ProtectedRoute><ResourcesAdmin /></ProtectedRoute>} />
         <Route path="/admin/job-applications" element={<ProtectedRoute><JobApplications /></ProtectedRoute>} />
