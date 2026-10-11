@@ -5,6 +5,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { BRAND, CONTACT, SOCIAL } from '../config/site';
 import { PRIMARY_NAV, HEADER_CTA } from '../content/navigation';
+import SocialIcon from './SocialIcon';
 
 /** Nav item ids that light up a parent dropdown. */
 const PARENT_OF = {};
@@ -262,15 +263,12 @@ export default function Navbar({ activePage }) {
                 <i className="bi bi-envelope" aria-hidden="true" /> {CONTACT.email}
               </a>
             </li>
-            <li>
-              <i className="bi bi-geo-alt" aria-hidden="true" /> {CONTACT.address.formatted}
-            </li>
           </ul>
           <ul className="utility-bar-social" aria-label={`${BRAND.abbr} on social media`}>
             {SOCIAL.map((s) => (
               <li key={s.label}>
                 <a href={s.href} target="_blank" rel="noopener noreferrer" aria-label={`${BRAND.abbr} on ${s.label}`}>
-                  <i className={`bi ${s.icon}`} aria-hidden="true" />
+                  <SocialIcon social={s} />
                 </a>
               </li>
             ))}

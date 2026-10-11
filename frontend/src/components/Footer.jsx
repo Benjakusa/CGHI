@@ -4,6 +4,7 @@ import React from 'react';
 import SmartLink from './SmartLink';
 import { BRAND, CONTACT, SOCIAL } from '../config/site';
 import { FOOTER_NAV, FOOTER_LEGAL } from '../content/navigation';
+import SocialIcon from './SocialIcon';
 
 
 export default function Footer() {
@@ -35,7 +36,7 @@ export default function Footer() {
                     rel="noopener noreferrer"
                     aria-label={`${BRAND.abbr} on ${s.label}`}
                   >
-                    <i className={`bi ${s.icon}`} aria-hidden="true" />
+                    <SocialIcon social={s} />
                   </a>
                 </li>
               ))}

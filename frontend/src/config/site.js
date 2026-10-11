@@ -98,6 +98,11 @@ export const SOCIAL = [
     href: 'https://www.facebook.com/profile.php?id=61582543745887',
     icon: 'bi-facebook',
   },
+  {
+    label: 'YouTube',
+    href: 'https://www.youtube.com/@Cgp_intel',
+    icon: 'youtube',
+  },
 ];
 
 export function absoluteUrl(path = '/') {

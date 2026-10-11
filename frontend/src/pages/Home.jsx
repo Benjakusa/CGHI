@@ -383,11 +383,15 @@ export default function Home() {
             skeleton={
               <div className="partner-marquee" aria-hidden="true">
                 <div className="partner-marquee-viewport">
-                  {Array.from({ length: 6 }).map((_, i) => (
-                    <div className="partner-marquee-card" key={i}>
-                      <span className="skeleton" style={{ width: '70%', height: '2.4rem' }} />
+                  <div className="partner-marquee-track">
+                    <div className="partner-marquee-group partner-marquee-skeleton">
+                      {Array.from({ length: 4 }).map((_, i) => (
+                        <div className="partner-marquee-card" key={i}>
+                          <span className="skeleton" style={{ width: '70%', height: '2.4rem' }} />
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
             }
@@ -426,7 +430,7 @@ export default function Home() {
           >
             <div className="grid-3">
               {latestNews.map((article) => (
-                <InsightCard key={article.id} article={article} />
+                <InsightCard key={article.id} article={article} compact />
               ))}
             </div>
           </AsyncSection>

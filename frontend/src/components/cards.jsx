@@ -185,13 +185,13 @@ export function InitiativeCard({ initiative }) {
 /* Insight cards                                                       */
 /* ------------------------------------------------------------------ */
 
-export function InsightCard({ article }) {
+export function InsightCard({ article, compact = false }) {
   const to = `/insights/${article.slug}`;
   const date = formatDate(article.published_at);
   const image = article.image_url;
 
   return (
-    <article className="article-card">
+    <article className={`article-card${compact ? ' article-card--compact' : ''}`}>
       {image ? (
         <SmartLink className="article-card-media" to={to} tabIndex={-1} aria-hidden="true">
           <SmartImage
@@ -209,16 +209,14 @@ export function InsightCard({ article }) {
       )}
 
       <div className="article-card-body">
-        <p className="article-meta">
+        {!compact && <p className="article-meta">
           <span className="pill">{categoryLabel(article.category)}</span>
-          {date && (
-            <time dateTime={article.isoPublished || undefined}>{date}</time>
-          )}
-        </p>
+          {date && <time dateTime={article.isoPublished || undefined}>{date}</time>}
+        </p>}
         <h3>
           <SmartLink to={to}>{article.title}</SmartLink>
         </h3>
-        <p>{article.excerpt}</p>
+        {!compact && <p>{article.excerpt}</p>}
         <SmartLink className="text-link card-link" to={to}>
           Read more<span className="sr-only">: {article.title}</span>{' '}
           <i className="bi bi-arrow-right" aria-hidden="true" />
@@ -305,7 +303,7 @@ export function PartnerMarquee({
 }) {
   if (!partners || partners.length === 0) return null;
 
-  const renderTile = (partner) => {
+  const renderTile = (partner, duplicate, index) => {
     const logo = partner.logo_url ? resolveAssetUrl(partner.logo_url) : null;
     const name = partner.name;
     const website = verifiedWebsite(partner);
@@ -329,14 +327,14 @@ export function PartnerMarquee({
     );
 
     return (
-      <li key={partner.id ?? name} className="partner-marquee-item">
+      <li key={`${partner.id ?? name}-${duplicate ? 'copy' : 'original'}-${index}`} className="partner-marquee-item">
         {website ? (
-          <a href={website} target="_blank" rel="noopener noreferrer" title={name}>
+          <a href={website} target="_blank" rel="noopener noreferrer" title={name} tabIndex={duplicate ? -1 : undefined}>
             {inner}
             <span className="sr-only">(opens in a new tab)</span>
           </a>
         ) : (
-          <SmartLink to={partner.to || '/partners'} title={name}>
+          <SmartLink to={partner.to || '/partners'} title={name} tabIndex={duplicate ? -1 : undefined}>
             {inner}
           </SmartLink>
         )}
@@ -344,7 +342,18 @@ export function PartnerMarquee({
     );
   };
 
-  return <div className="partner-marquee"><ul className="partner-marquee-track" aria-label={label}>{partners.map(renderTile)}</ul></div>;
+  const renderGroup = (duplicate) => <ul className="partner-marquee-group" aria-label={duplicate ? undefined : label} aria-hidden={duplicate || undefined}>
+    {partners.map((partner, index) => renderTile(partner, duplicate, index))}
+  </ul>;
+
+  return <div className="partner-marquee" role="region" aria-label={label}>
+    <div className="partner-marquee-viewport">
+      <div className="partner-marquee-track">
+        {renderGroup(false)}
+        {renderGroup(true)}
+      </div>
+    </div>
+  </div>;
 }
 
 /* ------------------------------------------------------------------ */

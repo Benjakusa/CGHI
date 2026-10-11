@@ -33,6 +33,7 @@ import SmartLink from '../components/SmartLink';
 import { CtaStrip } from '../components/cards';
 import { API_BASE } from '../context/AuthContext';
 import { BRAND, CONTACT, SOCIAL } from '../config/site';
+import SocialIcon from '../components/SocialIcon';
 import { PAGE_META } from '../content/navigation';
 
 const META = PAGE_META['/partner-with-us'];
@@ -606,7 +607,7 @@ export default function PartnerWithUs() {
                         rel="noopener noreferrer"
                         aria-label={`${BRAND.abbr} on ${s.label} (opens in a new tab)`}
                       >
-                        <i className={`bi ${s.icon}`} aria-hidden="true" />
+                        <SocialIcon social={s} />
                       </a>
                     </li>
                   ))}
