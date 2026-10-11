@@ -6,6 +6,28 @@ const auth = require('../middleware/auth');
 
 const router = express.Router();
 const now = () => new Date().toISOString();
+const commentAttempts = new Map();
+const COMMENT_RATE_WINDOW_MS = 10 * 60 * 1000;
+function limitCommentPosts(req, res, next) {
+  const timestamp = Date.now();
+  const key = req.ip || 'unknown';
+  const recent = (commentAttempts.get(key) || []).filter((time) => timestamp - time < COMMENT_RATE_WINDOW_MS);
+  if (recent.length >= 5) {
+    res.set('Retry-After', String(Math.ceil((COMMENT_RATE_WINDOW_MS - (timestamp - recent[0])) / 1000)));
+    return res.status(429).json({ error: 'Too many comments. Please wait a few minutes and try again.' });
+  }
+  recent.push(timestamp);
+  commentAttempts.set(key, recent);
+  next();
+}
+setInterval(() => {
+  const cutoff = Date.now() - COMMENT_RATE_WINDOW_MS;
+  for (const [key, times] of commentAttempts) {
+    const recent = times.filter((time) => time > cutoff);
+    if (recent.length) commentAttempts.set(key, recent);
+    else commentAttempts.delete(key);
+  }
+}, COMMENT_RATE_WINDOW_MS).unref();
 const slugify = (value) => String(value || 'article').toLowerCase()
   .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
   .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 90) || 'article';
@@ -72,6 +94,34 @@ router.get('/slug/:slug', (req, res) => {
   const article = db.prepare('SELECT * FROM news WHERE slug=? AND published=1').get(req.params.slug);
   if (!article) return res.status(404).json({ error: 'Article not found.' });
   res.json(withBlocks(article));
+});
+
+router.get('/slug/:slug/comments', (req, res) => {
+  const article = db.prepare('SELECT id FROM news WHERE slug=? AND published=1').get(req.params.slug);
+  if (!article) return res.status(404).json({ error: 'Article not found.' });
+  const comments = db.prepare(`
+    SELECT id, name, comment, created_at
+    FROM news_comments WHERE article_id=?
+    ORDER BY created_at ASC, id ASC
+  `).all(article.id);
+  res.json(comments);
+});
+
+router.post('/slug/:slug/comments', limitCommentPosts, (req, res) => {
+  const article = db.prepare('SELECT id FROM news WHERE slug=? AND published=1').get(req.params.slug);
+  if (!article) return res.status(404).json({ error: 'Article not found.' });
+  const name = typeof req.body?.name === 'string' ? req.body.name.trim() : '';
+  const comment = typeof req.body?.comment === 'string' ? req.body.comment.trim() : '';
+  if (name.length < 2 || name.length > 80) {
+    return res.status(400).json({ error: 'Name must be between 2 and 80 characters.' });
+  }
+  if (comment.length < 1 || comment.length > 2000) {
+    return res.status(400).json({ error: 'Comment must be between 1 and 2000 characters.' });
+  }
+  const result = db.prepare('INSERT INTO news_comments (article_id, name, comment) VALUES (?, ?, ?)')
+    .run(article.id, name, comment);
+  const saved = db.prepare('SELECT id, name, comment, created_at FROM news_comments WHERE id=?').get(result.lastInsertRowid);
+  res.status(201).json(saved);
 });
 
 router.get('/admin', auth, (req, res) => {

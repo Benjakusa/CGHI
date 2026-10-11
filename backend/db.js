@@ -158,6 +158,17 @@ addNewsColumn("slug", "TEXT");
 addNewsColumn("cover_image", "TEXT");
 addNewsColumn("cover_caption", "TEXT");
 db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_news_slug ON news(slug) WHERE slug IS NOT NULL");
+db.exec(`
+  CREATE TABLE IF NOT EXISTS news_comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    article_id INTEGER NOT NULL REFERENCES news(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    comment TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_news_comments_article_created
+    ON news_comments(article_id, created_at, id);
+`);
 const legacyArticles = db.prepare("SELECT * FROM news ORDER BY id").all();
 const insertLegacyBlock = db.prepare(`
   INSERT INTO article_blocks (article_id, position, block_type, text)
