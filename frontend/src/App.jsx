@@ -23,6 +23,7 @@ const Projects = lazy(() => import('./pages/Projects'));
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail'));
 const Initiatives = lazy(() => import('./pages/Initiatives'));
 const Insights = lazy(() => import('./pages/Insights'));
+const NewsDetail = lazy(() => import('./pages/NewsDetail'));
 const InsightDetail = lazy(() => import('./pages/InsightDetail'));
 const Partners = lazy(() => import('./pages/Partners'));
 const Leadership = lazy(() => import('./pages/Leadership'));
@@ -148,6 +149,7 @@ function AppRoutes() {
         <Route path="/initiatives" element={<Initiatives />} />
         <Route path="/insights" element={<Insights />} />
         <Route path="/insights/:slug" element={<InsightDetail />} />
+        <Route path="/news/:slug" element={<NewsDetail />} />
         <Route path="/partners" element={<Partners />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/partner-with-us" element={<PartnerWithUs />} />

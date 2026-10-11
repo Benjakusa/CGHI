@@ -92,6 +92,7 @@ export const FALLBACK_ARTICLES = [
     title:
       'Kenya Validates Groundbreaking Decision-Making Tool for Public Health Emergencies (DMT-PHE)',
     category: 'news',
+    type: 'news',
     excerpt:
       'Kenya has unveiled the Decision-Making Tool for Public Health Emergencies (DMT-PHE), a first-of-its-kind framework validated under KNPHI leadership, with support from Palladium’s TDDAP2 and technical facilitation by CGP. The tool will be piloted in ten high-risk counties before national rollout.',
     content:
@@ -100,6 +101,9 @@ export const FALLBACK_ARTICLES = [
     published_at: 'October 2025',
     image_url:
       'https://pandemicintelcenter.org/wp-content/uploads/2025/10/WhatsApp-Image-2025-10-22-at-12.17.44-1-1024x683.jpeg',
+    cover_image:
+      'https://pandemicintelcenter.org/wp-content/uploads/2025/10/WhatsApp-Image-2025-10-22-at-12.17.44-1-1024x683.jpeg',
+    blocks: [{ block_type: 'text', text: 'Kenya has unveiled the Decision-Making Tool for Public Health Emergencies (DMT-PHE), a first-of-its-kind framework validated under the Kenya National Public Health Institute (KNPHI), with support from Palladium’s TDDAP2 and technical facilitation by the Center for Global Health & Pandemic Intelligence (CGP).\n\nThe tool provides subnational decision-makers with a common, structured approach to grading and acting on public health emergency signals. It is being piloted in ten high-risk counties before national rollout.\n\nCGP is providing technical facilitation, supporting the integration of the tool with existing surveillance and 7-1-7 response monitoring so that early warnings translate into faster, coordinated action.' }],
     isFallback: true,
   },
 ];
@@ -119,6 +123,9 @@ export function normaliseArticle(article) {
   return {
     ...article,
     slug: article.slug || known?.slug || articleSlug(article),
+    type: article.type || 'news',
+    cover_image: article.cover_image || article.image_url,
+    blocks: article.blocks?.length ? article.blocks : [{ block_type: 'text', text: article.content || '' }],
     category: normaliseCategory(article.category),
     isoPublished: isoDate(article.published_at),
   };

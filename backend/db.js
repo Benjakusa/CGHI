@@ -116,6 +116,59 @@ db.exec(`
   );
 `);
 
+// Idempotent article-block migration. Legacy rows remain in place, preserving
+// their ids, dates, publication state and existing image URLs.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS article_blocks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    article_id INTEGER NOT NULL REFERENCES news(id) ON DELETE CASCADE,
+    position INTEGER NOT NULL,
+    block_type TEXT NOT NULL CHECK (block_type IN ('text', 'image')),
+    text TEXT,
+    image_url TEXT,
+    caption TEXT,
+    alt_text TEXT
+  );
+  CREATE INDEX IF NOT EXISTS idx_article_blocks_article_position
+    ON article_blocks(article_id, position);
+`);
+const newsColumns = db.prepare("PRAGMA table_info(news)").all();
+const addNewsColumn = (name, declaration) => {
+  if (!newsColumns.some((column) => column.name === name)) {
+    db.exec(`ALTER TABLE news ADD COLUMN ${name} ${declaration}`);
+  }
+};
+addNewsColumn("type", "TEXT NOT NULL DEFAULT 'news'");
+addNewsColumn("slug", "TEXT");
+addNewsColumn("cover_image", "TEXT");
+addNewsColumn("cover_caption", "TEXT");
+db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_news_slug ON news(slug) WHERE slug IS NOT NULL");
+const legacyArticles = db.prepare("SELECT * FROM news ORDER BY id").all();
+const insertLegacyBlock = db.prepare(`
+  INSERT INTO article_blocks (article_id, position, block_type, text)
+  SELECT ?, 0, 'text', ? WHERE NOT EXISTS (
+    SELECT 1 FROM article_blocks WHERE article_id = ?
+  )
+`);
+const updateArticle = db.prepare(`
+  UPDATE news SET type = COALESCE(NULLIF(type, ''), 'news'),
+    cover_image = COALESCE(NULLIF(cover_image, ''), image_url), slug = COALESCE(NULLIF(slug, ''), ?)
+  WHERE id = ?
+`);
+const slugify = (value) => String(value || "article").toLowerCase()
+  .normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
+  .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 90) || "article";
+const usedSlugs = new Set(legacyArticles.map((article) => article.slug).filter(Boolean));
+for (const article of legacyArticles) {
+  const oldSlug = article.slug;
+  let slug = oldSlug || slugify(article.title);
+  let suffix = 2;
+  while (!oldSlug && usedSlugs.has(slug)) slug = `${slugify(article.title)}-${suffix++}`;
+  usedSlugs.add(slug);
+  updateArticle.run(slug, article.id);
+  insertLegacyBlock.run(article.id, article.content || "", article.id);
+}
+
 try {
   db.exec(
     "CREATE INDEX IF NOT EXISTS idx_contact_messages_created ON contact_messages(created_at DESC)",

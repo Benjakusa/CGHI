@@ -1,460 +1,108 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import DashboardLayout from './Dashboard';
-import { getToken, API_BASE, resolveAssetUrl } from '../../context/AuthContext';
+import { API_BASE, getToken, resolveAssetUrl } from '../../context/AuthContext';
+import ArticleView from '../../components/ArticleView';
+
+const blank = () => ({ type: 'news', title: '', category: '', author: '', excerpt: '', cover_image: '', cover_caption: '', published: 0, blocks: [] });
+const styles = { input: { width: '100%', padding: 10, border: '1px solid var(--border)', borderRadius: 2 }, field: { display: 'grid', gap: 6, marginBottom: 14 } };
 
 export default function NewsAdmin() {
-    const [items, setItems] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [modalOpen, setModalOpen] = useState(false);
-    const [current, setCurrent] = useState({});
-    const fileInputRef = useRef(null);
-    const [uploading, setUploading] = useState(false);
-
-    useEffect(() => { loadItems(); }, []);
-
-    function loadItems() {
-        setLoading(true);
-        fetch(`${API_BASE}/api/news/admin`, { 
-            headers: { 'Authorization': `Bearer ${getToken()}` } 
-        })
-            .then(r => {
-                if (r.status === 401) {
-                    localStorage.removeItem('cghi_token');
-                    localStorage.removeItem('cghi_admin');
-                    setAdmin(null);
-                    setError('Session expired. Please log in again.');
-                    setLoading(false);
-                    return;
-                }
-                if (!r.ok) throw new Error('Failed to fetch news');
-                return r.json();
-            })
-            .then(data => { 
-                setItems(data); 
-                setLoading(false); 
-            })
-            .catch(err => {
-                console.error('Error loading news:', err);
-                setLoading(false);
-            });
+  const [items, setItems] = useState([]);
+  const [article, setArticle] = useState(null);
+  const [preview, setPreview] = useState(false);
+  const [filterType, setFilterType] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [error, setError] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const headers = () => ({ Authorization: `Bearer ${getToken()}` });
+  const load = async () => {
+    const response = await fetch(`${API_BASE}/api/news/admin`, { headers: headers() });
+    if (response.ok) setItems(await response.json());
+  };
+  useEffect(() => { load(); }, []);
+  const update = (key, value) => setArticle((current) => ({ ...current, [key]: value }));
+  const upload = async (file, apply) => {
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+      setError('Choose a JPG, PNG or WebP image up to 5 MB.'); return;
     }
+    setUploading(true); setError('');
+    try {
+      const data = new FormData(); data.append('images', file);
+      const response = await fetch(`${API_BASE}/api/news/admin/upload`, { method: 'POST', headers: headers(), body: data });
+      const result = await response.json(); if (!response.ok) throw new Error(result.error || 'Upload failed.');
+      apply(result.urls[0]);
+    } catch (exception) { setError(exception.message); }
+    finally { setUploading(false); }
+  };
+  const openEdit = async (item) => {
+    if (!item) { setArticle(blank()); setPreview(false); return; }
+    const response = await fetch(`${API_BASE}/api/news/admin/${item.id}`, { headers: headers() });
+    if (response.ok) { const data = await response.json(); setArticle({ ...data, blocks: (data.blocks || []).map((b) => ({ ...b, type: b.block_type })) }); setPreview(false); }
+  };
+  const validate = () => {
+    const issues = [];
+    if (!article.title.trim()) issues.push('Add a title.');
+    if (!article.excerpt.trim()) issues.push('Add an excerpt.');
+    if (!article.cover_image) issues.push('Add a cover image.');
+    if (!article.blocks.some((block) => block.type !== 'image' && block.text?.trim())) issues.push('Add at least one text block.');
+    setError(issues.join(' ')); return issues.length === 0;
+  };
+  const save = async (publish = false) => {
+    if (publish && !validate()) return;
+    const payload = { ...article, published_at: article.published_at || null, status: publish ? 'published' : (article.published ? 'published' : 'draft') };
+    const url = `${API_BASE}/api/news/admin${article.id ? `/${article.id}` : ''}`;
+    const response = await fetch(url, { method: article.id ? 'PUT' : 'POST', headers: { ...headers(), 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const result = await response.json();
+    if (!response.ok) { setError(result.error || 'Could not save article.'); return; }
+    setArticle({ ...result, blocks: (result.blocks || []).map((b) => ({ ...b, type: b.block_type })) });
+    await load();
+    if (publish) setPreview(true);
+    else setArticle(null);
+  };
+  const move = (index, delta) => {
+    const blocks = [...article.blocks]; const target = index + delta;
+    if (target < 0 || target >= blocks.length) return;
+    [blocks[index], blocks[target]] = [blocks[target], blocks[index]]; update('blocks', blocks);
+  };
+  const filtered = items.filter((item) => (filterType === 'all' || item.type === filterType) && (filterStatus === 'all' || (item.published ? 'published' : 'draft') === filterStatus));
 
-    // Handle file upload
-    const handleFileUpload = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+  return <DashboardLayout title="Manage News & Research">
+    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
+      <div><select value={filterType} onChange={(event) => setFilterType(event.target.value)}><option value="all">All types</option><option value="news">News</option><option value="research">Research</option></select>{' '}
+        <select value={filterStatus} onChange={(event) => setFilterStatus(event.target.value)}><option value="all">All statuses</option><option value="draft">Draft</option><option value="published">Published</option></select></div>
+      <button className="btn-primary" onClick={() => openEdit(null)}>Add Article</button>
+    </div>
+    <div style={{ overflowX: 'auto', background: 'var(--surface)', border: '1px solid var(--border)' }}><table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+      <thead><tr>{['Type', 'Title', 'Status', 'Date', 'Actions'].map((label) => <th key={label} style={{ padding: 12 }}>{label}</th>)}</tr></thead>
+      <tbody>{filtered.map((item) => <tr key={item.id} style={{ borderTop: '1px solid var(--border)' }}>
+        <td style={{ padding: 12 }}>{item.type}</td><td style={{ padding: 12 }}>{item.title}</td><td style={{ padding: 12 }}>{item.published ? 'Published' : 'Draft'}</td><td style={{ padding: 12 }}>{item.published_at || item.created_at}</td>
+        <td style={{ padding: 12, whiteSpace: 'nowrap' }}><button onClick={() => openEdit(item)}>Edit</button>{' '}
+          <button onClick={async () => { await fetch(`${API_BASE}/api/news/admin/${item.id}/publish`, { method: 'PATCH', headers: { ...headers(), 'Content-Type': 'application/json' }, body: JSON.stringify({ status: item.published ? 'draft' : 'published' }) }); load(); }}>{item.published ? 'Unpublish' : 'Publish'}</button>{' '}
+          <button onClick={async () => { if (window.confirm('Delete this article?')) { await fetch(`${API_BASE}/api/news/admin/${item.id}`, { method: 'DELETE', headers: headers() }); load(); } }}>Delete</button></td>
+      </tr>)}</tbody>
+    </table></div>
 
-        if (!file.type.startsWith('image/')) {
-            alert('Please upload an image file');
-            return;
-        }
-
-        if (file.size > 5 * 1024 * 1024) {
-            alert('File size must be less than 5MB');
-            return;
-        }
-
-        setUploading(true);
-        const formData = new FormData();
-        formData.append('image', file);
-
-        try {
-            const response = await fetch(`${API_BASE}/api/upload`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${getToken()}` },
-                body: formData
-            });
-
-            if (!response.ok) throw new Error('Upload failed');
-            const data = await response.json();
-            setCurrent({ ...current, image_url: data.url });
-            alert('Image uploaded successfully!');
-        } catch (error) {
-            console.error('Upload error:', error);
-            alert('Failed to upload image. Please try again.');
-        } finally {
-            setUploading(false);
-            if (fileInputRef.current) fileInputRef.current.value = '';
-        }
-    };
-
-    const handleImageUrlChange = (e) => {
-        setCurrent({ ...current, image_url: e.target.value });
-    };
-
-    function handleSave(e) {
-        e.preventDefault();
-        const isEdit = !!current.id;
-        const url = isEdit ? `${API_BASE}/api/news/admin/${current.id}` : `${API_BASE}/api/news/admin`;
-        fetch(url, {
-            method: isEdit ? 'PUT' : 'POST',
-            headers: { 
-                'Content-Type': 'application/json', 
-                'Authorization': `Bearer ${getToken()}` 
-            },
-            body: JSON.stringify(current)
-        })
-        .then(r => {
-            if (!r.ok) throw new Error('Save failed');
-            return r.json();
-        })
-        .then(() => {
-            setModalOpen(false);
-            loadItems();
-        })
-        .catch(err => console.error('Error saving news:', err));
-    }
-
-    function togglePublish(id) {
-        fetch(`${API_BASE}/api/news/admin/${id}/publish`, {
-            method: 'PATCH', 
-            headers: { 'Authorization': `Bearer ${getToken()}` }
-        })
-        .then(() => loadItems())
-        .catch(err => console.error('Error toggling publish:', err));
-    }
-
-    function handleDelete(id) {
-        if (!window.confirm('Delete this news article?')) return;
-        fetch(`${API_BASE}/api/news/admin/${id}`, {
-            method: 'DELETE', 
-            headers: { 'Authorization': `Bearer ${getToken()}` }
-        })
-        .then(() => loadItems())
-        .catch(err => console.error('Error deleting news:', err));
-    }
-
-    if (loading) {
-        return <DashboardLayout title="Manage News & Insights">Loading news...</DashboardLayout>;
-    }
-
-    const isMobile = window.innerWidth <= 768;
-
-    return (
-        <DashboardLayout title="Manage News & Insights">
-            <div style={{ 
-                display: 'flex', 
-                justifyContent: isMobile ? 'stretch' : 'flex-end', 
-                marginBottom: '24px',
-                flexDirection: isMobile ? 'column' : 'row',
-                gap: isMobile ? '12px' : '0'
-            }}>
-                <button 
-                    className="btn-primary" 
-                    onClick={() => { setCurrent({ published: 1 }); setModalOpen(true); }}
-                    style={{ 
-                        width: isMobile ? '100%' : 'auto',
-                        padding: '12px',
-                        justifyContent: 'center'
-                    }}
-                >
-                    <i className="bi bi-plus-circle" style={{ marginRight: '6px' }}></i> Add Article
-                </button>
-            </div>
-
-            <div style={{ 
-                background: '#ffffff', 
-                border: '1px solid var(--border)', 
-                borderRadius: '8px', 
-                overflow: 'auto',
-                WebkitOverflowScrolling: 'touch'
-            }}>
-                <table style={{ 
-                    width: '100%', 
-                    borderCollapse: 'collapse', 
-                    textAlign: 'left',
-                    minWidth: isMobile ? '600px' : 'auto',
-                    fontSize: 'var(--fs-body)'
-                }}>
-                    <thead>
-                        <tr style={{ background: 'var(--surface-alt)', borderBottom: '1px solid var(--border)' }}>
-                            <th style={{ padding: isMobile ? '10px' : '16px' }}>Title</th>
-                            <th style={{ padding: isMobile ? '10px' : '16px' }}>Category</th>
-                            <th style={{ padding: isMobile ? '10px' : '16px' }}>Date</th>
-                            <th style={{ padding: isMobile ? '10px' : '16px' }}>Status</th>
-                            <th style={{ padding: isMobile ? '10px' : '16px', textAlign: 'right' }}>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {items.map(item => (
-                            <tr key={item.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                                <td style={{ padding: isMobile ? '10px' : '16px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>{item.title}</td>
-                                <td style={{ padding: isMobile ? '10px' : '16px', fontSize: 'var(--fs-small)' }}>{item.category || 'General'}</td>
-                                <td style={{ padding: isMobile ? '10px' : '16px', fontSize: 'var(--fs-small)' }}>{item.published_at || 'N/A'}</td>
-                                <td style={{ padding: isMobile ? '10px' : '16px' }}>
-                                    {item.published ? (
-                                        <span style={{ 
-                                            background: 'rgba(0, 0, 0, 0.06)', 
-                                            color: '#000000', 
-                                            padding: '4px 8px', 
-                                            borderRadius: '4px', 
-                                            fontSize: 'var(--fs-caption)', 
-                                            fontWeight: 'var(--fw-semibold)' 
-                                        }}>Published</span>
-                                    ) : (
-                                        <span style={{ 
-                                            background: 'rgba(0, 0, 0, 0.06)', 
-                                            color: '#000000', 
-                                            padding: '4px 8px', 
-                                            borderRadius: '4px', 
-                                            fontSize: 'var(--fs-caption)', 
-                                            fontWeight: 'var(--fw-semibold)' 
-                                        }}>Draft</span>
-                                    )}
-                                </td>
-                                <td style={{ padding: isMobile ? '10px' : '16px', textAlign: 'right' }}>
-                                    <div style={{ 
-                                        display: 'flex', 
-                                        flexDirection: isMobile ? 'column' : 'row',
-                                        gap: '6px', 
-                                        justifyContent: 'flex-end',
-                                        alignItems: isMobile ? 'stretch' : 'center'
-                                    }}>
-                                        <button onClick={() => togglePublish(item.id)} style={{ 
-                                            background: 'none', 
-                                            border: '1px solid var(--border)', 
-                                            borderRadius: '4px', 
-                                            padding: isMobile ? '6px 10px' : '6px 12px', 
-                                            cursor: 'pointer',
-                                            fontSize: 'var(--fs-small)',
-                                            whiteSpace: 'nowrap'
-                                        }}>
-                                            <i className={item.published ? 'bi bi-toggle-off' : 'bi bi-toggle-on'} style={{ marginRight: '4px' }}></i>
-                                            {item.published ? 'Unpublish' : 'Publish'}
-                                        </button>
-                                        <button onClick={() => { setCurrent(item); setModalOpen(true); }} style={{ 
-                                            background: 'none', 
-                                            border: '1px solid var(--border)', 
-                                            borderRadius: '4px', 
-                                            padding: isMobile ? '6px 10px' : '6px 12px', 
-                                            cursor: 'pointer',
-                                            fontSize: 'var(--fs-small)'
-                                        }}>
-                                            <i className="bi bi-pencil" style={{ marginRight: '4px' }}></i>
-                                            Edit
-                                        </button>
-                                        <button onClick={() => handleDelete(item.id)} style={{ 
-                                            background: 'rgba(0, 0, 0, 0.06)', 
-                                            color: '#000000', 
-                                            border: '1px solid rgba(0, 0, 0, 0.35)', 
-                                            borderRadius: '4px', 
-                                            padding: isMobile ? '6px 10px' : '6px 12px', 
-                                            cursor: 'pointer',
-                                            fontSize: 'var(--fs-small)'
-                                        }}>
-                                            <i className="bi bi-trash" style={{ marginRight: '4px' }}></i>
-                                            Delete
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                        {items.length === 0 && (
-                            <tr><td colSpan="5" style={{ padding: '32px', textAlign: 'center', color: 'var(--ink-muted)' }}>No news articles found. Click "Add Article" to create one.</td></tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
-
-            {modalOpen && (
-                <div style={{ 
-                    position: 'fixed', 
-                    top: 0, 
-                    left: 0, 
-                    right: 0, 
-                    bottom: 0, 
-                    background: 'rgba(0,0,0,0.5)', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    zIndex: 9999,
-                    padding: isMobile ? '16px' : '0'
-                }}>
-                    <div style={{ 
-                        background: '#ffffff', 
-                        width: '100%', 
-                        maxWidth: '700px', 
-                        borderRadius: '8px', 
-                        padding: isMobile ? '20px' : '32px', 
-                        maxHeight: '90vh', 
-                        overflowY: 'auto',
-                        margin: isMobile ? '16px' : '0'
-                    }}>
-                        <h2 style={{ marginBottom: '24px', fontSize: 'var(--fs-h1)' }}>{current.id ? 'Edit Article' : 'Add Article'}</h2>
-                        <form onSubmit={handleSave}>
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Title *</label>
-                                <input required value={current.title || ''} onChange={e => setCurrent({ ...current, title: e.target.value })} style={{ 
-                                    width: '100%', 
-                                    padding: '10px', 
-                                    border: '1px solid var(--border)', 
-                                    borderRadius: '4px',
-                                    fontSize: 'var(--fs-body)'
-                                }} />
-                            </div>
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Category</label>
-                                <input value={current.category || ''} onChange={e => setCurrent({ ...current, category: e.target.value })} style={{ 
-                                    width: '100%', 
-                                    padding: '10px', 
-                                    border: '1px solid var(--border)', 
-                                    borderRadius: '4px',
-                                    fontSize: 'var(--fs-body)'
-                                }} />
-                            </div>
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Excerpt (Summary)</label>
-                                <textarea rows="2" value={current.excerpt || ''} onChange={e => setCurrent({ ...current, excerpt: e.target.value })} style={{ 
-                                    width: '100%', 
-                                    padding: '10px', 
-                                    border: '1px solid var(--border)', 
-                                    borderRadius: '4px', 
-                                    fontFamily: 'inherit',
-                                    fontSize: 'var(--fs-body)'
-                                }} />
-                            </div>
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Full Content</label>
-                                <textarea rows="6" value={current.content || ''} onChange={e => setCurrent({ ...current, content: e.target.value })} style={{ 
-                                    width: '100%', 
-                                    padding: '10px', 
-                                    border: '1px solid var(--border)', 
-                                    borderRadius: '4px', 
-                                    fontFamily: 'inherit',
-                                    fontSize: 'var(--fs-body)'
-                                }} />
-                            </div>
-
-                            {/* Image Upload Section */}
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Image</label>
-                                
-                                <div style={{ 
-                                    display: 'flex', 
-                                    flexDirection: isMobile ? 'column' : 'row',
-                                    gap: '10px',
-                                    alignItems: isMobile ? 'stretch' : 'center',
-                                    marginBottom: '10px'
-                                }}>
-                                    <input
-                                        type="file"
-                                        ref={fileInputRef}
-                                        accept="image/*"
-                                        onChange={handleFileUpload}
-                                        style={{ 
-                                            flex: 1,
-                                            padding: isMobile ? '8px' : '8px',
-                                            border: '1px solid var(--border)',
-                                            borderRadius: '4px',
-                                            fontSize: 'var(--fs-small)'
-                                        }}
-                                    />
-                                    {uploading && <span style={{ color: '#01abed', fontSize: 'var(--fs-small)' }}>Uploading...</span>}
-                                </div>
-
-                                <div style={{ marginTop: '8px' }}>
-                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: 'var(--fs-small)', color: 'var(--ink-muted)' }}>Or enter image URL directly:</label>
-                                    <input 
-                                        value={current.image_url || ''} 
-                                        onChange={handleImageUrlChange} 
-                                        placeholder="https://example.com/image.jpg" 
-                                        style={{ 
-                                            width: '100%', 
-                                            padding: '10px', 
-                                            border: '1px solid var(--border)', 
-                                            borderRadius: '4px',
-                                            fontSize: 'var(--fs-body)'
-                                        }} 
-                                    />
-                                </div>
-
-                                {current.image_url && (
-                                    <div style={{ marginTop: '10px' }}>
-                                        <img src={resolveAssetUrl(current.image_url)} alt="Preview" style={{ 
-                                            maxWidth: '100%', 
-                                            maxHeight: '150px', 
-                                            objectFit: 'contain',
-                                            border: '1px solid var(--border)',
-                                            borderRadius: '4px',
-                                            padding: '4px'
-                                        }} />
-                                    </div>
-                                )}
-                            </div>
-
-                            <div style={{ 
-                                display: 'flex', 
-                                flexDirection: isMobile ? 'column' : 'row',
-                                gap: isMobile ? '12px' : '16px', 
-                                marginBottom: '16px' 
-                            }}>
-                                <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Author</label>
-                                    <input value={current.author || ''} onChange={e => setCurrent({ ...current, author: e.target.value })} style={{ 
-                                        width: '100%', 
-                                        padding: '10px', 
-                                        border: '1px solid var(--border)', 
-                                        borderRadius: '4px',
-                                        fontSize: 'var(--fs-body)'
-                                    }} />
-                                </div>
-                                <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Published Date</label>
-                                    <input type="date" value={current.published_at || ''} onChange={e => setCurrent({ ...current, published_at: e.target.value })} style={{ 
-                                        width: '100%', 
-                                        padding: '10px', 
-                                        border: '1px solid var(--border)', 
-                                        borderRadius: '4px',
-                                        fontSize: 'var(--fs-body)'
-                                    }} />
-                                </div>
-                            </div>
-
-                            <div style={{ 
-                                display: 'flex', 
-                                flexDirection: isMobile ? 'column' : 'row',
-                                gap: isMobile ? '12px' : '16px', 
-                                marginBottom: '24px' 
-                            }}>
-                                <div style={{ 
-                                    flex: 1, 
-                                    display: 'flex', 
-                                    alignItems: 'center', 
-                                    paddingTop: isMobile ? '0' : '10px',
-                                    width: isMobile ? '100%' : 'auto'
-                                }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>
-                                        <input type="checkbox" checked={!!current.published} onChange={e => setCurrent({ ...current, published: e.target.checked ? 1 : 0 })} style={{ width: '18px', height: '18px' }} />
-                                        Published
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div style={{ 
-                                display: 'flex', 
-                                flexDirection: isMobile ? 'column-reverse' : 'row',
-                                justifyContent: 'flex-end', 
-                                gap: '12px' 
-                            }}>
-                                <button type="button" onClick={() => setModalOpen(false)} style={{ 
-                                    padding: '12px 20px', 
-                                    border: '1px solid var(--border)', 
-                                    background: '#ffffff', 
-                                    borderRadius: '4px', 
-                                    cursor: 'pointer',
-                                    width: isMobile ? '100%' : 'auto',
-                                    fontSize: 'var(--fs-body)'
-                                }}>Cancel</button>
-                                <button type="submit" className="btn-primary" style={{ 
-                                    width: isMobile ? '100%' : 'auto',
-                                    padding: '12px 24px',
-                                    fontSize: 'var(--fs-body)'
-                                }}>Save Article</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-        </DashboardLayout>
-    );
+    {article && <div className="news-editor-overlay"><section className="news-editor" role="dialog" aria-modal="true" aria-labelledby="editor-title">
+      {preview ? <><div className="news-preview-banner">Preview — not published</div><button onClick={() => setPreview(false)}>Back to editing</button>
+        <ArticleView article={{ ...article, slug: article.slug || 'preview' }} onCopy={setError} />
+        <button className="btn-primary" onClick={() => save(true)}>Publish</button></> : <>
+        <h2 id="editor-title">{article.id ? 'Edit article' : 'New article'}</h2>
+        {error && <p role="alert" className="news-form-error">{error}</p>}
+        <div style={styles.field}><label>Type</label><select value={article.type} onChange={(e) => update('type', e.target.value)}><option value="news">News</option><option value="research">Research</option></select></div>
+        <div style={styles.field}><label>Title *</label><input style={styles.input} value={article.title} onChange={(e) => update('title', e.target.value)} /></div>
+        <div style={styles.field}><label>Category</label><input style={styles.input} value={article.category || ''} onChange={(e) => update('category', e.target.value)} /></div>
+        <div style={styles.field}><label>Author</label><input style={styles.input} value={article.author || ''} onChange={(e) => update('author', e.target.value)} /></div>
+        <div style={styles.field}><label>Excerpt *</label><textarea style={styles.input} rows="3" value={article.excerpt} onChange={(e) => update('excerpt', e.target.value)} /></div>
+        <div style={styles.field}><label>Cover photo *</label><input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => upload(e.target.files[0], (url) => update('cover_image', url))} />{article.cover_image && <img className="news-editor-thumb" src={resolveAssetUrl(article.cover_image)} alt="Cover preview" />}<input style={styles.input} placeholder="Cover caption (optional)" value={article.cover_caption || ''} onChange={(e) => update('cover_caption', e.target.value)} /></div>
+        <h3>Content</h3>
+        {article.blocks.map((block, index) => <fieldset className="news-block-editor" key={block.id || index}><legend>{block.type === 'image' ? 'Image block' : 'Text block'}</legend>
+          {block.type === 'image' ? <><input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => upload(e.target.files[0], (url) => update('blocks', article.blocks.map((item, i) => i === index ? { ...item, image_url: url } : item)))} />{block.image_url && <img className="news-editor-thumb" src={resolveAssetUrl(block.image_url)} alt={block.alt_text || ''} />}<input style={styles.input} placeholder="Caption" value={block.caption || ''} onChange={(e) => update('blocks', article.blocks.map((item, i) => i === index ? { ...item, caption: e.target.value } : item))} /><input style={styles.input} placeholder="Alt text" value={block.alt_text || ''} onChange={(e) => update('blocks', article.blocks.map((item, i) => i === index ? { ...item, alt_text: e.target.value } : item))} /></> : <textarea style={styles.input} rows="5" placeholder="Write paragraphs separated by a blank line" value={block.text || ''} onChange={(e) => update('blocks', article.blocks.map((item, i) => i === index ? { ...item, text: e.target.value } : item))} />}
+          <div className="news-block-actions"><button type="button" onClick={() => move(index, -1)}>Move up</button><button type="button" onClick={() => move(index, 1)}>Move down</button><button type="button" onClick={() => { if (window.confirm('Delete this content block?')) update('blocks', article.blocks.filter((_, i) => i !== index)); }}>Delete block</button></div>
+        </fieldset>)}
+        <div className="news-block-add"><button onClick={() => update('blocks', [...article.blocks, { type: 'text', text: '' }])}>Add text</button><button onClick={() => update('blocks', [...article.blocks, { type: 'image', image_url: '', caption: '', alt_text: '' }])}>Add image</button></div>
+        <div className="news-editor-footer"><button onClick={() => setArticle(null)}>Cancel</button><button disabled={uploading} onClick={() => save(false)}>Save draft</button><button onClick={() => setPreview(true)}>Preview</button><button className="btn-primary" onClick={() => save(true)}>Publish</button>{article.published && <button onClick={async () => { await fetch(`${API_BASE}/api/news/admin/${article.id}/publish`, { method: 'PATCH', headers: { ...headers(), 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'draft' }) }); setArticle(null); load(); }}>Unpublish</button>}</div>
+      </>}
+    </section></div>}
+  </DashboardLayout>;
 }
