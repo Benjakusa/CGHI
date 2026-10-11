@@ -5,6 +5,7 @@ import Seo from '../components/Seo';
 import ArticleView from '../components/ArticleView';
 import { API_BASE } from '../context/AuthContext';
 import SmartLink from '../components/SmartLink';
+import { FALLBACK_ARTICLES, normaliseArticles } from '../content/insights';
 
 export default function NewsDetail() {
   const { slug } = useParams();
@@ -12,10 +13,30 @@ export default function NewsDetail() {
   const [error, setError] = useState(false);
   useEffect(() => {
     let active = true;
-    fetch(`${API_BASE}/api/news/slug/${encodeURIComponent(slug)}`).then((response) => {
-      if (!response.ok) throw new Error('not found');
-      return response.json();
-    }).then((data) => { if (active) setArticle(data); }).catch(() => { if (active) setError(true); });
+    async function loadArticle() {
+      try {
+        const response = await fetch(`${API_BASE}/api/news/slug/${encodeURIComponent(slug)}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (active) setArticle(data);
+          return;
+        }
+        const listResponse = await fetch(`${API_BASE}/api/news`);
+        if (listResponse.ok) {
+          const articles = normaliseArticles(await listResponse.json());
+          const match = articles.find((item) => item.slug === slug);
+          if (match) { if (active) setArticle(match); return; }
+        }
+        const fallback = normaliseArticles(FALLBACK_ARTICLES).find((item) => item.slug === slug);
+        if (fallback) { if (active) setArticle(fallback); return; }
+        if (active) setError(true);
+      } catch {
+        const fallback = normaliseArticles(FALLBACK_ARTICLES).find((item) => item.slug === slug);
+        if (active && fallback) setArticle(fallback);
+        else if (active) setError(true);
+      }
+    }
+    loadArticle();
     return () => { active = false; };
   }, [slug]);
   useEffect(() => {

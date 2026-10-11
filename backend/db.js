@@ -1295,6 +1295,28 @@ function runAllSeeders() {
 }
 
 runAllSeeders();
+
+// Complete article migrations after seeds run as well, so newly seeded rows
+// receive the same stable slugs, covers, and initial body block as legacy rows.
+const backfillSeededArticles = db.transaction(() => {
+  const rows = db.prepare("SELECT * FROM news ORDER BY id").all();
+  const occupied = new Set(rows.map((row) => row.slug).filter(Boolean));
+  const update = db.prepare("UPDATE news SET slug=?, cover_image=COALESCE(NULLIF(cover_image,''), image_url) WHERE id=?");
+  const addText = db.prepare("INSERT INTO article_blocks (article_id,position,block_type,text) SELECT ?,0,'text',? WHERE NOT EXISTS (SELECT 1 FROM article_blocks WHERE article_id=?)");
+  for (const row of rows) {
+    let slug = row.slug;
+    if (!slug) {
+      const base = slugify(row.title);
+      slug = base;
+      let suffix = 2;
+      while (occupied.has(slug)) slug = `${base}-${suffix++}`;
+      occupied.add(slug);
+    }
+    update.run(slug, row.id);
+    addText.run(row.id, row.content || "", row.id);
+  }
+});
+backfillSeededArticles();
 warnOnLegacySeedPassword();
 
 module.exports = db;

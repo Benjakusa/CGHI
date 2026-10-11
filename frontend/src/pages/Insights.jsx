@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import Seo from '../components/Seo';
-import { ShareBar } from '../components/ArticleView';
 import SmartLink from '../components/SmartLink';
 import useApi from '../hooks/useApi';
 import { FALLBACK_ARTICLES, normaliseArticles } from '../content/insights';
@@ -11,10 +10,9 @@ import { resolveAssetUrl } from '../context/AuthContext';
 function NewsCard({ article }) {
   return <article className="news-story">
     {(article.cover_image || article.image_url) && <div className="news-cover"><img src={resolveAssetUrl(article.cover_image || article.image_url)} alt={article.title} loading="lazy" /></div>}
-    <div className="news-story-body">
-      <p className="news-meta"><span>{article.category || (article.type === 'research' ? 'Research' : 'News')}</span>{article.author && <span>{article.author}</span>}{article.published_at && <time>{new Date(article.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</time>}</p>
-      <h2>{article.title}</h2>{article.excerpt && <p className="news-excerpt">{article.excerpt}</p>}
-      <div className="news-card-actions"><SmartLink className="news-more" to={`/news/${article.slug}`}>Read more</SmartLink><ShareBar article={article} /></div>
+    <div className="news-title-tile">
+      <h2>{article.title}</h2>
+      <SmartLink className="news-more" to={`/news/${article.slug}`}>Read more</SmartLink>
     </div>
   </article>;
 }
@@ -38,22 +36,14 @@ export default function Insights() {
         <p>Latest news, analysis and field reports from across global health.</p>
         <nav className="news-tabs" aria-label="News type and categories">
           {categories.map((category, index) => <button key={`${category}-${index}`} type="button" aria-pressed={type === category}
-            onClick={() => { setParams(category === 'all' ? {} : { type: category }, { replace: true }); setOpened(null); }}>
+            onClick={() => setParams(category === 'all' ? {} : { type: category }, { replace: true })}>
             {category === 'all' ? 'All' : category.replace(/\b\w/g, (char) => char.toUpperCase())}
           </button>)}
         </nav>
       </div></div>
       <div className="news-wrap news-feed">
         {list.length === 0 ? <p>No articles are available in this category yet.</p> : <>
-          {lead && (list.length === 1 ? <div className="news-lead"><div className="news-lead-card">
-            <div className="news-lead-cover">{(lead.cover_image || lead.image_url) && <img src={resolveAssetUrl(lead.cover_image || lead.image_url)} alt={lead.title} loading="lazy" />}</div>
-            <div className="news-lead-info"><NewsCard article={lead} /></div>
-          </div></div> : <div className="news-lead">
-            <div className="news-lead-card">
-              <div className="news-lead-cover">{(lead.cover_image || lead.image_url) && <img src={resolveAssetUrl(lead.cover_image || lead.image_url)} alt={lead.title} loading="lazy" />}</div>
-              <div className="news-lead-info"><NewsCard article={lead} /></div>
-            </div>
-          </div>)}
+          {lead && (list.length === 1 ? <div className="news-lead"><NewsCard article={lead} /></div> : <div className="news-lead"><NewsCard article={lead} /></div>)}
           {list.length > 1 && <div className="news-grid">
             {list.slice(1).map((article) => <div className="news-card" key={article.id}><NewsCard article={article} /></div>)}
           </div>}
