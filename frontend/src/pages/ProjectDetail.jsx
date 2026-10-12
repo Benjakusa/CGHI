@@ -2,7 +2,7 @@
  * Project detail — /projects/:slug
  *
  * One consistent template for every project, in the order the audit specified:
- * title, image, location, period, partners, background, objectives, CGP role,
+ * title, image, location, period, partners, background, objectives, CGHPI role,
  * activities, results, outputs, related publications.
  *
  * Fields with no approved content yet render a labelled placeholder rather
@@ -70,7 +70,7 @@ function ProjectBody({ project }) {
         description={project.summary}
         path={`/projects/${project.slug}`}
         type="article"
-        imageAlt={`${project.title} — CGP project`}
+        imageAlt={`${project.title} — CGHPI project`}
         jsonLd={[
           ...BASE_JSONLD,
           pageJsonLd({
@@ -169,13 +169,13 @@ function ProjectBody({ project }) {
               />
             )}
 
-            <h3>CGP’s role</h3>
+            <h3>CGHPI’s role</h3>
             {project.contribution ? (
               <p>{project.contribution}</p>
             ) : (
               <PendingField
-                label="CGP role"
-                note="A description of CGP’s specific contribution is pending sign-off."
+                label="CGHPI role"
+                note="A description of CGHPI’s specific contribution is pending sign-off."
               />
             )}
 
@@ -251,7 +251,7 @@ function ProjectBody({ project }) {
           <SectionHeader
             id="more-projects"
             eyebrow="Project record"
-            title="More CGP projects"
+            title="More CGHPI projects"
             action={{ label: 'All projects', to: '/projects' }}
           />
           <div className="grid-auto">

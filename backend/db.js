@@ -269,7 +269,7 @@ function seedAdminsIfNeeded() {
       const hash = bcrypt.hashSync(seedPassword, 10);
       db.prepare(
         "INSERT INTO admins (email, password_hash, name) VALUES (?, ?, ?)",
-      ).run(seedEmail, hash, "CGP Administrator");
+      ).run(seedEmail, hash, "CGHPI Administrator");
       console.log("[seed] Admin user created:", seedEmail);
     }
   }
@@ -295,8 +295,8 @@ function seedHeroesIfNeeded() {
         title: "Building Intelligence for a Safer World",
         topic: "Epidemic & Pandemic Intelligence",
         description:
-          "The Center for Global Health and Pandemic Intelligence (CGP) is a multidisciplinary policy, research, and implementation hub dedicated to strengthening global and regional health security through evidence-driven action.",
-        btn1_text: "About CGP",
+          "The Center for Global Health and Pandemic Intelligence (CGHPI) is a multidisciplinary policy, research, and implementation hub dedicated to strengthening global and regional health security through evidence-driven action.",
+        btn1_text: "About CGHPI",
         btn1_link: "/about",
         btn2_text: "What We Do",
         btn2_link: "/what-we-do",
@@ -308,7 +308,7 @@ function seedHeroesIfNeeded() {
         title: "Locally Anchored, Globally Aligned",
         topic: "African Communities & Public Health",
         description:
-          "Based in Kenya with partnerships spanning across Africa and global health institutions CGP works at the subnational level to strengthen health systems in vulnerable and high-risk communities.",
+          "Based in Kenya with partnerships spanning across Africa and global health institutions CGHPI works at the subnational level to strengthen health systems in vulnerable and high-risk communities.",
         btn1_text: "Projects & Impact",
         btn1_link: "/projects",
         btn2_text: "Our Work",
@@ -321,8 +321,8 @@ function seedHeroesIfNeeded() {
         title: "AI-Driven Outbreak Forecasting",
         topic: "Surveillance, Data & Digital Health",
         description:
-          "CGP pioneers AI-powered epidemic forecasting platforms, integrating IDSR, community-based surveillance, and environmental signals to anticipate outbreaks and support evidence-based decision-making.",
-        btn1_text: "CGP Initiatives",
+          "CGHPI pioneers AI-powered epidemic forecasting platforms, integrating IDSR, community-based surveillance, and environmental signals to anticipate outbreaks and support evidence-based decision-making.",
+        btn1_text: "CGHPI Initiatives",
         btn1_link: "/initiatives",
         btn2_text: "Data Science",
         btn2_link: "/what-we-do",
@@ -334,7 +334,7 @@ function seedHeroesIfNeeded() {
         title: "Integrating Human, Animal & Ecosystem Health",
         topic: "One Health & Environmental Health",
         description:
-          "Operating at the intersection of veterinary, environmental, and human public health CGP's One Health approach bridges data streams to provide early warning against climate-sensitive and zoonotic disease threats.",
+          "Operating at the intersection of veterinary, environmental, and human public health CGHPI's One Health approach bridges data streams to provide early warning against climate-sensitive and zoonotic disease threats.",
         btn1_text: "One Health Initiatives",
         btn1_link: "/initiatives",
         btn2_text: "Our Approach",
@@ -347,7 +347,7 @@ function seedHeroesIfNeeded() {
         title: "Rapid, Evidence-Based Response at Scale",
         topic: "Emergency Preparedness & Response",
         description:
-          "From IHR/JEE technical facilitation to Marburg and Mpox response planning CGP equips frontline responders with decision tools, simulation exercises, and 7-1-1 readiness frameworks.",
+          "From IHR/JEE technical facilitation to Marburg and Mpox response planning CGHPI equips frontline responders with decision tools, simulation exercises, and 7-1-1 readiness frameworks.",
         btn1_text: "View Projects",
         btn1_link: "/projects",
         btn2_text: "Partner With Us",
@@ -468,9 +468,9 @@ To translate strategic ambition into execution, KNPHI has introduced a suite of 
 
 Embedding AI and Advanced Analytics into Public Health Operations
 
-With foundational systems in place, Kenya is embedding artificial intelligence (AI) and advanced analytics into routine public health operations moving epidemic intelligence from concept to capability. The Centre for Global Health and Pandemic Intelligence (CGP) and Palladium's TDDAP2 have played a catalytic role in supporting both the design and operationalization of the Decision-Making Tool for Public Health Emergencies (DMT-PHE). Building on the strengthened digital and surveillance foundations, KNPHI is advancing the integration of artificial intelligence (AI) and advanced analytics into routine public health operations.
+With foundational systems in place, Kenya is embedding artificial intelligence (AI) and advanced analytics into routine public health operations moving epidemic intelligence from concept to capability. The Centre for Global Health and Pandemic Intelligence (CGHPI) and Palladium's TDDAP2 have played a catalytic role in supporting both the design and operationalization of the Decision-Making Tool for Public Health Emergencies (DMT-PHE). Building on the strengthened digital and surveillance foundations, KNPHI is advancing the integration of artificial intelligence (AI) and advanced analytics into routine public health operations.
 
-Through CGP's convened consortium, a DMT-PHE AI assistant as a prototype has been developed by the University of Michigan – Center for Global Health Equity (CGHE), which brings specialized expertise in artificial intelligence, applied analytics and epidemic intelligence. In parallel, locally-led evaluations of the DMT-PHE as an AI-enabled clinical decision support tool (CDST) have been undertaken in collaboration with the One Health Center at Kenya Institute of Primate Research (KIPRE), the Washington State University (WSU) Global Health-Kenya and University of Toronto, Dalla Lana School of Public Health, generating critical evidence to inform scale-up. These preliminary evaluations are promising, demonstrating high concordance with national escalation protocols, excellent usability and strong user trust in applying recommendations during public health emergencies, with no identified critical safety concerns. The AI integration enables faster detection, improved situational awareness, and more precise response shifting the system toward predictive and anticipatory public health action.
+Through CGHPI's convened consortium, a DMT-PHE AI assistant as a prototype has been developed by the University of Michigan – Center for Global Health Equity (CGHE), which brings specialized expertise in artificial intelligence, applied analytics and epidemic intelligence. In parallel, locally-led evaluations of the DMT-PHE as an AI-enabled clinical decision support tool (CDST) have been undertaken in collaboration with the One Health Center at Kenya Institute of Primate Research (KIPRE), the Washington State University (WSU) Global Health-Kenya and University of Toronto, Dalla Lana School of Public Health, generating critical evidence to inform scale-up. These preliminary evaluations are promising, demonstrating high concordance with national escalation protocols, excellent usability and strong user trust in applying recommendations during public health emergencies, with no identified critical safety concerns. The AI integration enables faster detection, improved situational awareness, and more precise response shifting the system toward predictive and anticipatory public health action.
 
 Investment Case: Scalable, Interoperable, and Intelligence-Driven Systems
 
@@ -524,7 +524,7 @@ Dr. Javid Abdelmoneim, international president of MSF, emphasized the need for c
 The current outbreak trajectory underscores the urgent need to continue to scale up evidence-based Ebola control measures, such as rapid case and contact identification, expansion of diagnostic capacity, improvement of infection prevention and control in health care settings, adoption of safe and dignified burials, strengthening of cross-border surveillance and coordination, and community engagement.`,
       image_url:
         "https://pandemicintelcenter.org/wp-content/uploads/2026/08/EVD-analysis.png",
-      author: "CGP Analysis",
+      author: "CGHPI Analysis",
       published_at: "August 2026",
     },
 
@@ -564,7 +564,7 @@ The recent Ebola outbreak in East Africa was a reminder of the stakes. Early sig
 That, more than the technology, is the part worth paying attention to. AI is arriving in global health faster than most institutions can evaluate it, often built far from the places it's meant to serve. This project took the slower route: years of Kenyan-led framework-building before a line of AI code was written, and a rigorous evaluation before anyone called it ready. It's a quieter story than "AI predicts the next pandemic", but it may be the more honest version of what responsible AI in public health actually looks like: not a shortcut, but a tool built patiently, by the people who'll be the ones relying on it when the next warning sign appears.`,
       image_url:
         "https://pandemicintelcenter.org/wp-content/uploads/2026/07/DMT-Discussion.png",
-      author: "CGP Communications",
+      author: "CGHPI Communications",
       published_at: "July 2026",
     },
 
@@ -591,7 +591,7 @@ The Advancing Global Health APS represents a shift from traditional project-base
 This approach reflects a broader evolution in global health diplomacy, where pandemic preparedness is increasingly viewed not only as a development priority but also as a strategic international security concern.
 
 "The emergence of flexible financing mechanisms such as the Advancing Global Health initiative signals a shift in global health diplomacy—from reactive outbreak funding toward strategic investment in preparedness systems. For Africa, the critical task is ensuring these resources strengthen integrated epidemic intelligence architectures capable of translating surveillance data into rapid public health action."
-— Dr. Mark Nanyingi, Center for Global Health and Pandemic Intelligence (CGP)
+— Dr. Mark Nanyingi, Center for Global Health and Pandemic Intelligence (CGHPI)
 
 The Rapid Outbreak Response (ROR) Alignment with 7-1-7
 
@@ -636,7 +636,7 @@ However, the initiative has also drawn scrutiny from African governments and civ
         "The National Validation Workshop for the DMT-PHE training curriculum marks a significant advancement in Kenya's public health emergency governance and reinforces the country's compliance with the International Health Regulations. The curriculum validation marked the institutionalization phase of DMT-PHE transitioning from framework validation to applied national rollout readiness.",
       content: `From Ad Hoc Response to Structured Activation: Operationalizing a Standardized Escalation Framework to Improve Speed, Clarity, and Accountability in Emergency Response
 
-The Center for Global Health and Pandemic Intelligence (CGP) in collaboration with the Kenya National Public Health Institute (KNPHI), with support from Tackling Deadly Diseases Programme (TDDAP2) provided technical leadership in the National Validation Workshop for the Decision-Making Tool for Public Health Emergencies (DMT-PHE) training curriculum. This milestone represents a significant advancement in Kenya's public health emergency governance and reinforces the country's compliance with the International Health Regulations (IHR 2005).
+The Center for Global Health and Pandemic Intelligence (CGHPI) in collaboration with the Kenya National Public Health Institute (KNPHI), with support from Tackling Deadly Diseases Programme (TDDAP2) provided technical leadership in the National Validation Workshop for the Decision-Making Tool for Public Health Emergencies (DMT-PHE) training curriculum. This milestone represents a significant advancement in Kenya's public health emergency governance and reinforces the country's compliance with the International Health Regulations (IHR 2005).
 
 From Framework Validation to Institutionalized Risk-based Activation
 
@@ -687,7 +687,7 @@ Pillar 4 – Digitization & AI Support: advances digital trigger matrices within
 Pillar 5 – NAPHS II & 7-1-7 Alignment: strengthens measurable compliance with IHR core capacities. The framework aligns indicators to SPAR/JEE benchmarks, institutionalizes 7-1-7 performance monitoring, reinforces One Health coordination metrics, and ensures integration with the broader public health emergency management architecture.`,
       image_url:
         "https://pandemicintelcenter.org/wp-content/uploads/2026/02/DSC_1942-scaled.jpg",
-      author: "CGP Communications",
+      author: "CGHPI Communications",
       published_at: "February 2026",
     },
 
@@ -705,7 +705,7 @@ Aligning SPAR with NAPHS II Implementation to Strengthen Sustainable National Pr
 
 The Kenya National Public Health Institute (KNPHI) convened a three-day national stakeholders' consultative workshop to undertake Kenya's 2025 States Parties Self-Assessment Annual Reporting (SPAR), a core obligation under the International Health Regulations (IHR, 2005). The assessment brought together over 50 multidisciplinary experts from multisectoral institutions spanning government, academia, One Health actors, and emergency response partners to reflect on national preparedness performance and identify priority areas for action.
 
-Kenya's SPAR 2025 process marked an important transition from routine reporting toward strategic reflection on national preparedness performance. Rather than serving solely as an annual compliance exercise, the process enabled stakeholders to interpret assessment findings as decision-shaping insights for strengthening the country's evolving health security architecture. Technical facilitation by the Center for Global Health and Pandemic Intelligence (CGP), Tackling Deadly Diseases Programme (TDDAP2) and WHO supported alignment between SPAR outcomes and the recently validated National Action Plan for Health Security II (NAPHS II), reinforcing a deliberate continuum between assessment, policy design, and implementation planning.
+Kenya's SPAR 2025 process marked an important transition from routine reporting toward strategic reflection on national preparedness performance. Rather than serving solely as an annual compliance exercise, the process enabled stakeholders to interpret assessment findings as decision-shaping insights for strengthening the country's evolving health security architecture. Technical facilitation by the Center for Global Health and Pandemic Intelligence (CGHPI), Tackling Deadly Diseases Programme (TDDAP2) and WHO supported alignment between SPAR outcomes and the recently validated National Action Plan for Health Security II (NAPHS II), reinforcing a deliberate continuum between assessment, policy design, and implementation planning.
 
 Performance Trajectory of SPAR: Insights from 2024 to 2025
 
@@ -720,9 +720,9 @@ Overall, the comparison signaled a transition from rapid capacity expansion towa
 
 Nexus of NAPHS II and SPAR 2025
 
-CGP and KNPHI underscored the SPAR as a strategic self-assessment tool that directly informed implementation and prioritization of Kenya's National Action Plan for Health Security (NAPHS). The SPAR enabled the country to systematically identify strengths, gaps, and priority actions across IHR core capacities, guiding evidence-based investments and coordinated action to strengthen national preparedness, resilience, and response to public health emergencies.
+CGHPI and KNPHI underscored the SPAR as a strategic self-assessment tool that directly informed implementation and prioritization of Kenya's National Action Plan for Health Security (NAPHS). The SPAR enabled the country to systematically identify strengths, gaps, and priority actions across IHR core capacities, guiding evidence-based investments and coordinated action to strengthen national preparedness, resilience, and response to public health emergencies.
 
-Through its technical facilitation and analytical synthesis, CGP supported the alignment of SPAR findings with national planning processes, helping translate assessment outcomes into strategic insights that informed Kenya's broader preparedness agenda. As countries increasingly seek to bridge global reporting frameworks with domestically driven implementation, integrated approaches linking assessment, policy design, and investment planning are becoming central to advancing sustainable health security systems.
+Through its technical facilitation and analytical synthesis, CGHPI supported the alignment of SPAR findings with national planning processes, helping translate assessment outcomes into strategic insights that informed Kenya's broader preparedness agenda. As countries increasingly seek to bridge global reporting frameworks with domestically driven implementation, integrated approaches linking assessment, policy design, and investment planning are becoming central to advancing sustainable health security systems.
 
 The SPAR is WHO's standardized mandatory annual self-assessment tool through which countries evaluated their capacities to prevent, detect, and respond to public health threats. It forms a critical component of the IHR Monitoring and Evaluation Framework (IHR MEF), alongside Joint External Evaluations (JEE), simulation exercises (SIMEXs), and after-action reviews (AARs).
 
@@ -753,7 +753,7 @@ One Health Integration Trajectory: Cross-sectoral engagement strengthened, altho
       content: `"The validation of NAPHS II marks a critical shift from planning to execution. By grounding the Plan in evidence, One Health principles, and national ownership, Kenya is positioning itself to translate investments into sustained health security impact. TDDAP2 is proud to support this process as it strengthens the systems that matter most before, during, and after health emergencies."
 — Dr. Kadondi Kasera, TDDAP2 Team Lead
 
-The Center for Global Health and Pandemic Intelligence (CGP), through its Division of Global Health Security, provided technical leadership and facilitation for the National Action Plan for Health Security II (NAPHS II) Validation Workshop.
+The Center for Global Health and Pandemic Intelligence (CGHPI), through its Division of Global Health Security, provided technical leadership and facilitation for the National Action Plan for Health Security II (NAPHS II) Validation Workshop.
 
 The validation convened over 70 multidisciplinary stakeholders from national and county governments, technical agencies, academia, and development partners to rigorously assess the technical soundness, strategic coherence, and implementability of NAPHS II—Kenya's five-year roadmap for strengthening prevention, detection, and response to public health threats in alignment with the International Health Regulations (IHR 2005).
 
@@ -782,7 +782,7 @@ NAPHS II articulates a clear national vision: to build a resilient, coordinated,
 
 How was the Validation Conducted
 
-The validation followed a structured, functional group–based methodology designed by CGP that is aligned with the IHR (2005) Monitoring and Evaluation Framework, combining thematic review, application of a standardised validation matrix, and cross-sectoral synthesis. The draft NAPHS II was reviewed through five functional groups, each assigned a defined scope and clustered JEE technical areas:
+The validation followed a structured, functional group–based methodology designed by CGHPI that is aligned with the IHR (2005) Monitoring and Evaluation Framework, combining thematic review, application of a standardised validation matrix, and cross-sectoral synthesis. The draft NAPHS II was reviewed through five functional groups, each assigned a defined scope and clustered JEE technical areas:
 
 - Governance and Financing (P1, P2, P3): Legal and policy frameworks, coordination mechanisms, and sustainable financing.
 - Surveillance, Laboratory Systems, and Workforce (D1, D2, P7, R5, POE): Detection and verification capacity, laboratory systems, biosafety, risk communication, and points of entry.
@@ -811,13 +811,13 @@ The validation confirmed that NAPHS II provides a credible platform for resource
         "Strengthening Africa's Pandemic Preparedness: A Harmonised One Health Response",
       category: "News",
       excerpt:
-        "CGP-supported HARMONIZE and SCOPE initiatives unlock USD 80M in coordinated investment for Africa's health security through the Pandemic Fund's Third Call proposals. The initiatives represent a landmark coordinated investment in Africa's pandemic prevention, preparedness and response capacity.",
-      content: `The Center for Global Health and Pandemic Intelligence (CGP)–supported HARMONIZE and SCOPE initiatives unlock USD 80M in coordinated investment for Africa's health security. The CGP proudly welcomes the Pandemic Fund's announcement of two landmark initiatives approved under the Pandemic Fund Third Call proposals that CGP supported technically, strategically, and methodologically.
+        "CGHPI-supported HARMONIZE and SCOPE initiatives unlock USD 80M in coordinated investment for Africa's health security through the Pandemic Fund's Third Call proposals. The initiatives represent a landmark coordinated investment in Africa's pandemic prevention, preparedness and response capacity.",
+      content: `The Center for Global Health and Pandemic Intelligence (CGHPI)–supported HARMONIZE and SCOPE initiatives unlock USD 80M in coordinated investment for Africa's health security. The CGHPI proudly welcomes the Pandemic Fund's announcement of two landmark initiatives approved under the Pandemic Fund Third Call proposals that CGHPI supported technically, strategically, and methodologically.
 
 The AU-IBAR led "Strengthening One Health Capacities for Enhanced Pandemic Preparedness and Response in the Lake Chad Basin" (SCOPE) and Africa CDC led "Harmonizing Continental Networks and Systems for Pandemic Prevention Preparedness and Response in Africa" (HARMONIZE) initiatives represent a USD 80 million coordinated investment in Africa's pandemic prevention, preparedness and response (PPR) capacity intentionally designed to avoid duplication and maximize synergy through an aligned, harmonised, and mutually reinforcing approach.
 
 "Africa's resilience against pandemics depends on integrated, multisectoral, equity-centred, and interoperable systems across human, animal and environmental health."
-— Dr. Nanyingi Mark, who led the CGP's technical support to both AU-IBAR and Africa CDC
+— Dr. Nanyingi Mark, who led the CGHPI's technical support to both AU-IBAR and Africa CDC
 
 The SCOPE initiative, led by the African Union Interafrican Bureau for Animal Resources (AU-IBAR), focuses on strengthening One Health capacities in the Lake Chad Basin—a region characterized by complex cross-border dynamics, climate vulnerability, and significant zoonotic disease risks. The project will enhance surveillance systems, laboratory networks, and community-based early warning systems across the basin's member states.
 
@@ -825,7 +825,7 @@ The HARMONIZE initiative, led by Africa CDC, aims to harmonize continental netwo
 
 Together, these initiatives represent a significant step toward operationalizing the Africa Health Security and Sovereignty (AHSS) agenda, which seeks to strengthen the continent's capacity to prevent, detect, and respond to public health threats while reducing reliance on external systems.
 
-CGP's technical contributions to both initiatives included:
+CGHPI's technical contributions to both initiatives included:
 
 - Strategic and technical guidance on One Health integration
 - Methodological support for surveillance system strengthening
@@ -836,7 +836,7 @@ CGP's technical contributions to both initiatives included:
 The approval of these initiatives marks a milestone in Africa's collective efforts to build resilient, integrated health security systems capable of managing emerging threats with greater independence and coordination.`,
       image_url:
         "https://pandemicintelcenter.org/wp-content/uploads/2025/11/20201010-REDDISSE-01-780x439-2-1.jpg",
-      author: "CGP Communications",
+      author: "CGHPI Communications",
       published_at: "November 2025",
     },
 
@@ -846,8 +846,8 @@ The approval of these initiatives marks a milestone in Africa's collective effor
         "Leveraging One Health to Strengthen Pandemic Preparedness in Kenya",
       category: "News",
       excerpt:
-        "At the inaugural Kenya One Health Conference, CGP's Technical Director delivered the opening keynote address on leveraging One Health to strengthen pandemic preparedness in Kenya. He traced Kenya's journey from responding to zoonotic outbreaks to building integrated systems for pandemic prevention, preparedness, and resilience.",
-      content: `At the inaugural Kenya One Health Conference (KOH 2025) jointly organized by the Kenya Medical Association (KMA) and Kenya Veterinary Association (KVA) under the global theme "By Protecting One, We Help Protect All", CGP's Technical Director for Global Health Security, Dr. Mark Nanyingi, delivered the opening keynote address on "Leveraging One Health to Strengthen Pandemic Preparedness in Kenya."
+        "At the inaugural Kenya One Health Conference, CGHPI's Technical Director delivered the opening keynote address on leveraging One Health to strengthen pandemic preparedness in Kenya. He traced Kenya's journey from responding to zoonotic outbreaks to building integrated systems for pandemic prevention, preparedness, and resilience.",
+      content: `At the inaugural Kenya One Health Conference (KOH 2025) jointly organized by the Kenya Medical Association (KMA) and Kenya Veterinary Association (KVA) under the global theme "By Protecting One, We Help Protect All", CGHPI's Technical Director for Global Health Security, Dr. Mark Nanyingi, delivered the opening keynote address on "Leveraging One Health to Strengthen Pandemic Preparedness in Kenya."
 
 Speaking before over 200 distinguished delegates drawn from human medicine, veterinary medicine, public health, environmental health, research, and academia, Dr. Nanyingi traced Kenya's journey from responding to zoonotic outbreaks to building integrated systems for pandemic prevention, preparedness, and resilience.
 
@@ -871,7 +871,7 @@ Kenya has systematically embedded One Health in national and subnational systems
 
 Decision Intelligence and the 7-1-7 Paradigm
 
-The introduction of Kenya's Decision-Making Tool for Public Health Emergencies (DMT-PHE)—an innovation developed by CGP in collaboration with the Kenya National Public Health Institute (KNPHI) and Ministry of Health—is a game-changer. The tool standardizes escalation, coordination, and support from community to county to national level, ensuring that event detection, notification, and response meet the 7-1-7 target (detect within 7 days, notify within 1 day, respond within 7 days). Using case studies of Rift Valley Fever (Wajir, Marsabit 2024) and Mpox (2024), he illustrated "One Health in Action" where One Health mechanisms were jointly applied to guide rapid, evidence-based decisions and the potential to use DMT-PHE in future outbreaks.
+The introduction of Kenya's Decision-Making Tool for Public Health Emergencies (DMT-PHE)—an innovation developed by CGHPI in collaboration with the Kenya National Public Health Institute (KNPHI) and Ministry of Health—is a game-changer. The tool standardizes escalation, coordination, and support from community to county to national level, ensuring that event detection, notification, and response meet the 7-1-7 target (detect within 7 days, notify within 1 day, respond within 7 days). Using case studies of Rift Valley Fever (Wajir, Marsabit 2024) and Mpox (2024), he illustrated "One Health in Action" where One Health mechanisms were jointly applied to guide rapid, evidence-based decisions and the potential to use DMT-PHE in future outbreaks.
 
 "The DMT-PHE is Kenya's decision intelligence backbone—transforming alerts into action, and coordination into accountability."
 
@@ -904,9 +904,9 @@ Kenya's One Health workforce development ecosystem aims to be transformative in 
       excerpt:
         "Kenya has launched two strategic public health frameworks: the National Contingency Plan for Rift Valley Fever (2025) and the Human Brucellosis Testing Guidelines. These frameworks represent a major advance in Kenya's One Health and pandemic preparedness agenda, providing standardized procedures and clear decision-support tools for tackling zoonotic threats.",
       content: `"Standardizing surveillance and diagnostics for priority zoonoses is a critical step toward faster detection, earlier response, and reduced outbreak impact, and the emergence of epidemics and pandemics."
-— Dr. Mark Nanyingi, (CGP)
+— Dr. Mark Nanyingi, (CGHPI)
 
-Kenya has taken a significant step forward in strengthening its national systems for early detection and coordinated response to zoonotic diseases with the official launch of two strategic public health frameworks: the National Contingency Plan for Rift Valley Fever (2025) and the Human Brucellosis Testing Guidelines. The launch event, convened by the Zoonotic Disease Unit (ZDU) under the joint leadership of the Ministry of Health, the Ministry of Agriculture & Livestock Development, and the Ministry of Environment, Climate Change & Forestry, Kenya National Public Health Institute (KNPHI) brought together national agencies, 19 county representatives, laboratory networks, research institutions—Kenya Medical Research Institute, International Livestock Research Institute—and international partners including the Center for Global Health and Pandemic Intelligence (CGP), Washington State University (WSU), Amref Health Africa-Kenya, University of Liverpool, University of Nairobi.
+Kenya has taken a significant step forward in strengthening its national systems for early detection and coordinated response to zoonotic diseases with the official launch of two strategic public health frameworks: the National Contingency Plan for Rift Valley Fever (2025) and the Human Brucellosis Testing Guidelines. The launch event, convened by the Zoonotic Disease Unit (ZDU) under the joint leadership of the Ministry of Health, the Ministry of Agriculture & Livestock Development, and the Ministry of Environment, Climate Change & Forestry, Kenya National Public Health Institute (KNPHI) brought together national agencies, 19 county representatives, laboratory networks, research institutions—Kenya Medical Research Institute, International Livestock Research Institute—and international partners including the Center for Global Health and Pandemic Intelligence (CGHPI), Washington State University (WSU), Amref Health Africa-Kenya, University of Liverpool, University of Nairobi.
 
 These national frameworks represent a major advance in Kenya's One Health and pandemic preparedness agenda, providing national and county-level actors with standardized procedures, clear decision-support tools, and a shared operational language for tackling zoonotic threats with epidemic and socio-economic impact.
 
@@ -955,9 +955,9 @@ The newly launched Human Brucellosis Testing Guidelines address long-standing ga
 
 The guidelines are expected to reduce diagnostic delays and misclassification—common barriers that have masked the true burden of brucellosis in Kenya and the region.
 
-CGP's Role in Advancing Evidence-Based Preparedness
+CGHPI's Role in Advancing Evidence-Based Preparedness
 
-The Center for Global Health and Pandemic Intelligence (CGP) provided technical assistance during the development of both documents, contributing expertise in:
+The Center for Global Health and Pandemic Intelligence (CGHPI) provided technical assistance during the development of both documents, contributing expertise in:
 
 - Outbreak analytics and disease modelling
 - Harmonization of human–animal surveillance systems
@@ -965,10 +965,10 @@ The Center for Global Health and Pandemic Intelligence (CGP) provided technical 
 - Integration of One Health governance into public health emergency management
 - County-level readiness assessments and policy translation
 
-CGP's contribution builds on more than a decade of technical work in zoonotic disease preparedness in Kenya, including support to RVF hotspot mapping and early warning systems.`,
+CGHPI's contribution builds on more than a decade of technical work in zoonotic disease preparedness in Kenya, including support to RVF hotspot mapping and early warning systems.`,
       image_url:
         "https://pandemicintelcenter.org/wp-content/uploads/2025/11/9.jpeg",
-      author: "CGP Communications",
+      author: "CGHPI Communications",
       published_at: "November 2025",
     },
 
@@ -979,11 +979,11 @@ CGP's contribution builds on more than a decade of technical work in zoonotic di
       category: "News",
       excerpt:
         "Kenya has taken a major step toward institutionalizing rapid, evidence-based outbreak response with the successful validation of the Decision-Making Tool for Public Health Emergencies (DMT-PHE) – the country's first standardized framework for guiding escalation, coordination, and decision-making during public health crises.",
-      content: `A new era of evidence-based, decentralized, and One Health–aligned emergency decision-making is taking shape under KNPHI leadership with technical support from CGP and Palladium's TDDAP2 programme.
+      content: `A new era of evidence-based, decentralized, and One Health–aligned emergency decision-making is taking shape under KNPHI leadership with technical support from CGHPI and Palladium's TDDAP2 programme.
 
 Kenya has taken a major step toward institutionalizing rapid, evidence-based outbreak response with the successful validation of the Decision-Making Tool for Public Health Emergencies (DMT-PHE) – the country's first standardized framework for guiding escalation, coordination, and decision-making during public health crises.
 
-The National Validation Workshop, held from 16–17 October 2025 at Sarova Panafric Hotel in Nairobi, was convened by the Kenya National Public Health Institute (KNPHI) with support from Palladium's Tackling Deadly Diseases in Africa Programme 2 (TDDAP2) and technical facilitation from the Center for Global Health and Pandemic Intelligence (CGP). Over 40 participants drawn from government agencies, research institutions, and international partners including Ministry of Health (MOH), MOH-Disaster Risk Management, Directorate of Veterinary Services, WHO, Africa CDC, FAO, Amref Health Africa, US CDC, IGAD, AFENET, Washington State University (Global Health), TaskForce for Global Health (SONAR) and Kenya RedCross Society (KRCS), Kenya Medical Research Institute (KEMRI), KEMRI-Wellcome Trust, Pandemic Action Network (PAN) and RAMAT collaborated to test the DMT-PHE through five real-world table top simulation exercises (SIMEX) ranging from Ebola Virus Disease, Cholera outbreaks, Rift Valley fever, chemical spills and Public Health Emergencies of Initially Unknown Etiology (PHEIUE).
+The National Validation Workshop, held from 16–17 October 2025 at Sarova Panafric Hotel in Nairobi, was convened by the Kenya National Public Health Institute (KNPHI) with support from Palladium's Tackling Deadly Diseases in Africa Programme 2 (TDDAP2) and technical facilitation from the Center for Global Health and Pandemic Intelligence (CGHPI). Over 40 participants drawn from government agencies, research institutions, and international partners including Ministry of Health (MOH), MOH-Disaster Risk Management, Directorate of Veterinary Services, WHO, Africa CDC, FAO, Amref Health Africa, US CDC, IGAD, AFENET, Washington State University (Global Health), TaskForce for Global Health (SONAR) and Kenya RedCross Society (KRCS), Kenya Medical Research Institute (KEMRI), KEMRI-Wellcome Trust, Pandemic Action Network (PAN) and RAMAT collaborated to test the DMT-PHE through five real-world table top simulation exercises (SIMEX) ranging from Ebola Virus Disease, Cholera outbreaks, Rift Valley fever, chemical spills and Public Health Emergencies of Initially Unknown Etiology (PHEIUE).
 
 "This tool bridges the long-standing gap between surveillance data and timely decision-making," said Dr. Samuel Kadivane, who coordinated the workshop on behalf of the KNPHI Director General Dr. Maureen Kamene. "It empowers county health leaders to act decisively, with clear escalation thresholds, structured coordination, and predictable response pathways."
 
@@ -993,13 +993,13 @@ Dr. Kadondi Kasera, Country Lead for TDDAP2, emphasized the tool's strategic int
 
 The validated tool will now proceed to pilot testing in ten high-risk counties, representing diverse epidemiological and cross-border contexts. These pilots will help refine Standard Operating Procedures (SOPs), integrate DMT-PHE with IDSR and DHIS2, and establish a baseline for monitoring county performance against 7-1-7 benchmarks.
 
-Dr. Mark Nanyingi, Technical Director at CGP and the workshop's lead facilitator, noted: "The DMT-PHE represents a new frontier in Kenya's pandemic preparedness architecture — a clear, practical mechanism for deciding who acts, when, and how, during complex health emergencies."
+Dr. Mark Nanyingi, Technical Director at CGHPI and the workshop's lead facilitator, noted: "The DMT-PHE represents a new frontier in Kenya's pandemic preparedness architecture — a clear, practical mechanism for deciding who acts, when, and how, during complex health emergencies."
 
 The validation workshop concluded with a unified call to digitize the DMT-PHE, embed its triggers in national dashboards, and align its rollout with the National Action Plan for Health Security (NAPHS 2.0) and the broader Public Health Emergency Management (PHEM) framework. With Kenya leading the way, the DMT-PHE is poised to become a regional reference model for structured, One Health–based decision-making—a blueprint for turning data into decisive action when every hour counts.
 
 About the DMT-PHE
 
-The Decision-Making Tool for Public Health Emergencies (DMT-PHE) is a structured, evidence-based framework developed by the Kenya National Public Health Institute (KNPHI) with technical support from CGP and Palladium's TDDAP2.
+The Decision-Making Tool for Public Health Emergencies (DMT-PHE) is a structured, evidence-based framework developed by the Kenya National Public Health Institute (KNPHI) with technical support from CGHPI and Palladium's TDDAP2.
 
 It provides:
 
@@ -1011,7 +1011,7 @@ It provides:
 - Accountability, coordination, and speed of action—transforming Kenya's emergency management from reactive to predictive and structured.`,
       image_url:
         "https://pandemicintelcenter.org/wp-content/uploads/2025/10/WhatsApp-Image-2025-10-22-at-12.17.44.jpeg",
-      author: "CGP Communications",
+      author: "CGHPI Communications",
       published_at: "October 2025",
     },
 
@@ -1021,10 +1021,10 @@ It provides:
         "Operationalizing 7-1-7: Kenya's Shift from Metrics and Timelines to Decision Intelligence",
       category: "Analysis",
       excerpt:
-        "The Kenya National Public Health Institute, supported by AFENET and with technical guidance from CGP, convened a national workshop to operationalize 7-1-7. The emphasis was not on introducing the framework, but on interrogating its application. A key innovation within this process was the pilot integration of AI-assisted decision support within the DMT-PHE.",
+        "The Kenya National Public Health Institute, supported by AFENET and with technical guidance from CGHPI, convened a national workshop to operationalize 7-1-7. The emphasis was not on introducing the framework, but on interrogating its application. A key innovation within this process was the pilot integration of AI-assisted decision support within the DMT-PHE.",
       content: `Designing Systems That Deliver Speed in Outbreak Response
 
-The Kenya National Public Health Institute (KNPHI), supported by the African Field Epidemiology Network (AFENET) and with technical guidance from the Center for Global Health and Pandemic Intelligence (CGP), convened a national workshop to operationalize 7-1-7. The emphasis was not on introducing the framework, but on interrogating its application. Through simulation exercises, early action reviews, and hands-on engagement with national dashboards, participants explored how decisions are made in real time and where delays emerge. A key innovation within this process was the pilot integration of AI-assisted decision support within the Decision-Making Tool for Public Health Emergencies (DMT-PHE), marking a shift toward embedding intelligence directly into operational workflows.
+The Kenya National Public Health Institute (KNPHI), supported by the African Field Epidemiology Network (AFENET) and with technical guidance from the Center for Global Health and Pandemic Intelligence (CGHPI), convened a national workshop to operationalize 7-1-7. The emphasis was not on introducing the framework, but on interrogating its application. Through simulation exercises, early action reviews, and hands-on engagement with national dashboards, participants explored how decisions are made in real time and where delays emerge. A key innovation within this process was the pilot integration of AI-assisted decision support within the Decision-Making Tool for Public Health Emergencies (DMT-PHE), marking a shift toward embedding intelligence directly into operational workflows.
 
 Why 7-1-7
 
@@ -1210,11 +1210,11 @@ function seedJobsIfNeeded() {
       "Technical",
       "Nairobi, Kenya (with field travel)",
       "Flexible engagement – Short-to-medium term",
-      "CGP is seeking experienced Technical Consultants to support its technical capability areas across epidemic intelligence, health security, One Health, community engagement, and digital health.",
+      "CGHPI is seeking experienced Technical Consultants to support its technical capability areas across epidemic intelligence, health security, One Health, community engagement, and digital health.",
       JSON.stringify([
         "Advanced degree (Master's or PhD) in public health, epidemiology, veterinary science, environmental health, data science, or related field.",
         "Minimum 5 years of relevant professional experience in global health, health security, or epidemic/pandemic preparedness and response, with a focus on technical implementation.",
-        "Demonstrated expertise in one or more of CGP's technical areas.",
+        "Demonstrated expertise in one or more of CGHPI's technical areas.",
         "Experience working with international health agencies, Ministries of Health, or NGOs in sub-Saharan Africa particularly in Kenya or East Africa.",
         "Strong written and verbal communication skills, including the ability to produce high-quality technical reports, briefs, and presentations.",
         "Proficiency in English (required); Swahili or other regional languages (preferred).",
@@ -1233,7 +1233,7 @@ function seedJobsIfNeeded() {
       "Research",
       "Nairobi, Kenya",
       "Full engagement – Ongoing",
-      "CGP is seeking Research Associates to contribute to its research, surveillance, and digital health programmes, supporting subnational and national level public health initiatives.",
+      "CGHPI is seeking Research Associates to contribute to its research, surveillance, and digital health programmes, supporting subnational and national level public health initiatives.",
       JSON.stringify([
         "Bachelor's or Master's degree in public health, epidemiology, data science, or a related field.",
         "2–5 years of experience in public health research, health security, or global health programme implementation.",
@@ -1272,13 +1272,13 @@ function seedResourcesIfNeeded() {
     `);
     insertResource.run(
       "Kenya Decision-Making Tool for Public Health Emergencies (DMT-PHE)",
-      "A framework that guides rapid, evidence-based action during outbreaks, validated in October 2025 under KNPHI leadership with technical facilitation by CGP.",
+      "A framework that guides rapid, evidence-based action during outbreaks, validated in October 2025 under KNPHI leadership with technical facilitation by CGHPI.",
       "https://pandemicintelcenter.org/wp-content/uploads/2025/10/WhatsApp-Image-2025-10-22-at-12.17.44-1-1024x683.jpeg",
       "October 2025",
     );
     insertResource.run(
-      "Technical Areas of Work at CGP",
-      "An overview of the technical capability areas CGP operates in, from epidemic intelligence to digital health and One Health surveillance.",
+      "Technical Areas of Work at CGHPI",
+      "An overview of the technical capability areas CGHPI operates in, from epidemic intelligence to digital health and One Health surveillance.",
       "",
       "September 2025",
     );

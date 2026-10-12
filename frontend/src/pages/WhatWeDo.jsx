@@ -65,7 +65,7 @@ export default function WhatWeDo() {
         <PageHeader
           trail={META.breadcrumb}
           h1="What We Do"
-          dek="CGP strengthens global health security and IHR compliance, integrates One Health data streams for early warning, builds AI-driven outbreak forecasting, and equips frontline responders with real-time tools and training."
+          dek="CGHPI strengthens global health security and IHR compliance, integrates One Health data streams for early warning, builds AI-driven outbreak forecasting, and equips frontline responders with real-time tools and training."
           kickers={CAPABILITIES.map((c) => c.short)}
         />
       </div>
@@ -73,7 +73,7 @@ export default function WhatWeDo() {
       {/* ---------------- Headline figures ---------------- */}
       <section
         className="section-tight section-surface"
-        aria-label="CGP at a glance"
+        aria-label="CGHPI at a glance"
       >
         <div className="wrap">
           <div className="stat-strip">
@@ -191,7 +191,7 @@ export default function WhatWeDo() {
             id="related-heading"
             align="center"
             eyebrow="See it in practice"
-            title="Explore CGP’s work"
+            title="Explore CGHPI’s work"
             lede="Capabilities only matter when they change outcomes. See where each one is applied."
           />
           <div className="grid-auto">
@@ -201,7 +201,7 @@ export default function WhatWeDo() {
               </div>
               <h3>Projects &amp; Impact</h3>
               <p>
-                Outcome-led summaries of CGP’s project record across Kenya and
+                Outcome-led summaries of CGHPI’s project record across Kenya and
                 the region.
               </p>
               <SmartLink className="text-link card-link" to="/projects">
@@ -213,7 +213,7 @@ export default function WhatWeDo() {
               <div className="card-icon" aria-hidden="true">
                 <i className="bi bi-broadcast-pin" />
               </div>
-              <h3>CGP Initiatives</h3>
+              <h3>CGHPI Initiatives</h3>
               <p>
                 Six active programmes putting epidemic intelligence into
                 practice subnationally.
@@ -229,7 +229,7 @@ export default function WhatWeDo() {
               </div>
               <h3>Media Insights and Research</h3>
               <p>
-                Research, policy and field updates from the CGP team and its
+                Research, policy and field updates from the CGHPI team and its
                 partners.
               </p>
               <SmartLink className="text-link card-link" to="/insights">
@@ -242,11 +242,11 @@ export default function WhatWeDo() {
       </section>
 
       <CtaStrip
-        title="Explore CGP's projects & initiatives"
-        body="See CGP's capabilities in action through our project record and subnational programmes."
+        title="Explore CGHPI's projects & initiatives"
+        body="See CGHPI's capabilities in action through our project record and subnational programmes."
         actions={[
           { label: "Explore Our Projects", to: "/projects", variant: "white" },
-          { label: "CGP Initiatives", to: "/initiatives", variant: "white" },
+          { label: "CGHPI Initiatives", to: "/initiatives", variant: "white" },
         ]}
       />
 

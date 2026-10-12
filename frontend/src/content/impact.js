@@ -62,7 +62,7 @@ export const GLANCE = [
     value: null,
     display: null,
     label: 'Health professionals and community workers trained',
-    note: 'CGP runs FELTP, ISAVET, CBS and EBS training. Participant counts are not currently recorded on the site.',
+    note: 'CGHPI runs FELTP, ISAVET, CBS and EBS training. Participant counts are not currently recorded on the site.',
     verified: false,
   },
   {

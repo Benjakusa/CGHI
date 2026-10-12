@@ -160,8 +160,8 @@ function ArticleBody({ article, all }) {
       </article>
 
       <CtaStrip
-        title="See CGP's project record"
-        body="Learn more about the projects behind the DMT-PHE and other CGP initiatives."
+        title="See CGHPI's project record"
+        body="Learn more about the projects behind the DMT-PHE and other CGHPI initiatives."
         actions={[
           { label: 'Explore Our Projects', to: '/projects', variant: 'white' },
           { label: 'Partner With Us', to: '/partner-with-us#contact-form', variant: 'white' },

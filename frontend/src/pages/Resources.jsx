@@ -93,7 +93,7 @@ export default function Resources() {
       pageJsonLd({ name: META.title, path: '/resources', description: META.description }),
       breadcrumbJsonLd(META.breadcrumb),
       ...(list.length
-        ? [itemListJsonLd('CGP resources', list.map((r) => ({ name: r.title, to: '/resources' })))]
+        ? [itemListJsonLd('CGHPI resources', list.map((r) => ({ name: r.title, to: '/resources' })))]
         : []),
     ],
     [list]
@@ -106,7 +106,7 @@ export default function Resources() {
       <PageHeader
         trail={META.breadcrumb}
         h1="Resource Library"
-        dek="Reports, tools, guidelines, and publications from CGP's research and implementation work."
+        dek="Reports, tools, guidelines, and publications from CGHPI's research and implementation work."
       />
 
       <section aria-labelledby="library-heading">

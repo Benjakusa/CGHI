@@ -1,0 +1,85 @@
+# -----------------------------------------------------------------------------
+# Apache configuration for the CGHPI static site (cPanel / public_html).
+#
+# Vite emits a single-page app: every URL must return index.html so React Router
+# can render the route. Without the rewrite block below, a hard refresh or a
+# direct visit to https://cghpi.org/projects/foo returns Apache's 404 because no
+# such file exists on disk.
+#
+# This file lives in frontend/public/, so `vite build` copies it to dist/ root.
+# If the site is deployed into a sub-folder instead of the domain root, change
+# RewriteBase to that folder (e.g. RewriteBase /site/).
+# -----------------------------------------------------------------------------
+
+Options -MultiViews
+RewriteEngine On
+RewriteBase /
+
+# 1. Force HTTPS. cPanel's AutoSSL issues the certificate; this only makes sure
+#    nobody lands on the plain-HTTP version. `%{HTTPS} off` is used instead of
+#    X-Forwarded-Proto so this cannot loop behind a proxy.
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# 2. Force the canonical apex host. Canonical URLs, sitemap and VITE_SITE_URL
+#    all use https://cghpi.org.
+RewriteCond %{HTTP_HOST} ^www\.cghpi\.org$ [NC]
+RewriteRule ^(.*)$ https://cghpi.org/$1 [R=301,L]
+
+# 3. Never serve source control / config files.
+RewriteRule '(^|/)\.(git|env|htaccess)' - [F,L]
+
+# 4. SPA fallback: real files and folders win, everything else falls through to
+#    index.html. Must stay last — it is the catch-all.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]
+
+# ------------------------------------------------------------------------------
+# Compression. cPanel normally has mod_deflate enabled; leave this here so the
+# build still compresses if the account's httpd.conf turns it off.
+# ------------------------------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE image/svg+xml application/xml
+  AddOutputFilterByType DEFLATE font/woff2 font/woff
+</IfModule>
+
+# ------------------------------------------------------------------------------
+# Caching.
+#
+# Vite fingerprints everything under /assets/ (app.[hash].js), so those files
+# are safe to cache forever. index.html and the manifest must never be cached or
+# visitors keep getting the previous build after a deploy.
+# ------------------------------------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault                          "access plus 1 week"
+  ExpiresByType text/html                 "access plus 0 seconds"
+  ExpiresByType application/json          "access plus 0 seconds"
+  ExpiresByType image/svg+xml             "access plus 1 year"
+  ExpiresByType image/png                 "access plus 1 year"
+  ExpiresByType image/jpeg                "access plus 1 year"
+  ExpiresByType image/webp                "access plus 1 year"
+  ExpiresByType image/x-icon              "access plus 1 year"
+  ExpiresByType font/woff2                "access plus 1 year"
+  ExpiresByType text/css                  "access plus 1 year"
+  ExpiresByType application/javascript    "access plus 1 year"
+</IfModule>
+
+<IfModule mod_headers.c>
+  # index.html and the web manifest are the deploy markers — always revalidate.
+  <FilesMatch "\.(html|webmanifest)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+  # Fingerprinted bundle files can be cached hard.
+  <FilesMatch "\.(js|css|woff2|woff|png|jpg|jpeg|webp|svg|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy       "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options       "SAMEORIGIN"
+  Header always set Permissions-Policy    "camera=(), microphone=(), geolocation=(self)"
+</IfModule>

@@ -1,5 +1,5 @@
 /**
- * CGP leadership and team.
+ * CGHPI leadership and team.
  *
  * STATUS — PLACEHOLDER FILE.
  *
@@ -7,7 +7,7 @@
  * any kind (verified by searching every source file, the SQLite schema in
  * `backend/db.js` and the admin CRUD routes). Rather than invent people, this
  * file declares the shape of the data plus an explicit, visible placeholder
- * roster so the page renders as a designed template that CGP can populate
+ * roster so the page renders as a designed template that CGHPI can populate
  * from the admin panel or by editing this file.
  *
  * TODO(stakeholder): supply name, position, expertise areas, photograph and
@@ -38,7 +38,7 @@ export const LEADERSHIP_GROUPS = [
 
 export const LEADERS = [];
 
-/** Card fields CGP must supply before /leadership can go live. */
+/** Card fields CGHPI must supply before /leadership can go live. */
 export const LEADERSHIP_REQUIRED_FIELDS = [
   'name',
   'position',

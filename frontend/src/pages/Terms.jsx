@@ -6,7 +6,7 @@
  * is a plain-language framework covering the same subject matter as the Privacy
  * Policy (Kenya Data Protection Act 2019, GDPR where applicable).
  *
- * TODO(legal): this must be reviewed and approved by CGP's legal counsel before
+ * TODO(legal): this must be reviewed and approved by CGHPI's legal counsel before
  * it is relied upon. Section numbers and the governing-law clause are
  * placeholders pending that review.
  */
@@ -54,8 +54,8 @@ const SECTIONS = [
     id: 'content',
     heading: '4. Content and accuracy',
     body: [
-      'CGP takes care to ensure the accuracy of the information published on the Site, but it is provided for general information only and does not constitute medical, legal or professional advice, nor a clinical or public-health decision tool.',
-      'Figures, project outcomes and partner information reflect CGP’s published project record as at the date of publication and may change. Where a figure has not yet been verified, the Site marks it as pending rather than publishing an estimate.',
+      'CGHPI takes care to ensure the accuracy of the information published on the Site, but it is provided for general information only and does not constitute medical, legal or professional advice, nor a clinical or public-health decision tool.',
+      'Figures, project outcomes and partner information reflect CGHPI’s published project record as at the date of publication and may change. Where a figure has not yet been verified, the Site marks it as pending rather than publishing an estimate.',
       `${BRAND.abbr} reserves the right to correct, update or remove content at any time without notice.`,
     ],
   },
@@ -71,7 +71,7 @@ const SECTIONS = [
     id: 'third-party',
     heading: '6. Third-party links and content',
     body: [
-      'The Site links to, and may embed content from, third-party websites including social media platforms, mapping services and video hosting. CGP does not control these sites and is not responsible for their content, availability, or privacy practices.',
+      'The Site links to, and may embed content from, third-party websites including social media platforms, mapping services and video hosting. CGHPI does not control these sites and is not responsible for their content, availability, or privacy practices.',
       'Where content is embedded from a third-party provider, that provider’s own terms and privacy policy also apply to your use of it.',
     ],
   },
@@ -80,7 +80,7 @@ const SECTIONS = [
     heading: '7. Limitation of liability',
     body: [
       'To the fullest extent permitted by law, ' + BRAND.legalName + ' shall not be liable for any indirect, incidental, special, consequential or punitive loss, or for any loss of profits, data, goodwill or other intangible losses, arising out of or in connection with your use of the Site.',
-      'The Site is provided on an "as is" and "as available" basis. To the fullest extent permitted by law, CGP disclaims all warranties, express or implied, including any implied warranties of merchantability, fitness for a particular purpose, accuracy and non-infringement.',
+      'The Site is provided on an "as is" and "as available" basis. To the fullest extent permitted by law, CGHPI disclaims all warranties, express or implied, including any implied warranties of merchantability, fitness for a particular purpose, accuracy and non-infringement.',
     ],
   },
   {
@@ -138,7 +138,7 @@ export default function Terms() {
               <p>
                 <i className="bi bi-info-circle" aria-hidden="true" /> This document is a
                 plain-language framework prepared to sit alongside the Privacy Policy. It requires
-                review and approval by CGP’s legal counsel before it is relied upon.
+                review and approval by CGHPI’s legal counsel before it is relied upon.
               </p>
             </div>
 

@@ -123,8 +123,9 @@ function xmlEscape(value) {
  * A production build run without the variable therefore ships a site whose
  * every API call — login, content, contact form — points at localhost.
  *
- * On Vercel (`VERCEL=1`) a missing or localhost API base fails the build;
- * anywhere else it warns loudly so local builds still work.
+ * `CI` is set by every CI/CD system (and by Render/GitHub Actions), which is
+ * where a deploy build runs; there a missing or localhost API base fails the
+ * build. Anywhere else it warns loudly so local builds still work.
  */
 async function checkApiBase() {
   const fromEnv = process.env.VITE_API_BASE_URL?.trim();
@@ -134,7 +135,7 @@ async function checkApiBase() {
     const m = env.match(/^VITE_API_BASE_URL=(.*)$/m);
     fromFile = (m?.[1] || '').trim().replace(/^["']|["']$/g, '');
   } catch {
-    /* No local .env (e.g. Vercel provides the variable directly). */
+    /* No local .env (e.g. the variable is provided directly by the shell). */
   }
   // Match Vite's precedence: a variable present in the shell environment wins
   // over .env files — even when it is empty (Vite inlines the empty string,
@@ -148,9 +149,9 @@ async function checkApiBase() {
   const detail = missing
     ? 'VITE_API_BASE_URL is not set — the bundle will call http://localhost:4000.'
     : `VITE_API_BASE_URL=${apiBase} — the bundle will call a local backend.`;
-  const help = ' Set it in the Vercel project environment (Production and Preview).';
+  const help = ' Set it in frontend/.env (see frontend/.env.example) before building.';
 
-  if (process.env.VERCEL) {
+  if (process.env.CI) {
     throw new Error(`[build] ${detail}${help}`);
   }
   console.warn(`[build] WARNING: ${detail}${help}`);
@@ -230,7 +231,7 @@ async function main() {
   let next = html;
   for (const pattern of origins) {
     // Two captures either side of the value, plus the path suffix to restore.
-    const suffix = pattern === origins[0] || pattern === origins[1] ? '/' : '/og/cgp-og-default.png';
+    const suffix = pattern === origins[0] || pattern === origins[1] ? '/' : '/og/cghpi-og-default.png';
     if (!pattern.test(next)) {
       throw new Error(`index.html no longer matches ${pattern} — canonical/og URL templating was changed by hand.`);
     }

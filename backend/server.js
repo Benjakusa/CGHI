@@ -7,7 +7,7 @@ const fs = require('fs');
 
 if (!process.env.JWT_SECRET) {
     console.error(
-        '[CGP API] WARNING: JWT_SECRET is not set. ' +
+        '[CGHPI API] WARNING: JWT_SECRET is not set. ' +
         `Looked for .env at ${path.join(__dirname, '.env')}. ` +
         'Authenticated endpoints will refuse requests until this is fixed.'
     );
@@ -28,7 +28,14 @@ const ALLOWED_ORIGINS = [
     'http://127.0.0.1:3000',
     'http://localhost:8080',
     'http://127.0.0.1:8080',
-    ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
+    // FRONTEND_URL is a comma-separated list (apex + www of the live site).
+    // It used to be pushed as a single element, so a comma-separated value
+    // never matched any real Origin and the deployed site was blocked by CORS.
+    ...(process.env.FRONTEND_URL
+        ? process.env.FRONTEND_URL.split(',')
+            .map((origin) => origin.trim().replace(/\/+$/, ''))
+            .filter(Boolean)
+        : []),
 ];
 
 const corsOptions = {
@@ -36,9 +43,6 @@ const corsOptions = {
         if (!origin) return callback(null, true);
         if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
         if (/^http:\/\/(\d{1,3}\.){3}\d{1,3}:(5173|3000|8080)$/.test(origin)) {
-            return callback(null, true);
-        }
-        if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) {
             return callback(null, true);
         }
         return callback(new Error(`Origin ${origin} not allowed by CORS`));
@@ -125,7 +129,7 @@ app.get('/api/admin/stats', authMiddleware, (req, res) => {
         };
         res.json(payload);
     } catch (err) {
-        console.error('[CGP API] /api/admin/stats failed:', err);
+        console.error('[CGHPI API] /api/admin/stats failed:', err);
         res.status(500).json({ error: 'Failed to compute dashboard statistics.' });
     }
 });
@@ -134,7 +138,7 @@ app.get('/api/admin/stats', authMiddleware, (req, res) => {
 const applicationsDir = path.join(__dirname, 'data', 'uploads');
 if (!fs.existsSync(applicationsDir)) {
     fs.mkdirSync(applicationsDir, { recursive: true });
-    console.log(`[CGP API] Created applications directory: ${applicationsDir}`);
+    console.log(`[CGHPI API] Created applications directory: ${applicationsDir}`);
 }
 
 const jobApplicationsStorage = multer.diskStorage({
@@ -233,7 +237,7 @@ app.post('/api/job-applications', applicationsUpload.fields([
             }
         });
     } catch (err) {
-        console.error('[CGP API] Error creating job application:', err);
+        console.error('[CGHPI API] Error creating job application:', err);
         res.status(500).json({ error: 'Failed to submit application. Please try again.' });
     }
 });
@@ -247,7 +251,7 @@ app.get('/api/job-applications', authMiddleware, (req, res) => {
         }));
         res.json(result);
     } catch (err) {
-        console.error('[CGP API] Error fetching job applications:', err);
+        console.error('[CGHPI API] Error fetching job applications:', err);
         res.status(500).json({ error: 'Failed to fetch applications.' });
     }
 });
@@ -277,13 +281,13 @@ app.delete('/api/job-applications/:id', authMiddleware, (req, res) => {
         if (result.changes === 0) return res.status(404).json({ error: 'Application not found.' });
         res.json({ ok: true });
     } catch (err) {
-        console.error('[CGP API] Error deleting job application:', err);
+        console.error('[CGHPI API] Error deleting job application:', err);
         res.status(500).json({ error: 'Failed to delete application.' });
     }
 });
 
 app.use((err, req, res, next) => {
-    console.error('[CGP API] Error:', err.message);
+    console.error('[CGHPI API] Error:', err.message);
     if (err instanceof multer.MulterError) {
         if (err.code === 'LIMIT_FILE_SIZE') {
             return res.status(400).json({ error: 'File too large. Maximum 5MB.' });
@@ -297,7 +301,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`[CGP API] Running on http://localhost:${PORT}`);
-    console.log(`[CGP API] Uploads served from ${uploadsDir}`);
-    console.log(`[CGP API] CORS allowed origins: ${ALLOWED_ORIGINS.join(', ')} + LAN IPs on :5173/:3000/:8080`);
+    console.log(`[CGHPI API] Running on http://localhost:${PORT}`);
+    console.log(`[CGHPI API] Uploads served from ${uploadsDir}`);
+    console.log(`[CGHPI API] CORS allowed origins: ${ALLOWED_ORIGINS.join(', ')} + LAN IPs on :5173/:3000/:8080`);
 });

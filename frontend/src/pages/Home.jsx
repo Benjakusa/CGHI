@@ -5,9 +5,9 @@
  *
  *   1. Hero         — headline, value proposition, "Explore Our Work" +
  *                     "Partner With Us" CTAs
- *   2. Welcome       — what CGP is, with a link into the story
+ *   2. Welcome       — what CGHPI is, with a link into the story
  *   3. What We Do    — the five capability cards
- *   4. CGP at a Glance — published impact figures only (never left blank)
+ *   4. CGHPI at a Glance — published impact figures only (never left blank)
  *   5. Projects      — outcome-led cards, not activity lists
  *   6. Initiatives   — the six active programmes
  *   7. Insights      — latest research and news
@@ -57,7 +57,7 @@ const DEFAULT_HERO = {
   title: 'Building Intelligence for a Safer World',
   topic: 'Epidemic & Pandemic Intelligence',
   description:
-    'CGP combines epidemic intelligence, One Health and community engagement with data science to help countries prevent, detect and respond to health threats earlier.',
+    'CGHPI combines epidemic intelligence, One Health and community engagement with data science to help countries prevent, detect and respond to health threats earlier.',
   btn1_text: 'Explore Our Work',
   btn1_link: '/projects',
   btn2_text: 'Partner With Us',
@@ -167,7 +167,7 @@ function HeroCarousel({ slides }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* CGP at a Glance                                                      */
+/* CGHPI at a Glance                                                      */
 /* ------------------------------------------------------------------ */
 
 function GlanceFigure({ figure }) {
@@ -194,7 +194,7 @@ function GlanceFigure({ figure }) {
  * Every figure on the homepage carries a published value — items still awaiting
  * an official source are filtered out rather than rendered as a blank stat.
  *
- * The "$145M Pandemic Fund financing" card was removed from CGP at a Glance at
+ * The "$145M Pandemic Fund financing" card was removed from CGHPI at a Glance at
  * the stakeholder's request and no replacement figure was approved, so it is
  * excluded here (it remains in the data file for the What We Do headline set).
  */
@@ -266,11 +266,11 @@ export default function Home() {
         <div className="wrap">
           <div className="grid-2 grid-2--center">
             <div>
-              <span className="section-label">Welcome to CGP</span>
+              <span className="section-label">Welcome to CGHPI</span>
               <h2>{BRAND.tagline}</h2>
               <p className="lead">{DEK.home}</p>
               <p>
-                CGP operates at the intersection of epidemic and pandemic intelligence, One Health,
+                CGHPI operates at the intersection of epidemic and pandemic intelligence, One Health,
                 and community-centred preparedness — providing strategic solutions to prevent,
                 detect and respond to public health threats, especially in vulnerable and high-risk
                 settings.
@@ -302,7 +302,7 @@ export default function Home() {
             align="center"
             eyebrow="What We Do"
             title="Five interconnected areas of expertise"
-            lede="CGP works across five areas of global health expertise to strengthen surveillance, preparedness and response."
+            lede="CGHPI works across five areas of global health expertise to strengthen surveillance, preparedness and response."
           />
           <div className="grid-auto">
             {CAPABILITIES.map((capability) => (
@@ -319,15 +319,15 @@ export default function Home() {
 
 
 
-      {/* ---------------- CGP at a Glance ---------------- */}
+      {/* ---------------- CGHPI at a Glance ---------------- */}
       <section className="section-glance" aria-labelledby="glance-heading">
         <div className="wrap">
           <SectionHeader
             id="glance-heading"
             align="center"
-            eyebrow="CGP at a Glance"
+            eyebrow="CGHPI at a Glance"
             title="Our impact in numbers"
-            lede="Figures below are taken from CGP’s published project record."
+            lede="Figures below are taken from CGHPI’s published project record."
           />
           <GlanceGrid />
         </div>
@@ -356,7 +356,7 @@ export default function Home() {
           <SectionHeader
             id="initiatives-heading"
             eyebrow="Active Programmes"
-            title="CGP Initiatives"
+            title="CGHPI Initiatives"
             action={{ label: 'All initiatives', to: '/initiatives' }}
           />
           <div className="grid-auto">

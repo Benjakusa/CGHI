@@ -2364,7 +2364,7 @@ select.input {
   color: var(--ink-muted);
 }
 
-/* Pending data: a field CGP has not verified yet. Styled to be visibly
+/* Pending data: a field CGHPI has not verified yet. Styled to be visibly
    provisional so a placeholder is never mistaken for a finding. */
 .pending-field {
   padding: 0.85rem 1rem;
@@ -3429,10 +3429,10 @@ select.input {
    ========================================================================== */
 
 /**
- * new-site.css — Red Cross Kenya-inspired layer for the CGP public site.
+ * new-site.css — Red Cross Kenya-inspired layer for the CGHPI public site.
  *
  * Loaded AFTER style.css (see App.jsx), so it wins on equal
- * specificity without needing !important. It only uses the existing CGP
+ * specificity without needing !important. It only uses the existing CGHPI
  * tokens (--sky, --sky-dark, --sky-deep, tints, ink, surface) — no new brand
  * colours. Cards are rectangular (2px radius), sections are spacious, and
  * motion is driven by GSAP (src/hooks/useScrollAnimations.js) with a pure-CSS
@@ -3454,7 +3454,7 @@ select.input {
 
 /* 1. Tokens and type ------------------------------------------------------ */
 :root {
-  /* Semantic aliases over the CGP brand tokens defined in section 1 of this
+  /* Semantic aliases over the CGHPI brand tokens defined in section 1 of this
      file's predecessor (--sky*, --ink*, --surface*). Nothing new is introduced. */
   --color-primary: var(--sky);
   --color-primary-hover: var(--sky-dark);
@@ -4798,7 +4798,7 @@ section {
   max-width: 34ch;
 }
 
-/* CGP at a Glance: brand-blue band, centred, one white card per figure. */
+/* CGHPI at a Glance: brand-blue band, centred, one white card per figure. */
 .section-glance {
   background: var(--sky);
   color: var(--black);
@@ -5304,7 +5304,7 @@ section {
   color: var(--sky-deep);
 }
 
-/* --- CGP Initiatives: mixed sky / black / white composition -------------- */
+/* --- CGHPI Initiatives: mixed sky / black / white composition -------------- */
 .initiatives-programmes {
   padding: 0;
 }

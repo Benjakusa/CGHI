@@ -365,7 +365,7 @@ export default function Careers() {
             <PageHeader
                 trail={META.breadcrumb}
                 h1="Careers"
-                dek="CGP builds an expert network of public health and data professionals committed to transforming epidemic intelligence in Africa and beyond."
+                dek="CGHPI builds an expert network of public health and data professionals committed to transforming epidemic intelligence in Africa and beyond."
             />
 
                 <section>
@@ -453,7 +453,7 @@ export default function Careers() {
                         )}
 
                         <h2 style={{ marginBottom: '24px' }}>Technical Areas of Work</h2>
-                        <ul className="tech-area-list" aria-label="Technical areas at CGP">
+                        <ul className="tech-area-list" aria-label="Technical areas at CGHPI">
                             <li>Epidemic &amp; pandemic intelligence</li>
                             <li>IHR 2005, JEE, SPAR, NAPHS</li>
                             <li>7-1-7 outbreak detection &amp; response monitoring</li>

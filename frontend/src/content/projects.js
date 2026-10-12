@@ -1,5 +1,5 @@
 /**
- * CGP project record — the single data source behind /projects, the project
+ * CGHPI project record — the single data source behind /projects, the project
  * detail template at /projects/:slug, and the project teasers on the
  * homepage and /about.
  *
@@ -29,7 +29,7 @@ export const PROJECTS = [
       'Coordinated development of National, multi-country and regional proposals to the Pandemic Fund (2023–2025). Requested funding: $145 million.',
     challenge: null, // See PENDING_CONTENT.
     contribution:
-      'CGP coordinated the development of national, multi-country and regional proposals submitted to the Pandemic Fund.',
+      'CGHPI coordinated the development of national, multi-country and regional proposals submitted to the Pandemic Fund.',
     results: null, // See PENDING_CONTENT.
     outputs: null, // See PENDING_CONTENT.
     metrics: [
@@ -57,7 +57,7 @@ export const PROJECTS = [
       'Facilitated the Intra-Action Review (IAR) of the cholera outbreak in Migori and the Intra-Action Review of Kenya’s mpox outbreak (2024) using 7-1-7 targets. Reduced detection-to-response time by 30% in four counties.',
     challenge: null,
     contribution:
-      'CGP facilitated the Intra-Action Reviews of the Migori cholera outbreak and Kenya’s 2024 mpox outbreak against the WHO-endorsed 7-1-7 targets.',
+      'CGHPI facilitated the Intra-Action Reviews of the Migori cholera outbreak and Kenya’s 2024 mpox outbreak against the WHO-endorsed 7-1-7 targets.',
     results:
       'Detection-to-response time reduced by 30% across four counties in Kenya.',
     outputs: null,
@@ -91,7 +91,7 @@ export const PROJECTS = [
       'Supported development of the Marburg Preparedness and 72-Hour Response Plans, and the Mpox Response Plans for Kenya (2024).',
     challenge: null,
     contribution:
-      'CGP supported the development of hazard-specific national preparedness and response plans.',
+      'CGHPI supported the development of hazard-specific national preparedness and response plans.',
     results: null,
     outputs: null,
     metrics: [
@@ -119,7 +119,7 @@ export const PROJECTS = [
       'Review of Kenya’s public health emergency management (PHEM) curriculum. Capacity building and knowledge exchange through FELTP and ISAVET programmes.',
     challenge: null,
     contribution:
-      'CGP reviewed Kenya’s public health emergency management curriculum and supported capacity building and knowledge exchange through the FELTP and ISAVET programmes.',
+      'CGHPI reviewed Kenya’s public health emergency management curriculum and supported capacity building and knowledge exchange through the FELTP and ISAVET programmes.',
     results: null,
     outputs: null,
     metrics: [],
@@ -144,7 +144,7 @@ export const PROJECTS = [
       'Supporting the Ministry of Health and KNPHI in conducting the Joint External Evaluation (JEE 2024) and the States Parties Self-Assessment Annual Report (SPAR); development of the National Action Plan for Health Security (NAPHS 2.0, 2025); and simulation exercises including Rift Valley fever, Ebola and COHESION, a One Health cross-border simulation with Kenya, Somalia and Ethiopia.',
     challenge: null,
     contribution:
-      'CGP supports the Ministry of Health and the Kenya National Public Health Institute on IHR 2005 core capacity assessment and planning, and designs and facilitates multi-hazard and One Health simulation exercises.',
+      'CGHPI supports the Ministry of Health and the Kenya National Public Health Institute on IHR 2005 core capacity assessment and planning, and designs and facilitates multi-hazard and One Health simulation exercises.',
     results: null,
     outputs: null,
     metrics: [
@@ -174,10 +174,10 @@ export const PROJECTS = [
     image: null,
     featured: true,
     summary:
-      'Supporting KNPHI on the Standardized Decision-Making Tool for Public Health Emergencies (DMT-PHE). Validated in October 2025 under KNPHI leadership with support from Palladium’s TDDAP2 and technical facilitation by CGP. Now piloted in 10 high-risk counties before national rollout.',
+      'Supporting KNPHI on the Standardized Decision-Making Tool for Public Health Emergencies (DMT-PHE). Validated in October 2025 under KNPHI leadership with support from Palladium’s TDDAP2 and technical facilitation by CGHPI. Now piloted in 10 high-risk counties before national rollout.',
     challenge: null,
     contribution:
-      'CGP provided technical facilitation for the DMT-PHE, supporting KNPHI leadership alongside Palladium’s TDDAP2.',
+      'CGHPI provided technical facilitation for the DMT-PHE, supporting KNPHI leadership alongside Palladium’s TDDAP2.',
     results:
       'The DMT-PHE was validated in October 2025 and is being piloted in 10 high-risk counties ahead of national rollout.',
     outputs: null,
@@ -206,7 +206,7 @@ export const PROJECTS = [
       'Training health workers and communities, integrating Community-Based Surveillance (CBS), deploying digital tools for real-time alerts, and enhancing multisectoral collaboration through alignment with IDSR and 7-1-7 targets.',
     challenge: null,
     contribution:
-      'CGP trains health workers and communities, integrates CBS, and deploys digital alerting aligned with IDSR and 7-1-7 targets.',
+      'CGHPI trains health workers and communities, integrates CBS, and deploys digital alerting aligned with IDSR and 7-1-7 targets.',
     results: null,
     outputs: null,
     metrics: [],

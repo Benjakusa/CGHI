@@ -45,7 +45,7 @@ export default function NotFound() {
     <Layout navId={PAGE_META['/404'].navId}>
       <Seo
         title={title}
-        description="The page you were looking for could not be found. Return to the CGP homepage or explore our work."
+        description="The page you were looking for could not be found. Return to the CGHPI homepage or explore our work."
         path={location.pathname}
         imageAlt={`${BRAND.abbr} — ${BRAND.tagline}`}
         noIndex

@@ -117,7 +117,7 @@ function validate(body) {
 }
 
 function hashIp(ip) {
-    const salt = process.env.IP_HASH_SALT || process.env.JWT_SECRET || 'cgp-contact';
+    const salt = process.env.IP_HASH_SALT || process.env.JWT_SECRET || 'cghpi-contact';
     return crypto.createHash('sha256').update(`${salt}:${ip || 'unknown'}`).digest('hex').slice(0, 32);
 }
 
@@ -173,18 +173,18 @@ router.post('/', rateLimit, (req, res) => {
         );
 
         console.log(
-            `[CGP API] Contact enquiry #${result.lastInsertRowid} — ${value.topic} — ${value.email}`
+            `[CGHPI API] Contact enquiry #${result.lastInsertRowid} — ${value.topic} — ${value.email}`
         );
 
         res.status(201).json({
             ok: true,
             id: result.lastInsertRowid,
-            reference: `CGP-${String(result.lastInsertRowid).padStart(5, '0')}`,
+            reference: `CGHPI-${String(result.lastInsertRowid).padStart(5, '0')}`,
             message:
                 'Thank you — your message has been received. Our team replies to enquiries within two working days.',
         });
     } catch (err) {
-        console.error('[CGP API] Failed to store contact enquiry:', err.message);
+        console.error('[CGHPI API] Failed to store contact enquiry:', err.message);
         res.status(500).json({
             error: 'Something went wrong while sending your message. Please try again, or email us directly.',
         });
@@ -208,7 +208,7 @@ router.get('/stats', auth, (req, res) => {
             closed: counts.closed || 0,
         });
     } catch (err) {
-        console.error('[CGP API] Contact stats failed:', err.message);
+        console.error('[CGHPI API] Contact stats failed:', err.message);
         res.status(500).json({ error: 'Failed to compute contact statistics.' });
     }
 });
@@ -242,7 +242,7 @@ router.get('/', auth, (req, res) => {
 
         res.json(messages);
     } catch (err) {
-        console.error('[CGP API] Failed to list contact enquiries:', err.message);
+        console.error('[CGHPI API] Failed to list contact enquiries:', err.message);
         res.status(500).json({ error: 'Failed to fetch enquiries.' });
     }
 });
@@ -253,7 +253,7 @@ router.get('/:id', auth, (req, res) => {
         if (!message) return res.status(404).json({ error: 'Enquiry not found.' });
         res.json(message);
     } catch (err) {
-        console.error('[CGP API] Failed to fetch contact enquiry:', err.message);
+        console.error('[CGHPI API] Failed to fetch contact enquiry:', err.message);
         res.status(500).json({ error: 'Failed to fetch the enquiry.' });
     }
 });
@@ -285,7 +285,7 @@ router.put('/:id', auth, (req, res) => {
 
         res.json({ ok: true, id: existing.id, status: nextStatus });
     } catch (err) {
-        console.error('[CGP API] Failed to update contact enquiry:', err.message);
+        console.error('[CGHPI API] Failed to update contact enquiry:', err.message);
         res.status(500).json({ error: 'Failed to update the enquiry.' });
     }
 });
@@ -296,7 +296,7 @@ router.delete('/:id', auth, (req, res) => {
         if (result.changes === 0) return res.status(404).json({ error: 'Enquiry not found.' });
         res.json({ ok: true });
     } catch (err) {
-        console.error('[CGP API] Failed to delete contact enquiry:', err.message);
+        console.error('[CGHPI API] Failed to delete contact enquiry:', err.message);
         res.status(500).json({ error: 'Failed to delete the enquiry.' });
     }
 });

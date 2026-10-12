@@ -1,7 +1,7 @@
 /**
  * Partner With Us.
  *
- * The single home for "work with CGP" on the public site. It replaces the old
+ * The single home for "work with CGHPI" on the public site. It replaces the old
  * /contact page: the enquiry form and the contact details now live here, and
  * every legacy contact URL permanently redirects to this route.
  *
@@ -237,7 +237,7 @@ function ContactForm() {
         throw new Error(payload.message || payload.error || 'Something went wrong.');
       }
 
-      setReference(payload.reference || (payload.id ? `CGP-${payload.id}` : null));
+      setReference(payload.reference || (payload.id ? `CGHPI-${payload.id}` : null));
       setStatus('success');
       setValues(EMPTY);
       setErrors({});
@@ -457,7 +457,7 @@ function ContactForm() {
           aria-describedby={errors.consent ? `${uid}-consent-error` : undefined}
         />
         <label htmlFor={`${uid}-consent`}>
-          I agree that CGP may use the details I have provided to respond to this
+          I agree that CGHPI may use the details I have provided to respond to this
           enquiry, as described in the{' '}
           <SmartLink to="/privacy">Privacy Policy</SmartLink>.
           <span className="req" aria-hidden="true"> *</span>
@@ -531,7 +531,7 @@ export default function PartnerWithUs() {
       <PageHeader
         trail={META.breadcrumb}
         h1="Partner With Us"
-        dek="Reach out to discuss partnerships, technical collaboration, research enquiries, or to learn more about CGP's work."
+        dek="Reach out to discuss partnerships, technical collaboration, research enquiries, or to learn more about CGHPI's work."
       />
 
       <section>
@@ -586,7 +586,7 @@ export default function PartnerWithUs() {
                 </li>
               </ul>
 
-              <div className="map-embed" role="region" aria-label="Map of the CGP office location">
+              <div className="map-embed" role="region" aria-label="Map of the CGHPI office location">
                 <iframe
                   src={CONTACT.mapEmbedUrl}
                   title={`Map showing the ${BRAND.abbr} office in ${CONTACT.address.formatted}`}
@@ -625,7 +625,7 @@ export default function PartnerWithUs() {
 
       <section className="section-surface" aria-labelledby="other-ways">
         <div className="wrap">
-          <h2 id="other-ways">Other ways to engage with CGP</h2>
+          <h2 id="other-ways">Other ways to engage with CGHPI</h2>
           <div className="grid-3">
             <article className="icon-card">
               <div className="card-icon" aria-hidden="true">
@@ -642,7 +642,7 @@ export default function PartnerWithUs() {
                 <i className="bi bi-briefcase-fill" />
               </div>
               <h3>Join the team</h3>
-              <p>Open roles and the technical areas CGP recruits across.</p>
+              <p>Open roles and the technical areas CGHPI recruits across.</p>
               <SmartLink className="text-link card-link" to="/careers">
                 View careers <i className="bi bi-arrow-right" aria-hidden="true" />
               </SmartLink>

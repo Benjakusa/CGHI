@@ -62,7 +62,7 @@ export default function Partners() {
         trail={META.breadcrumb}
         eyebrow="Who We Are"
         h1="Our Partners & Collaborators"
-        dek="CGP works with ministries, public health institutes, multilateral institutions, financing mechanisms, universities, implementing partners and communities to strengthen health security."
+        dek="CGHPI works with ministries, public health institutes, multilateral institutions, financing mechanisms, universities, implementing partners and communities to strengthen health security."
       />
 
       <section aria-labelledby="network-heading">
@@ -134,7 +134,7 @@ export default function Partners() {
             align="center"
             eyebrow="How we work together"
             title="Types of collaborator"
-            lede="CGP’s partnerships span government, multilateral, financing, academic, implementing and community channels."
+            lede="CGHPI’s partnerships span government, multilateral, financing, academic, implementing and community channels."
           />
           <div className="grid-auto collab-grid">
             {COLLABORATOR_TYPES.map((type) => (

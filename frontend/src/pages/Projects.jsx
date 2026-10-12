@@ -1,7 +1,7 @@
 /**
  * Projects & Impact.
  *
- * Outcome-led listing. Each card states the challenge context, what CGP
+ * Outcome-led listing. Each card states the challenge context, what CGHPI
  * contributed and what changed, rather than listing activities — the audit's
  * "cards should communicate outcomes, not just activities" finding.
  *
@@ -43,7 +43,7 @@ export default function Projects() {
       ...BASE_JSONLD,
       pageJsonLd({ name: META.title, path: '/projects', description: META.description }),
       breadcrumbJsonLd(META.breadcrumb),
-      itemListJsonLd('CGP projects', PROJECTS.map((p) => ({ name: p.title, to: `/projects/${p.slug}` }))),
+      itemListJsonLd('CGHPI projects', PROJECTS.map((p) => ({ name: p.title, to: `/projects/${p.slug}` }))),
     ],
     []
   );
@@ -66,7 +66,7 @@ export default function Projects() {
             align="center"
             eyebrow="Project Record"
             title="Flagship projects"
-            lede="Each entry summarises the problem, CGP’s contribution and the result."
+            lede="Each entry summarises the problem, CGHPI’s contribution and the result."
           />
 
           <div className="filter-bar filter-bar--center">
@@ -113,10 +113,10 @@ export default function Projects() {
       </section>
 
       <CtaStrip
-        title="See CGP in action"
+        title="See CGHPI in action"
         body="Explore the subnational initiatives that put these projects into practice."
         actions={[
-          { label: 'CGP Initiatives', to: '/initiatives', variant: 'white' },
+          { label: 'CGHPI Initiatives', to: '/initiatives', variant: 'white' },
           { label: 'Partner With Us', to: '/partner-with-us#contact-form', variant: 'white' },
         ]}
       />

@@ -21,7 +21,7 @@ export const PRIMARY_NAV = [
     label: 'Who We Are',
     id: 'about',
     children: [
-      { label: 'About CGP', to: '/about', id: 'about' },
+      { label: 'About CGHPI', to: '/about', id: 'about' },
       { label: 'Leadership & Team', to: '/leadership', id: 'leadership' },
       { label: 'Partners & Collaborators', to: '/partners', id: 'partners' },
     ],
@@ -32,7 +32,7 @@ export const PRIMARY_NAV = [
     children: [
       { label: 'Overview', to: '/what-we-do', id: 'what-we-do' },
       { label: 'Projects & Impact', to: '/projects', id: 'projects' },
-      { label: 'CGP Initiatives', to: '/initiatives', id: 'initiatives' },
+      { label: 'CGHPI Initiatives', to: '/initiatives', id: 'initiatives' },
     ],
   },
   {
@@ -78,11 +78,11 @@ export const FOOTER_NAV = [
   {
     title: 'Who We Are',
     links: [
-      { label: 'About CGP', to: '/about' },
+      { label: 'About CGHPI', to: '/about' },
       { label: 'Leadership & Team', to: '/leadership' },
       { label: 'What We Do', to: '/what-we-do' },
       { label: 'Projects & Impact', to: '/projects' },
-      { label: 'CGP Initiatives', to: '/initiatives' },
+      { label: 'CGHPI Initiatives', to: '/initiatives' },
     ],
   },
   {
@@ -106,10 +106,10 @@ export const FOOTER_LEGAL = [
  */
 export const ROUTES = [
   { path: '/', priority: '1.0', changefreq: 'weekly', label: 'Home' },
-  { path: '/about', priority: '0.9', changefreq: 'monthly', label: 'About CGP' },
+  { path: '/about', priority: '0.9', changefreq: 'monthly', label: 'About CGHPI' },
   { path: '/what-we-do', priority: '0.9', changefreq: 'monthly', label: 'What We Do' },
   { path: '/projects', priority: '0.9', changefreq: 'monthly', label: 'Projects & Impact' },
-  { path: '/initiatives', priority: '0.8', changefreq: 'monthly', label: 'CGP Initiatives' },
+  { path: '/initiatives', priority: '0.8', changefreq: 'monthly', label: 'CGHPI Initiatives' },
   { path: '/insights', priority: '0.8', changefreq: 'weekly', label: 'Media Insights and Research' },
   { path: '/partners', priority: '0.7', changefreq: 'monthly', label: 'Partners & Collaborators' },
   { path: '/leadership', priority: '0.6', changefreq: 'monthly', label: 'Leadership & Team' },
@@ -130,16 +130,16 @@ export const PAGE_META = {
     breadcrumb: [],
   },
   '/about': {
-    title: `About CGP | ${BRAND.name}`,
+    title: `About CGHPI | ${BRAND.name}`,
     description:
-      'Who CGP is: a multidisciplinary policy, research and implementation hub strengthening global and regional health security from Westlands, Nairobi.',
+      'Who CGHPI is: a multidisciplinary policy, research and implementation hub strengthening global and regional health security from Westlands, Nairobi.',
     navId: 'about',
     breadcrumb: [{ label: 'Who We Are', to: '/about' }],
   },
   '/leadership': {
     title: `Leadership & Team | ${BRAND.name}`,
     description:
-      'Meet the leadership and technical leadership of the Center for Global Health & Pandemic Intelligence (CGP).',
+      'Meet the leadership and technical leadership of the Center for Global Health & Pandemic Intelligence (CGHPI).',
     navId: 'leadership',
     breadcrumb: [
       { label: 'Who We Are', to: '/about' },
@@ -149,23 +149,23 @@ export const PAGE_META = {
   '/what-we-do': {
     title: `What We Do | ${BRAND.name}`,
     description:
-      'CGP works across five interconnected areas: epidemic and pandemic intelligence, public health emergency preparedness and response, One Health, community engagement, and data science and digital health.',
+      'CGHPI works across five interconnected areas: epidemic and pandemic intelligence, public health emergency preparedness and response, One Health, community engagement, and data science and digital health.',
     navId: 'what-we-do',
     breadcrumb: [{ label: 'What We Do', to: '/what-we-do' }],
   },
   '/projects': {
     title: `Projects & Impact | ${BRAND.name}`,
     description:
-      'CGP’s project record: Pandemic Fund financing, 7-1-7 readiness, emergency guidelines, IHR core capacities, precision public health and event-based surveillance.',
+      'CGHPI’s project record: Pandemic Fund financing, 7-1-7 readiness, emergency guidelines, IHR core capacities, precision public health and event-based surveillance.',
     navId: 'projects',
     breadcrumb: [{ label: 'Projects & Impact', to: '/projects' }],
   },
   '/initiatives': {
-    title: `CGP Initiatives | ${BRAND.name}`,
+    title: `CGHPI Initiatives | ${BRAND.name}`,
     description:
-      'Six active CGP programmes: the EWIN early warning flagship, 7-1-7 performance improvement, AI epidemic forecasting, community risk communication, climate-sensitive surveillance and One Health urban.',
+      'Six active CGHPI programmes: the EWIN early warning flagship, 7-1-7 performance improvement, AI epidemic forecasting, community risk communication, climate-sensitive surveillance and One Health urban.',
     navId: 'initiatives',
-    breadcrumb: [{ label: 'CGP Initiatives', to: '/initiatives' }],
+    breadcrumb: [{ label: 'CGHPI Initiatives', to: '/initiatives' }],
   },
   '/insights': {
     title: `Media Insights and Research | ${BRAND.name}`,
@@ -177,7 +177,7 @@ export const PAGE_META = {
   '/partners': {
     title: `Partners & Collaborators | ${BRAND.name}`,
     description:
-      'The ministries, public health institutes, multilateral institutions, global financing mechanisms and implementing partners CGP works with.',
+      'The ministries, public health institutes, multilateral institutions, global financing mechanisms and implementing partners CGHPI works with.',
     navId: 'partners',
     breadcrumb: [
       { label: 'Who We Are', to: '/about' },
@@ -187,14 +187,14 @@ export const PAGE_META = {
   '/resources': {
     title: `Resource Library | ${BRAND.name}`,
     description:
-      'Reports, tools, guidelines and publications from CGP’s research and implementation work.',
+      'Reports, tools, guidelines and publications from CGHPI’s research and implementation work.',
     navId: 'resources',
     breadcrumb: [{ label: 'Resource Library', to: '/resources' }],
   },
   '/careers': {
     title: `Careers | ${BRAND.name}`,
     description:
-      'Open roles at the Center for Global Health & Pandemic Intelligence, and the technical areas CGP recruits across.',
+      'Open roles at the Center for Global Health & Pandemic Intelligence, and the technical areas CGHPI recruits across.',
     navId: 'careers',
     breadcrumb: [
       { label: 'Who We Are', to: '/about' },
@@ -222,7 +222,7 @@ export const PAGE_META = {
   },
   '/accessibility': {
     title: `Accessibility Statement | ${BRAND.name}`,
-    description: `CGP’s commitment to an accessible, inclusive website, and how to report a barrier.`,
+    description: `CGHPI’s commitment to an accessible, inclusive website, and how to report a barrier.`,
     navId: 'accessibility',
     breadcrumb: [{ label: 'Accessibility Statement', to: '/accessibility' }],
   },

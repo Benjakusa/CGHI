@@ -65,7 +65,7 @@ function setCanonical(pathname) {
 }
 
 function setManagedJsonLd(nodes) {
-  let el = document.head.querySelector('script[data-cgp-jsonld]');
+  let el = document.head.querySelector('script[data-cghpi-jsonld]');
   if (!nodes || nodes.length === 0) {
     if (el) el.remove();
     return;
@@ -73,7 +73,7 @@ function setManagedJsonLd(nodes) {
   if (!el) {
     el = document.createElement('script');
     el.type = 'application/ld+json';
-    el.setAttribute('data-cgp-jsonld', '');
+    el.setAttribute('data-cghpi-jsonld', '');
     document.head.appendChild(el);
   }
   el.textContent = JSON.stringify(

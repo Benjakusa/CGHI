@@ -1,5 +1,5 @@
 /**
- * CGP Initiatives.
+ * CGHPI Initiatives.
  *
  * Renders the six programmes from `src/content/initiatives.js` as a list of
  * `<details>` disclosures — native, keyboard-accessible, and openable via a
@@ -92,7 +92,7 @@ export default function Initiatives() {
       ...BASE_JSONLD,
       pageJsonLd({ name: META.title, path: '/initiatives', description: META.description }),
       breadcrumbJsonLd(META.breadcrumb),
-      itemListJsonLd('CGP initiatives', INITIATIVES.map((i) => ({ name: i.title, to: `/initiatives#${i.id}` }))),
+      itemListJsonLd('CGHPI initiatives', INITIATIVES.map((i) => ({ name: i.title, to: `/initiatives#${i.id}` }))),
     ],
     []
   );
@@ -103,8 +103,8 @@ export default function Initiatives() {
 
       <PageHeader
         trail={META.breadcrumb}
-        h1="CGP Initiatives"
-        dek="Six subnational and community-level programmes through which CGP puts its epidemic-intelligence approach into practice."
+        h1="CGHPI Initiatives"
+        dek="Six subnational and community-level programmes through which CGHPI puts its epidemic-intelligence approach into practice."
       />
 
       {/* ---------------- Full detail ---------------- */}
@@ -164,7 +164,7 @@ export default function Initiatives() {
       </section>
 
       <CtaStrip
-        title="Learn more about CGP's projects"
+        title="Learn more about CGHPI's projects"
         body="See the full project record behind these initiatives."
         actions={[
           { label: 'Explore Our Projects', to: '/projects', variant: 'white' },

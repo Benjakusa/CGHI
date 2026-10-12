@@ -1,5 +1,5 @@
 /**
- * Count-up animation for the "CGP at a Glance" figures.
+ * Count-up animation for the "CGHPI at a Glance" figures.
  *
  * Replaces the IntersectionObserver in the legacy `public/site.js`, which used
  * a `data-count` attribute that no longer matched anything React rendered. The

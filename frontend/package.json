@@ -8,7 +8,9 @@
     "prebuild": "node scripts/generate-sitemap.mjs && npm run check:icons",
     "build": "vite build",
     "check:icons": "node scripts/check-icons.mjs",
+    "icons": "bash scripts/generate-icons.sh",
     "lint": "oxlint",
+    "package:cpanel": "npm run build && node scripts/package-cpanel.mjs",
     "preview": "vite preview",
     "sitemap": "node scripts/generate-sitemap.mjs"
   },

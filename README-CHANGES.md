@@ -1,7 +1,7 @@
-# CGP restyle v2 — Red Cross Kenya structure, CGP colours
+# CGHPI restyle v2 — Red Cross Kenya structure, CGHPI colours
 
 ## How to apply
-Paths are relative to the repo root (CGHI/). Extract cgp-restyle-v2.zip over the repo, then:
+Paths are relative to the repo root (CGHI/). Extract the restyle archive over the repo, then:
 - DELETE  frontend/src/site.css   (merged into the new stylesheet)
 - ADD     frontend/src/styles/site.css
 - ADD     frontend/src/hooks/useScrollAnimations.js
@@ -13,11 +13,11 @@ Paths are relative to the repo root (CGHI/). Extract cgp-restyle-v2.zip over the
 - Run: cd frontend && npm install && npm run dev
 Keep frontend/src/style.css and index.css: the admin screens and Careers page still use them.
 
-## Sitemap (redcross.or.ke pattern -> CGP). All URLs unchanged, so no redirects are needed.
+## Sitemap (redcross.or.ke pattern -> CGHPI). All URLs unchanged, so no redirects are needed.
 Utility bar:   email, location, social icons (Red Cross: email, phone, social, Donate)
 Home
-Who We Are:    About CGP | Leadership & Team | Partners & Collaborators
-What We Do:    Overview | Projects & Impact | CGP Initiatives
+Who We Are:    About CGHPI | Leadership & Team | Partners & Collaborators
+What We Do:    Overview | Projects & Impact | CGHPI Initiatives
 Get Involved:  Partner With Us | Careers            (new group; Careers moved here)
 Media Center:  Media Insights and Research | Resource Library   (Media & Press removed)
 Contact Us
@@ -25,7 +25,7 @@ Header button: Partner With Us (Red Cross: Donate)
 
 ## Home page order
 Red Cross: Hero > Principles > What We Do > Join (member/volunteer) > Stats + About > Projects > Partners > Impact stories > Report concern
-CGP now:   Hero > Welcome > What We Do > Get Involved > CGP at a Glance (stats) > Projects > Initiatives > Partners > Insights > CTA
+CGHPI now:   Hero > Welcome > What We Do > Get Involved > CGHPI at a Glance (stats) > Projects > Initiatives > Partners > Insights > CTA
 
 ## Content map
 No pages, routes or copy were removed. Moves: Careers (Who We Are -> Get Involved);

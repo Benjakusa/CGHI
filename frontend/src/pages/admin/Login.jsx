@@ -40,7 +40,7 @@ export default function Login() {
             <main style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', backgroundColor: 'var(--surface)' }}>
                 <div style={{ background: '#ffffff', padding: '40px', borderRadius: '12px', boxShadow: 'var(--shadow)', width: '100%', maxWidth: '420px' }}>
                     <h1 style={{ fontSize: 'var(--fs-h1)', marginBottom: '8px', textAlign: 'center' }}>Staff Login</h1>
-                    <p style={{ textAlign: 'center', color: 'var(--ink-muted)', marginBottom: '32px' }}>Access the CGP Content Management System</p>
+                    <p style={{ textAlign: 'center', color: 'var(--ink-muted)', marginBottom: '32px' }}>Access the CGHPI Content Management System</p>
 
                     {error && (
                         <div style={{ background: 'rgba(0, 0, 0, 0.06)', color: '#000000', padding: '12px', borderRadius: '6px', marginBottom: '24px', fontSize: 'var(--fs-small)' }}>

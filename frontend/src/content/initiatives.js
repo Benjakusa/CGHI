@@ -1,5 +1,5 @@
 /**
- * CGP initiatives — six active programmes, transcribed verbatim from
+ * CGHPI initiatives — six active programmes, transcribed verbatim from
  * `src/pages/Initiatives.jsx` and `src/pages/Home.jsx` (both of which carried
  * near-identical hard-coded copies of this content).
  *
@@ -21,9 +21,9 @@ export const INITIATIVES = [
     status: 'Flagship',
     location: 'Subnational, Kenya',
     summary:
-      "CGP's flagship model for subnational epidemic intelligence, integrating AI-powered forecasting, 7-1-7 response monitoring and community-based early warning in the One Health approach.",
+      "CGHPI's flagship model for subnational epidemic intelligence, integrating AI-powered forecasting, 7-1-7 response monitoring and community-based early warning in the One Health approach.",
     background: [
-      "The EWIN initiative is CGP's flagship model for subnational epidemic intelligence — integrating AI-powered forecasting, 7-1-7 response monitoring, and community-based early warning. Anchored in the One Health approach, EWIN pilots will demonstrate how predictive analytics, trust-building communication, and digital surveillance tools can accelerate detection and save lives in vulnerable counties.",
+      "The EWIN initiative is CGHPI's flagship model for subnational epidemic intelligence — integrating AI-powered forecasting, 7-1-7 response monitoring, and community-based early warning. Anchored in the One Health approach, EWIN pilots will demonstrate how predictive analytics, trust-building communication, and digital surveillance tools can accelerate detection and save lives in vulnerable counties.",
     ],
     objectives: null,
     activities: null,
@@ -42,7 +42,7 @@ export const INITIATIVES = [
     summary:
       'Pilot implementation of the WHO-endorsed 7-1-7 model in five counties in Kenya using digital tools and quality improvement (QI) methods to track and enhance outbreak response timelines.',
     background: [
-      "The WHO-endorsed 7-1-7 framework aims to strengthen outbreak detection and response by ensuring signals are detected within 7 days, notified within 1 day, and responded to within 7 days. Many countries struggle to meet these timelines due to systemic gaps in data flow, workforce capacity, and coordination. We propose a pilot implementation of the 7-1-7 model in five counties in Kenya, using CGP's digital tools and quality improvement (QI) methods to track and enhance performance.",
+      "The WHO-endorsed 7-1-7 framework aims to strengthen outbreak detection and response by ensuring signals are detected within 7 days, notified within 1 day, and responded to within 7 days. Many countries struggle to meet these timelines due to systemic gaps in data flow, workforce capacity, and coordination. We propose a pilot implementation of the 7-1-7 model in five counties in Kenya, using CGHPI's digital tools and quality improvement (QI) methods to track and enhance performance.",
     ],
     objectives: null,
     activities: [
@@ -72,7 +72,7 @@ export const INITIATIVES = [
     summary:
       'Pilot an AI-powered epidemic forecasting platform using IDSR, CBS and climatic signals to anticipate outbreaks and generate risk alerts targeting 7–14 day improved lead time.',
     background: [
-      'Sub-Saharan Africa faces increasing risks of emerging and re-emerging infectious diseases. Traditional surveillance systems, while improving, are still largely reactive and struggle to integrate multisectoral, community-level, and environmental data. The rise of AI and machine learning (ML) offers an opportunity to transform disease forecasting and response planning at the subnational level. CGP seeks to pilot an AI-powered epidemic forecasting platform that leverages IDSR, CBS, and climatic or environmental signals to anticipate outbreaks, generate risk alerts, and support decision-making by frontline health teams in Kenya.',
+      'Sub-Saharan Africa faces increasing risks of emerging and re-emerging infectious diseases. Traditional surveillance systems, while improving, are still largely reactive and struggle to integrate multisectoral, community-level, and environmental data. The rise of AI and machine learning (ML) offers an opportunity to transform disease forecasting and response planning at the subnational level. CGHPI seeks to pilot an AI-powered epidemic forecasting platform that leverages IDSR, CBS, and climatic or environmental signals to anticipate outbreaks, generate risk alerts, and support decision-making by frontline health teams in Kenya.',
     ],
     objectives: [
       'Build and pilot a machine learning-based early warning model using multi-source surveillance data.',
@@ -136,7 +136,7 @@ export const INITIATIVES = [
     summary:
       'Integrating meteorological, environmental and health data to build GIS-based early warning and response systems for climate-sensitive outbreaks including cholera and Rift Valley fever.',
     background: [
-      'Climate variability and extreme weather events are increasingly influencing the emergence and transmission of infectious diseases in East Africa. Floods, droughts, and changing vector habitats are contributing to recurrent outbreaks of cholera, Rift Valley fever, and other climate-sensitive diseases. CGP proposes a pilot to integrate meteorological, environmental, and health data to build early warning and response systems for climate-sensitive outbreaks.',
+      'Climate variability and extreme weather events are increasingly influencing the emergence and transmission of infectious diseases in East Africa. Floods, droughts, and changing vector habitats are contributing to recurrent outbreaks of cholera, Rift Valley fever, and other climate-sensitive diseases. CGHPI proposes a pilot to integrate meteorological, environmental, and health data to build early warning and response systems for climate-sensitive outbreaks.',
     ],
     objectives: [
       'Identify and prioritize climate-sensitive diseases and risk indicators.',
@@ -169,7 +169,7 @@ export const INITIATIVES = [
     summary:
       'A One Health surveillance model for urban informal settlements, integrating community reporting, animal health indicators and environmental risk factors for improved early detection.',
     background: [
-      'Urban informal settlements in sub-Saharan Africa are home to millions living in conditions that exacerbate disease transmission: high population density, poor sanitation, and close proximity between humans, animals, and waste. CGP proposes a One Health surveillance model specifically tailored to urban informal settlements, integrating community-level reporting, animal health indicators, and environmental risk factors.',
+      'Urban informal settlements in sub-Saharan Africa are home to millions living in conditions that exacerbate disease transmission: high population density, poor sanitation, and close proximity between humans, animals, and waste. CGHPI proposes a One Health surveillance model specifically tailored to urban informal settlements, integrating community-level reporting, animal health indicators, and environmental risk factors.',
     ],
     objectives: [
       'Establish sentinel One Health surveillance sites in two high-risk informal settlements.',

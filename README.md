@@ -1,11 +1,11 @@
-# CGP — Center for Global Health & Pandemic Intelligence
+# CGHPI — Center for Global Health & Pandemic Intelligence
 
-**CGP** is the institution's web platform: a public website presenting CGP's mandate,
+**CGHPI** is the institution's web platform: a public website presenting CGHPI's mandate,
 capabilities, projects, initiatives, insights and partners, plus an admin dashboard for
 managing heroes, news, partners, jobs, resources and **contact enquiries**.
 
 > The repository and directory retain the legacy `CGHI` name; the institution's public
-> identity is **CGP** throughout the application (see `frontend/src/config/site.js`).
+> identity is **CGHPI** throughout the application (see `frontend/src/config/site.js`).
 
 ## Tech Stack
 
@@ -14,7 +14,7 @@ managing heroes, news, partners, jobs, resources and **contact enquiries**.
 | Frontend| React 19 + Vite + React Router v7                       |
 | Backend | Node.js + Express + better-sqlite3                      |
 | Auth    | JWT (bcryptjs + jsonwebtoken), 8h expiry                |
-| Deploy  | Frontend → Vercel, Backend → Render or any Node host    |
+| Deploy  | Frontend → cPanel (`cghpi.org`), Backend → Render       |
 | DB      | SQLite (`backend/data/cghi.db` — legacy filename kept)  |
 
 ## Project Structure
@@ -34,7 +34,8 @@ CGHI/
 │   │   └── styles/site.css # Public-site design system
 │   ├── public/             # Icons, OG image, robots.txt, sitemap.xml, manifest
 │   ├── scripts/            # generate-sitemap.mjs (runs before every build)
-│   └── vercel.json         # Vercel deployment config
+│   ├── public/.htaccess    # Apache SPA routing and cache headers
+│   └── scripts/package-cpanel.mjs # Creates a cPanel-ready ZIP
 ├── backend/                # Express REST API
 │   ├── routes/             # auth, heroes, news, partners, jobs, resources, contact
 │   ├── middleware/         # auth middleware
@@ -54,7 +55,7 @@ CGHI/
 The information architecture: **Home → Who We Are → What We Do → Projects →
 Initiatives → Media Insights and Research → Partners → Partner With Us**.
 
-- **Home** — Hero, five capability cards, "CGP at a Glance", featured projects, initiatives, latest insights, selected partners
+- **Home** — Hero, five capability cards, "CGHPI at a Glance", featured projects, initiatives, latest insights, selected partners
 - **About** — Who we are, mission, vision, approach, expertise, leadership status, partners
 - **Leadership** — Leadership/team page (renders an explicit content-pending state until verified profiles are supplied)
 - **What We Do** — The five capability areas in full
@@ -143,13 +144,13 @@ IP_HASH_SALT=<any long random string>
 
 **`frontend/.env`** (documented in `frontend/.env.example`)
 ```env
-VITE_API_BASE_URL=https://your-backend-domain.com
-VITE_SITE_URL=https://pandemicintelcenter.org
+VITE_API_BASE_URL=https://your-render-service.onrender.com
+VITE_SITE_URL=https://cghpi.org
 ```
 
 `VITE_SITE_URL` is the canonical origin used for `<link rel="canonical">`,
 Open Graph/Twitter URLs, `sitemap.xml` and `robots.txt`. It must be the official
-domain — never a `vercel.app` host. See `docs/DEPLOYMENT.md`.
+domain (`https://cghpi.org`). See `docs/DEPLOYMENT.md`.
 
 Generate a secure JWT secret:
 ```bash
@@ -193,13 +194,13 @@ Login with the seeded email and password to get a JWT token sent as a Bearer tok
 See `docs/DEPLOYMENT.md` for the full go-live checklist (domain, DNS, environment
 variables). At minimum:
 
-### Frontend (Vercel)
-`frontend/vercel.json` configures Vercel to use Vite, output from `dist/`, and rewrite all routes to `index.html` for React Router. Set `VITE_API_BASE_URL` and `VITE_SITE_URL` (the official domain) in the Vercel environment. `npm run build` also regenerates `sitemap.xml` and the Sitemap line in `robots.txt` from `VITE_SITE_URL`.
+### Frontend (cPanel)
+The frontend is a static Vite site hosted on cPanel at `https://cghpi.org`. Set `VITE_API_BASE_URL` to the Render API URL and `VITE_SITE_URL=https://cghpi.org` in `frontend/.env`, then run `npm run package:cpanel` from `frontend/`. Upload `cghpi.org-site.zip` through cPanel File Manager and extract its contents into the domain's `public_html` directory. The archive includes `.htaccess` for React Router deep links, HTTPS, and cache headers. Full instructions are in `docs/DEPLOYMENT.md`.
 
 ### Backend
-Standalone Express server. Deploy to any Node.js host (Render, Railway, VPS, etc.). Ensure:
+Standalone Express server. The backend remains deployed on Render. Ensure:
 - `JWT_SECRET` is set and secure
-- `FRONTEND_URL` matches your production frontend URL (for CORS); `*.vercel.app` preview origins are allowed automatically
+- `FRONTEND_URL=https://cghpi.org` (for CORS)
 - SQLite DB directory is writable **and persistent** (on Render, mount a disk — otherwise content managed through `/admin` is lost on deploy)
 - Uploads directory persists across restarts
 - Deploy the backend **before** releasing the frontend that submits the contact form, so `POST /api/contact` exists

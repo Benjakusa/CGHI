@@ -1,82 +1,76 @@
 # Deployment & Domain Configuration
 
-This document covers what must be configured **outside the repository** before the
-public site goes live on the official CGP domain. Nothing in this file invents a
-domain or a credential: every value marked _confirm_ must be supplied by CGP.
+The public frontend is a static site hosted on cPanel at `https://cghpi.org`.
+The Express backend remains hosted on Render. The frontend build reads its
+public domain and API origin from `frontend/.env`.
 
-## 1. Canonical site URL (frontend)
+## 1. Build the frontend for cPanel
 
-Everything SEO-related derives from one value:
+1. In `frontend/`, copy `.env.example` to `.env` and set:
 
-| Where | Variable | Used for |
-|-------|----------|----------|
-| Vercel env | `VITE_SITE_URL` | `<link rel="canonical">`, Open Graph / Twitter URLs, `sitemap.xml`, the Sitemap line in `robots.txt` |
+   ```env
+   VITE_SITE_URL=https://cghpi.org
+   VITE_API_BASE_URL=https://<your-render-service>.onrender.com
+   ```
 
-- The code default is `https://pandemicintelcenter.org` — the institution's
-  existing official domain, as published in the project's own content
-  (`info@pandemicintelcenter.org`, the seeded media URLs). Change the default in
-  `frontend/src/config/site.js` only if the confirmed production domain differs.
-- **Never set `VITE_SITE_URL` to a `*.vercel.app` host.** Preview and production
-  deployments should both point canonical URLs at the official domain, or search
-  engines will index the preview host instead.
-- `npm run build` runs `scripts/generate-sitemap.mjs` first, which rewrites the
-  canonical/OG tags in `dist/index.html`, regenerates `public/sitemap.xml` and
-  rewrites the Sitemap line in `public/robots.txt` from `VITE_SITE_URL`.
+   Use the actual Render service URL and omit its trailing slash. These values
+   are included in the public frontend build; never put secrets in this file.
+2. Run `npm install` if dependencies are not installed, then run
+   `npm run package:cpanel`. The command builds the site and produces
+   `frontend/cghpi.org-site.zip`. It checks that the SPA rewrite and sitemap are
+   present and reports the API URL used by the build.
 
-## 2. Vercel (frontend hosting)
+## 2. Upload the site in cPanel
 
-1. Project root: `frontend/`. `frontend/vercel.json` already configures the Vite
-   framework, `dist` output and the SPA rewrite.
-2. Environment variables (Production **and** Preview):
-   - `VITE_SITE_URL` — the official HTTPS origin, no trailing slash. _confirm_
-   - `VITE_API_BASE_URL` — the deployed API origin, no trailing slash (e.g. the
-     Render service URL). _confirm_
-   > **Warning:** `VITE_API_BASE_URL` is inlined at build time. `.env` files are
-   > gitignored, so a Vercel build without this variable falls back to
-   > `http://localhost:4000` and every API call (content, login, contact form)
-   > breaks. The prebuild script now **fails the build on Vercel** when the
-   > variable is missing or points at localhost, and warns on local builds.
-3. Add the custom domain in **Project → Settings → Domains** and create the DNS
-   records Vercel shows (typically `A`/`ALIAS` for the apex and `CNAME` for
-   `www`). Keep Vercel's automatic HTTPS.
-4. Decide the apex vs `www` form once, set it in `VITE_SITE_URL`, and redirect
-   the other with a Vercel domain redirect so canonical URLs and the sitemap
-   cannot disagree.
+1. In cPanel, confirm `cghpi.org` is configured as the primary or an addon
+   domain. Note its document root, commonly `public_html`. Point the domain's
+   DNS to the cPanel hosting provider using the records supplied by that host.
+2. Enable AutoSSL for `cghpi.org` (and `www.cghpi.org` if it is configured).
+3. Open **File Manager**, navigate to the domain's document root, and back up or
+   remove any old site files.
+4. Upload `cghpi.org-site.zip` and use **Extract** in the document root. The
+   files `index.html`, `.htaccess`, `assets/`, `favicon.ico`, and the other
+   build outputs should be directly inside the document root, not inside an
+   extra `dist` folder.
+5. Once AutoSSL is active, enable cPanel's **Force HTTPS Redirect** or leave
+   the supplied `.htaccess` HTTPS redirect active. The `.htaccess` also sends
+   `www.cghpi.org` to the canonical apex host `https://cghpi.org` and routes
+   application paths such as `/about` to React Router. Do not add a second
+   redirect that sends the apex domain back to `www`.
+6. Visit the homepage and a nested page directly, then refresh the nested page.
+   Confirm both load over HTTPS.
 
-## 3. Backend API
+The included `.htaccess` requires Apache's `mod_rewrite`. If your cPanel host
+does not support it, ask the host to enable it; direct visits and refreshes of
+nested React routes will otherwise return 404.
+
+## 3. Keep the backend on Render
+
+Deploy the `backend/` service on Render using the existing `backend/.render.yaml`
+configuration. Set these service environment variables in the Render dashboard:
 
 | Variable | Purpose |
 |----------|---------|
-| `JWT_SECRET` | Signs admin tokens. **Required.** Generate with `openssl rand -hex 32`. |
-| `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` | First-boot admin only. The server now refuses to seed without `SEED_ADMIN_PASSWORD`, so the old published default can no longer appear on a fresh database. |
-| `FRONTEND_URL` | Comma-separated browser origins allowed by CORS. Include the official domain (and any operational preview origins). |
-| `IP_HASH_SALT` | Salt for contact-enquiry IP hashes. Optional; falls back to `JWT_SECRET`. |
-| `DB_PATH` | SQLite location. On Render, mount a persistent disk at `backend/data`, otherwise content managed through `/admin` is lost on each deploy. |
+| `JWT_SECRET` | Required signing secret. Generate with `openssl rand -hex 32`. |
+| `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` | First-boot admin credentials. Set a strong unique password. |
+| `FRONTEND_URL` | Set to `https://cghpi.org` for browser CORS access. |
+| `IP_HASH_SALT` | Optional salt for contact-enquiry IP hashes; defaults to `JWT_SECRET`. |
+| `DB_PATH` | SQLite path. Use a persistent Render disk mounted at `backend/data`, or admin-managed content and uploads are lost when the instance is replaced. |
 
-Deploy the backend **before** releasing the frontend that submits the contact
-form: `POST /api/contact` must exist or the form will report a send failure.
+Deploy the backend before releasing the frontend that submits contact forms.
+The frontend's `VITE_API_BASE_URL` must match the live Render service URL. Since
+Vite inserts it at build time, rebuild and re-upload the frontend if the API URL
+changes. The repository's default is `https://cghi.onrender.com`; confirm that
+this is the correct active Render service before packaging.
 
-## 4. Contact form
+## 4. Post-deploy checks
 
-- `POST /api/contact` validates every field server-side and stores enquiries in
-  the `contact_messages` table (created automatically on boot).
-- Spam controls: honeypot field, minimum fill time, per-IP rate limit (5 per
-  10 minutes), field length limits. Bot submissions receive an HTTP 202 that
-  looks like success and are not stored.
-- Admin access: `GET /api/contact` (with Bearer token) lists enquiries;
-  `PUT /api/contact/:id` updates status/notes; `DELETE /api/contact/:id` removes.
-
-## 5. Post-deploy checklist
-
-1. `VITE_SITE_URL` and `VITE_API_BASE_URL` are set in Vercel for Production.
-2. `https://<official-domain>/robots.txt` and `/sitemap.xml` show the official
-   origin (not a vercel.app host).
-3. View-source on the homepage: `canonical`, `og:url`, `og:image` all use the
-   official origin.
-4. Browser devtools → Network: page requests go to the `VITE_API_BASE_URL`
-   origin (no calls to `localhost` or `127.0.0.1` from a real visitor's
-   session).
-5. Submit a test enquiry through `/partner-with-us` and confirm it arrives in the admin
-   list.
-6. Rotate the admin password away from the legacy seed password (the API logs a
-   warning at boot while it is still in use).
+1. Open `https://cghpi.org/robots.txt` and `/sitemap.xml`; URLs should use the
+   `https://cghpi.org` origin.
+2. View the homepage source and confirm canonical, Open Graph, and Twitter image
+   URLs use `https://cghpi.org`.
+3. In browser developer tools, confirm API requests go to the Render service,
+   not localhost.
+4. Open and refresh a nested route such as `/about` and a detail route.
+5. Submit a test enquiry and confirm it appears in the admin inbox.
+6. Change the seeded admin password after first login.

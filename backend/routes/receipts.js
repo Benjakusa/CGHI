@@ -17,11 +17,11 @@ router.post('/generate', (req, res) => {
         return res.status(404).json({ error: 'Job not found or not published' });
     }
 
-    const doc = new PDFDocument({ margin: 50, size: 'A4', compress: true, info: { Title: 'Application Receipt - CGP' } });
+    const doc = new PDFDocument({ margin: 50, size: 'A4', compress: true, info: { Title: 'Application Receipt - CGHPI' } });
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    const filename = 'CGP_Application_Receipt_' + jobIdNum + '_' + Date.now() + '.pdf';
+    const filename = 'CGHPI_Application_Receipt_' + jobIdNum + '_' + Date.now() + '.pdf';
     const safeFilename = filename.replace(/[^A-Za-z0-9._-]/g, '_');
     res.setHeader('Content-Disposition', 'attachment; filename="' + safeFilename + '"; filename*=UTF-8\'\'' + encodeURIComponent(safeFilename));
     res.setHeader('Accept-Ranges', 'none');
@@ -57,7 +57,7 @@ router.post('/generate', (req, res) => {
     }
 
     doc.rect(0, 0, pageWidth, 68).fill(brandBlue);
-    doc.fillColor(white).fontSize(22).font('Helvetica-Bold').text('CGP', 50, 20, { width: pageWidth - 100 });
+    doc.fillColor(white).fontSize(22).font('Helvetica-Bold').text('CGHPI', 50, 20, { width: pageWidth - 100 });
     doc.fillColor(white).fontSize(11).font('Helvetica').text('Center for Global Health & Pandemic Intelligence', 50, 42, { width: pageWidth - 100 });
     doc.fillColor(white).fontSize(8).font('Helvetica').text('Pandemic Intel Center', 50, 55, { width: pageWidth - 100 });
 
@@ -86,7 +86,7 @@ router.post('/generate', (req, res) => {
     doc.fillColor(black).font('Helvetica-Bold');
     doc.text('Organization:', leftX, metaY + 50);
     doc.fillColor(black).font('Helvetica');
-    doc.text('Center for Global Health & Pandemic Intelligence (CGP)', valueX, metaY + 50, { width: valueW, lineBreak: true });
+    doc.text('Center for Global Health & Pandemic Intelligence (CGHPI)', valueX, metaY + 50, { width: valueW, lineBreak: true });
 
     hr(metaY + 72, lightGray, 0.5);
 

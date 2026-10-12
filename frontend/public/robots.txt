@@ -7,4 +7,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://pandemicintelcenter.org/sitemap.xml
+Sitemap: https://cghpi.org/sitemap.xml

@@ -27,7 +27,7 @@ export default function Privacy() {
       <PageHeader
         trail={META.breadcrumb}
         h1="Privacy Policy"
-        dek="How CGP collects, uses, and protects information on this website."
+        dek="How CGHPI collects, uses, and protects information on this website."
       />
 
       <div className="page-body">
@@ -43,7 +43,7 @@ export default function Privacy() {
               <div className="privacy-intro">
                 <p>
                   This Privacy Policy explains how The Center for Global Health and Pandemic Intelligence
-                  (referred to as CGP, we, us, or our) collects, uses, stores, shares, and protects personal
+                  (referred to as CGHPI, we, us, or our) collects, uses, stores, shares, and protects personal
                   data when you visit this website or otherwise interact with us. It applies to this website
                   and to any enquiry, application, or communication you send to us through the channels listed
                   on this site.
@@ -108,7 +108,7 @@ export default function Privacy() {
                 including the homepage, embed a video hosted on YouTube. When the embedded player loads,
                 YouTube (operated by Google) may set cookies or receive technical information such as your IP
                 address and your interaction with the player. This data is controlled by Google under its own
-                privacy policy, not by CGP. See section 4 below for more detail and for how to limit this
+                privacy policy, not by CGHPI. See section 4 below for more detail and for how to limit this
                 sharing.
               </p>
               <p>

@@ -1,6 +1,6 @@
 
 
-const DEFAULT_SITE_URL = 'https://pandemicintelcenter.org';
+const DEFAULT_SITE_URL = 'https://cghpi.org';
 
 function normaliseOrigin(value) {
   if (!value) return DEFAULT_SITE_URL;
@@ -15,7 +15,7 @@ export const SITE_URL = normaliseOrigin(
 
 export const BRAND = {
   /** Short, official abbreviation used in the logo lockup, nav and metadata. */
-  abbr: 'CGP',
+  abbr: 'CGHPI',
   /** Full legal name of the organisation. */
   name: 'Center for Global Health & Pandemic Intelligence',
   /** Alternate full name used where an ampersand is not appropriate. */
@@ -39,17 +39,17 @@ export const BRAND = {
   logoDisplay: '/Assets/logo-display.png',
   logoDisplayWebp: '/Assets/logo-display.webp',
   logoAlt:
-    'Center for Global Health & Pandemic Intelligence (CGP) logo',
-  wordmark: 'CGP',
+    'Center for Global Health & Pandemic Intelligence (CGHPI) logo',
+  wordmark: 'CGHPI',
   foundingYear: null,
 };
 
 export const SITE_DESCRIPTION =
-  'CGP is a multidisciplinary policy, research and implementation hub strengthening global and regional health security through epidemic intelligence, One Health, community engagement and data science.';
+  'CGHPI is a multidisciplinary policy, research and implementation hub strengthening global and regional health security through epidemic intelligence, One Health, community engagement and data science.';
 
 export const DEK = {
   home:
-    'CGP turns data, science and multisectoral partnerships into earlier warnings and faster, more equitable responses to public health threats.',
+    'CGHPI turns data, science and multisectoral partnerships into earlier warnings and faster, more equitable responses to public health threats.',
 };
 
 /**
@@ -100,7 +100,7 @@ export const SOCIAL = [
   },
   {
     label: 'YouTube',
-    href: 'https://www.youtube.com/@Cgp_intel',
+    href: 'https://www.youtube.com/@Cghpi_intel',
     icon: 'youtube',
   },
 ];
@@ -110,7 +110,7 @@ export function absoluteUrl(path = '/') {
   return `${SITE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 }
 
-export const DEFAULT_OG_IMAGE = '/og/cgp-og-default.png';
+export const DEFAULT_OG_IMAGE = '/og/cghpi-og-default.png';
 
 /**
  * Dimensions and MIME type of every Open Graph image this site can emit.
@@ -132,7 +132,7 @@ export const OG_IMAGES = {
     width: 1200,
     height: 630,
     type: 'image/png',
-    alt: 'Center for Global Health & Pandemic Intelligence (CGP)',
+    alt: 'Center for Global Health & Pandemic Intelligence (CGHPI)',
   },
 };
 

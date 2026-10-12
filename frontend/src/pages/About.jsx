@@ -42,7 +42,7 @@ const VALUE_PILLARS = [
     id: 'locally-anchored',
     icon: 'bi-geo-alt-fill',
     title: 'Locally Anchored, Globally Aligned',
-    body: 'Based in Kenya with partnerships across Africa and global health institutions — CGP understands the local context while applying global standards, frameworks, and best practices.',
+    body: 'Based in Kenya with partnerships across Africa and global health institutions — CGHPI understands the local context while applying global standards, frameworks, and best practices.',
   },
   {
     id: 'evidence-driven',
@@ -121,7 +121,7 @@ export default function About() {
       <PageHeader
         trail={META.breadcrumb}
         eyebrow="Who We Are"
-        h1="About CGP"
+        h1="About CGHPI"
         dek={`${BRAND.abbr} is a multidisciplinary policy, research and implementation hub dedicated to strengthening global and regional health security.`}
       />
 
@@ -133,12 +133,12 @@ export default function About() {
               <span className="section-label">Who We Are</span>
               <h2 id="who-we-are">A multidisciplinary hub for global health security</h2>
               <p className="lead">
-                The <SmartLink to="/">Center for Global Health &amp; Pandemic Intelligence (CGP)</SmartLink>{' '}
+                The <SmartLink to="/">Center for Global Health &amp; Pandemic Intelligence (CGHPI)</SmartLink>{' '}
                 is a multidisciplinary policy, research, and implementation hub dedicated to
                 strengthening global and regional health security.
               </p>
               <p>
-                CGP operates at the intersection of epidemic and pandemic intelligence, One Health,
+                CGHPI operates at the intersection of epidemic and pandemic intelligence, One Health,
                 and community-centred preparedness, providing strategic solutions to prevent, detect,
                 and respond to public health threats — especially in vulnerable and high-risk
                 settings across the world.
@@ -194,7 +194,7 @@ export default function About() {
           <SectionHeader
             id="approach-heading"
             eyebrow="Approach"
-            title="How CGP works"
+            title="How CGHPI works"
             lede="A five-step cycle that turns evidence into operational capability — repeated at subnational, national and regional level."
           />
           <ol className="approach-grid">
@@ -221,7 +221,7 @@ export default function About() {
             id="expertise-heading"
             align="center"
             eyebrow="Expertise"
-            title="What Makes CGP Different"
+            title="What Makes CGHPI Different"
             lede="Our value proposition, and the technical disciplines behind it."
           />
 
@@ -266,7 +266,7 @@ export default function About() {
       </section>
 
       <CtaStrip
-        title="Work with CGP"
+        title="Work with CGHPI"
         body="Explore how we can collaborate to strengthen health security and pandemic intelligence in your region."
         actions={[
           { label: 'Partner With Us', to: '/partner-with-us#contact-form', variant: 'white' },

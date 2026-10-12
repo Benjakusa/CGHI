@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Build artefact produced by `npm run package:cpanel` — regenerated locally,
+# never committed.
+cghpi.org-site.zip
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
