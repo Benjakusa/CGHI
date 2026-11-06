@@ -60,7 +60,7 @@ export default function Login() {
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
                                 style={{ width: '100%', padding: '12px', border: '1px solid var(--border)', borderRadius: '6px' }}
-                                placeholder="staff@pandemicintelcenter.org"
+                                placeholder="staff@cghpi.org"
                             />
                         </div>
 

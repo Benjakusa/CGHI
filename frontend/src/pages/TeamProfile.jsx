@@ -8,6 +8,7 @@ import useApi from '../hooks/useApi';
 import { resolveAssetUrl } from '../context/AuthContext';
 import { PAGE_META } from '../content/navigation';
 import ShareProfileButton from '../components/ShareProfileButton';
+import { BRAND } from '../config/site';
 
 const META = PAGE_META['/leadership'];
 
@@ -38,8 +39,8 @@ export default function TeamProfile() {
 
   return <Layout navId="leadership" pageId="leadership-detail">
     {member && <Seo
-      title={`${member.name} | CGHI Team`}
-      description={member.biography || `${member.name}, ${member.role} at CGHI.`}
+      title={`${member.name} | ${BRAND.abbr} Team`}
+      description={member.biography || `${member.name}, ${member.role} at ${BRAND.abbr}.`}
       path={canonicalPath}
       type="profile"
       image={member.image_url ? resolveAssetUrl(member.image_url) : undefined}

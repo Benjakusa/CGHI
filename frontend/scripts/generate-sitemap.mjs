@@ -62,7 +62,7 @@ async function routesFromNavigation() {
   return routes;
 }
 
-/** Slugs for the detail pages, so project and article URLs are discoverable. */
+/** Slugs for the detail pages, so all existing detail URLs are discoverable. */
 async function detailRoutes() {
   const routes = [];
 
@@ -71,6 +71,9 @@ async function detailRoutes() {
     const source = await readFile(insights, 'utf8');
     for (const m of source.matchAll(/slug:\s*['"`]([^'"`]+)['"`]/g)) {
       routes.push(`/insights/${m[1]}`);
+      // /news/:slug is an existing public permalink route alongside the
+      // /insights/:slug route. Include it without changing either URL.
+      routes.push(`/news/${m[1]}`);
     }
   }
 
@@ -83,6 +86,34 @@ async function detailRoutes() {
   }
 
   return [...new Set(routes)];
+}
+
+/** Published CMS records are live public routes and must be crawlable too. */
+async function cmsDetailRoutes() {
+  let apiBase = process.env.VITE_API_BASE_URL?.trim();
+  if (!apiBase) {
+    try {
+      const env = await readFile(resolve(root, '.env'), 'utf8');
+      apiBase = env.match(/^VITE_API_BASE_URL=(.*)$/m)?.[1]?.trim().replace(/^['"]|['"]$/g, '');
+    } catch { /* A shell-provided value is optional for local content-only builds. */ }
+  }
+  if (!apiBase || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(apiBase)) return [];
+
+  try {
+    const response = await fetch(`${apiBase.replace(/\/+$/, '')}/api/news`, {
+      signal: AbortSignal.timeout(10000),
+      headers: { Accept: 'application/json' },
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const articles = await response.json();
+    if (!Array.isArray(articles)) throw new Error('API returned a non-list response');
+    return articles
+      .filter((article) => article.published !== 0 && /^[a-z0-9][a-z0-9-]*$/i.test(article.slug || ''))
+      .flatMap((article) => [`/news/${article.slug}`]);
+  } catch (error) {
+    console.warn(`[sitemap] Could not fetch published article routes from the Render API (${error.message}); using source content routes.`);
+    return [];
+  }
 }
 
 async function baseUrl() {
@@ -99,11 +130,6 @@ async function baseUrl() {
     );
   }
   return match[1].replace(/\/+$/, '');
-}
-
-function lastmod() {
-  // Only the date, which is what the sitemap protocol asks for.
-  return new Date().toISOString().slice(0, 10);
 }
 
 function xmlEscape(value) {
@@ -160,14 +186,15 @@ async function checkApiBase() {
 async function main() {
   await checkApiBase();
   const base = await baseUrl();
-  const today = lastmod();
   const routes = await routesFromNavigation();
   const details = await detailRoutes();
+  const cmsDetails = await cmsDetailRoutes();
 
   const entries = [
     ...routes.map((r) => ({ ...r })),
     // Detail pages are not in the nav, so they get conservative values.
     ...details.map((path) => ({ path, priority: '0.6', changefreq: 'monthly' })),
+    ...cmsDetails.map((path) => ({ path, priority: '0.6', changefreq: 'monthly' })),
   ].filter((entry) => !entry.path.startsWith('/admin') && entry.path !== '/404');
 
   const urls = [...new Map(entries.map((e) => [e.path, e])).values()].map((entry) => {
@@ -175,7 +202,6 @@ async function main() {
     return [
       '  <url>',
       `    <loc>${xmlEscape(loc)}</loc>`,
-      `    <lastmod>${today}</lastmod>`,
       `    <changefreq>${entry.changefreq}</changefreq>`,
       `    <priority>${entry.priority}</priority>`,
       '  </url>',

@@ -124,20 +124,20 @@ export const ROUTES = [
 /** Metadata used by the SEO component, keyed by route path. */
 export const PAGE_META = {
   '/': {
-    title: `${BRAND.abbr} | ${BRAND.name}`,
+    title: 'CGHPI | Epidemic Intelligence & Outbreak Detection',
     description: SITE_DESCRIPTION,
     navId: 'home',
     breadcrumb: [],
   },
   '/about': {
-    title: `About CGHPI | ${BRAND.name}`,
+    title: `About CGHPI | ${BRAND.abbr}`,
     description:
       'Who CGHPI is: a multidisciplinary policy, research and implementation hub strengthening global and regional health security from Westlands, Nairobi.',
     navId: 'about',
     breadcrumb: [{ label: 'Who We Are', to: '/about' }],
   },
   '/leadership': {
-    title: `Leadership & Team | ${BRAND.name}`,
+    title: `Leadership & Team | ${BRAND.abbr}`,
     description:
       'Meet the leadership and technical leadership of the Center for Global Health & Pandemic Intelligence (CGHPI).',
     navId: 'leadership',
@@ -147,35 +147,35 @@ export const PAGE_META = {
     ],
   },
   '/what-we-do': {
-    title: `What We Do | ${BRAND.name}`,
+    title: `What We Do | ${BRAND.abbr}`,
     description:
       'CGHPI works across five interconnected areas: epidemic and pandemic intelligence, public health emergency preparedness and response, One Health, community engagement, and data science and digital health.',
     navId: 'what-we-do',
     breadcrumb: [{ label: 'What We Do', to: '/what-we-do' }],
   },
   '/projects': {
-    title: `Projects & Impact | ${BRAND.name}`,
+    title: `Projects & Impact | ${BRAND.abbr}`,
     description:
       'CGHPI’s project record: Pandemic Fund financing, 7-1-7 readiness, emergency guidelines, IHR core capacities, precision public health and event-based surveillance.',
     navId: 'projects',
     breadcrumb: [{ label: 'Projects & Impact', to: '/projects' }],
   },
   '/initiatives': {
-    title: `CGHPI Initiatives | ${BRAND.name}`,
+    title: `CGHPI Initiatives | ${BRAND.abbr}`,
     description:
       'Six active CGHPI programmes: the EWIN early warning flagship, 7-1-7 performance improvement, AI epidemic forecasting, community risk communication, climate-sensitive surveillance and One Health urban.',
     navId: 'initiatives',
     breadcrumb: [{ label: 'CGHPI Initiatives', to: '/initiatives' }],
   },
   '/insights': {
-    title: `Media Insights and Research | ${BRAND.name}`,
+    title: `Media Insights and Research | ${BRAND.abbr}`,
     description:
       'Research, policy, One Health and data & AI publications and updates from the Center for Global Health & Pandemic Intelligence.',
     navId: 'insights',
     breadcrumb: [{ label: 'Media Insights and Research', to: '/insights' }],
   },
   '/partners': {
-    title: `Partners & Collaborators | ${BRAND.name}`,
+    title: `Partners & Collaborators | ${BRAND.abbr}`,
     description:
       'The ministries, public health institutes, multilateral institutions, global financing mechanisms and implementing partners CGHPI works with.',
     navId: 'partners',
@@ -185,14 +185,14 @@ export const PAGE_META = {
     ],
   },
   '/resources': {
-    title: `Resource Library | ${BRAND.name}`,
+    title: `Resource Library | ${BRAND.abbr}`,
     description:
       'Reports, tools, guidelines and publications from CGHPI’s research and implementation work.',
     navId: 'resources',
     breadcrumb: [{ label: 'Resource Library', to: '/resources' }],
   },
   '/careers': {
-    title: `Careers | ${BRAND.name}`,
+    title: `Careers | ${BRAND.abbr}`,
     description:
       'Open roles at the Center for Global Health & Pandemic Intelligence, and the technical areas CGHPI recruits across.',
     navId: 'careers',
@@ -202,32 +202,32 @@ export const PAGE_META = {
     ],
   },
   '/partner-with-us': {
-    title: `Partner With Us | ${BRAND.name}`,
+    title: `Partner With Us | ${BRAND.abbr}`,
     description:
       'Partner with the Center for Global Health & Pandemic Intelligence in Westlands, Nairobi to discuss partnerships, technical collaboration, research enquiries, media or careers.',
     navId: 'partner-with-us',
     breadcrumb: [{ label: 'Partner With Us', to: '/partner-with-us' }],
   },
   '/privacy': {
-    title: `Privacy Policy | ${BRAND.name}`,
+    title: `Privacy Policy | ${BRAND.abbr}`,
     description: `How ${BRAND.legalName} collects, uses and protects personal data.`,
     navId: 'privacy',
     breadcrumb: [{ label: 'Privacy Policy', to: '/privacy' }],
   },
   '/terms': {
-    title: `Terms of Use | ${BRAND.name}`,
+    title: `Terms of Use | ${BRAND.abbr}`,
     description: `Terms governing use of the ${BRAND.name} website and its content.`,
     navId: 'terms',
     breadcrumb: [{ label: 'Terms of Use', to: '/terms' }],
   },
   '/accessibility': {
-    title: `Accessibility Statement | ${BRAND.name}`,
+    title: `Accessibility Statement | ${BRAND.abbr}`,
     description: `CGHPI’s commitment to an accessible, inclusive website, and how to report a barrier.`,
     navId: 'accessibility',
     breadcrumb: [{ label: 'Accessibility Statement', to: '/accessibility' }],
   },
   '/404': {
-    title: `Page Not Found | ${BRAND.name}`,
+    title: `Page Not Found | ${BRAND.abbr}`,
     description: 'The page you were looking for could not be found.',
     navId: null,
     breadcrumb: [],
@@ -239,7 +239,7 @@ export const PAGE_META = {
 export function metaForPath(pathname) {
   return (
     PAGE_META[pathname] || {
-      title: `Page Not Found | ${BRAND.name}`,
+      title: `Page Not Found | ${BRAND.abbr}`,
       description: SITE_DESCRIPTION,
       navId: null,
       breadcrumb: [],

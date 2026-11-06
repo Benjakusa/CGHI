@@ -18,7 +18,10 @@ public domain and API origin from `frontend/.env`.
 2. Run `npm install` if dependencies are not installed, then run
    `npm run package:cpanel`. The command builds the site and produces
    `frontend/cghpi.org-site.zip`. It checks that the SPA rewrite and sitemap are
-   present and reports the API URL used by the build.
+   present and reports the API URL used by the build. It also uses installed
+   Google Chrome (`google-chrome`, or the path in `CHROME_BIN`) to render a
+   crawler snapshot for every sitemap URL; human visitors continue using the
+   regular React app.
 
 ## 2. Upload the site in cPanel
 

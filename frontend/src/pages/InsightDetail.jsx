@@ -48,7 +48,7 @@ function ArticleBody({ article, all }) {
   return (
     <Layout navId="insights">
       <Seo
-        title={`${article.title} | ${BRAND.name}`}
+        title={`${article.title} | ${BRAND.abbr}`}
         description={article.excerpt}
         path={`/insights/${article.slug}`}
         type="article"
@@ -198,7 +198,7 @@ export default function InsightDetail() {
       <Layout navId="insights">
         <div className="wrap" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
           <Seo
-            title={`Article not found | ${BRAND.name}`}
+            title={`Article not found | ${BRAND.abbr}`}
             description="The article you were looking for could not be found."
             path={`/insights/${slug}`}
             noIndex

@@ -61,7 +61,7 @@ export const DEK = {
  */
 export const CONTACT = {
   organisation: BRAND.name,
-  email: 'info@pandemicintelcenter.org',
+  email: 'info@cghpi.org',
   pressEmail: null,
   phone: null,
   address: {

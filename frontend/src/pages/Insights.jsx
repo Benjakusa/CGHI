@@ -29,7 +29,7 @@ export default function Insights() {
   const list = articles.filter((article) => type === 'all' || article.type === type || article.category?.toLowerCase() === type);
   const lead = list[0];
   return <Layout navId="insights">
-    <Seo title="News & Research | CGHI" description="Latest news, research, analysis and field reports from CGHI." path="/insights" />
+    <Seo title="Media Insights and Research | CGHPI" description="Research, policy, One Health and data & AI publications and updates from the Center for Global Health & Pandemic Intelligence." path="/insights" />
     <section className="news-page" aria-labelledby="news-heading">
       <div className="news-heading"><div className="news-wrap">
         <h1 id="news-heading">News &amp; Research</h1>

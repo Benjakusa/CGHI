@@ -261,7 +261,7 @@ function seedAdminsIfNeeded() {
   const count = db.prepare("SELECT COUNT(*) as c FROM admins").get().c;
   if (count === 0) {
     const seedEmail =
-      process.env.SEED_ADMIN_EMAIL || "admin@pandemicintelcenter.org";
+      process.env.SEED_ADMIN_EMAIL || "admin@cghpi.org";
     const seedPassword = process.env.SEED_ADMIN_PASSWORD;
     if (!seedPassword) {
       console.warn("[seed] SEED_ADMIN_PASSWORD not set — skipping admin seed.");
@@ -1225,7 +1225,7 @@ function seedJobsIfNeeded() {
         "Experience in training, facilitation, and adult learning.",
         "Track record of working in resource-constrained or emergency settings.",
       ]),
-      "info@pandemicintelcenter.org",
+      "acreers@cghpi.org",
       "Application – Technical Consultant",
     );
     insertJob.run(
@@ -1248,7 +1248,7 @@ function seedJobsIfNeeded() {
         "Exposure to AI/ML, GIS, or health informatics tools.",
         "Knowledge of One Health frameworks and multi-sectoral approaches.",
       ]),
-      "info@pandemicintelcenter.org",
+      "acreers@cghpi.org",
       "Application – Research Associate",
     );
     console.log("[seed] Jobs seeded: 2");

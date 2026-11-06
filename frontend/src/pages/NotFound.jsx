@@ -26,7 +26,7 @@ const DESTINATIONS = [
 export default function NotFound() {
   const location = useLocation();
 
-  const title = `Page Not Found (404) | ${BRAND.name}`;
+  const title = `Page Not Found (404) | ${BRAND.abbr}`;
 
   const jsonLd = useMemo(
     () => [

@@ -139,7 +139,7 @@ router.post('/generate', (req, res) => {
     hr(footerY, lightGray, 0.5);
     doc.fillColor(gray).fontSize(7.5).font('Helvetica');
     doc.text('This is a computer-generated receipt. No signature is required.', center, footerY + 8, { align: 'center', width: pageWidth - 100 });
-    doc.text('For inquiries about this application, please contact: info@pandemicintelcenter.org', center, footerY + 20, { align: 'center', width: pageWidth - 100 });
+    doc.text('For inquiries about this application, please contact: acreers@cghpi.org', center, footerY + 20, { align: 'center', width: pageWidth - 100 });
     doc.text('(c) ' + receiptDate.getFullYear() + ' Center for Global Health & Pandemic Intelligence. All rights reserved.', center, footerY + 32, { align: 'center', width: pageWidth - 100 });
 
     doc.end();

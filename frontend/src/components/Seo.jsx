@@ -8,6 +8,7 @@ import {
   DEFAULT_OG_IMAGE,
   SITE_DESCRIPTION,
   SITE_URL,
+  SOCIAL,
   absoluteUrl,
   ogImageMeta,
 } from '../config/site';
@@ -80,7 +81,7 @@ function setManagedJsonLd(nodes) {
     nodes.length === 1 ? nodes[0] : { '@context': 'https://schema.org', '@graph': nodes },
     null,
     0
-  );
+  ).replace(/</g, '\\u003c');
 }
 
 export default function Seo({
@@ -177,7 +178,7 @@ export function organisationJsonLd() {
     '@type': 'NGO',
     '@id': `${SITE_URL}/#organisation`,
     name: BRAND.name,
-    alternateName: BRAND.nameAlt,
+    alternateName: BRAND.abbr,
     acronym: BRAND.abbr,
     url: `${SITE_URL}/`,
     description: SITE_DESCRIPTION,
@@ -189,6 +190,7 @@ export function organisationJsonLd() {
     },
     image: absoluteUrl(BRAND.logo),
     email: CONTACT.email,
+    sameAs: SOCIAL.map(({ href }) => href),
     address: {
       '@type': 'PostalAddress',
       addressLocality: CONTACT.address.locality,

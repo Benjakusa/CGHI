@@ -31,6 +31,17 @@ if (!existsSync(dist)) {
 
 const failures = [];
 
+// Build route HTML snapshots for crawlers that do not execute JavaScript.
+const prerender = spawnSync(process.execPath, ['scripts/prerender-crawlers.mjs'], {
+  cwd: root,
+  stdio: 'inherit',
+  env: process.env,
+});
+if (prerender.error || prerender.status !== 0) {
+  console.error('[package] Crawler prerendering failed; refusing to create an archive without route content.');
+  process.exit(1);
+}
+
 // 1. The SPA rewrite. Without it, /about or /insights/some-slug returns
 //    Apache's 404 on a hard refresh or a direct visit.
 if (!existsSync(join(dist, '.htaccess'))) {

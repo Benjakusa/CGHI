@@ -387,7 +387,7 @@ export default function Careers() {
                                 <h3>There are no open roles right now</h3>
                                 <p>
                                     Please check back soon, or send a speculative application to{' '}
-                                    <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>.
+                                    <a href="mailto:acreers@cghpi.org">acreers@cghpi.org</a>.
                                 </p>
                             </div>
                         ) : (

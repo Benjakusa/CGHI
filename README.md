@@ -134,8 +134,8 @@ cp .env.example .env
 ```env
 JWT_SECRET=<openssl rand -hex 32>
 PORT=4000
-FRONTEND_URL=https://pandemicintelcenter.org
-SEED_ADMIN_EMAIL=admin@pandemicintelcenter.org
+FRONTEND_URL=https://cghpi.org
+SEED_ADMIN_EMAIL=admin@cghpi.org
 SEED_ADMIN_PASSWORD=<strong-password>
 # Optional:
 IP_HASH_SALT=<any long random string>

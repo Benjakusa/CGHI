@@ -62,7 +62,7 @@ export default function Privacy() {
               <div className="privacy-contact-card">
                 <p><strong>The Center for Global Health and Pandemic Intelligence</strong></p>
                 <p>Westlands, Nairobi, Kenya</p>
-                <p>Email: <a href="mailto:info@pandemicintelcenter.org">info@pandemicintelcenter.org</a></p>
+                <p>Email: <a href="mailto:info@cghpi.org">info@cghpi.org</a></p>
                 <p>Telephone: N/A</p>
                 <p>Office hours: 08:00 to 16:00 East Africa Time, Monday to Friday</p>
               </div>
@@ -221,7 +221,7 @@ export default function Privacy() {
               </div>
               <p>
                 You may ask us for more information about the safeguards we use for a specific transfer by
-                writing to <a href="mailto:info@pandemicintelcenter.org">info@pandemicintelcenter.org</a>.
+                writing to <a href="mailto:info@cghpi.org">info@cghpi.org</a>.
               </p>
 
               <h2>7. How long we keep personal data</h2>
@@ -306,7 +306,7 @@ export default function Privacy() {
               </div>
               <p>
                 To exercise any of these rights, please write to
-                <a href="mailto:info@pandemicintelcenter.org">info@pandemicintelcenter.org</a>. We will respond
+                <a href="mailto:info@cghpi.org">info@cghpi.org</a>. We will respond
                 within the time limits set by the applicable law, which are 30 days under the DPA and one month
                 under the GDPR. We may ask you for information needed to confirm your identity before we act on
                 your request.
@@ -336,7 +336,7 @@ export default function Privacy() {
                 This website and the opportunities described on it are directed at adults. We do not knowingly
                 collect personal data from children under the age of 16. If you believe that a child has
                 provided personal data to us, please contact us at
-                <a href="mailto:info@pandemicintelcenter.org">info@pandemicintelcenter.org</a> and we will take
+                <a href="mailto:info@cghpi.org">info@cghpi.org</a> and we will take
                 steps to delete the data.
               </p>
 
@@ -356,7 +356,7 @@ export default function Privacy() {
               <div className="privacy-contact-card">
                 <p><strong>The Center for Global Health and Pandemic Intelligence</strong></p>
                 <p>Westlands, Nairobi, Kenya</p>
-                <p>Email: <a href="mailto:info@pandemicintelcenter.org">info@pandemicintelcenter.org</a></p>
+                <p>Email: <a href="mailto:info@cghpi.org">info@cghpi.org</a></p>
                 <p>Telephone: N/A</p>
                 <p>Office hours: 08:00 to 16:00 East Africa Time, Monday to Friday</p>
               </div>

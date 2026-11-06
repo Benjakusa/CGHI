@@ -66,7 +66,7 @@ function ProjectBody({ project }) {
   return (
     <Layout navId="projects">
       <Seo
-        title={`${project.title} | ${BRAND.name}`}
+        title={`${project.title} | ${BRAND.abbr}`}
         description={project.summary}
         path={`/projects/${project.slug}`}
         type="article"

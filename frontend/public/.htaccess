@@ -29,7 +29,18 @@ RewriteRule ^(.*)$ https://cghpi.org/$1 [R=301,L]
 # 3. Never serve source control / config files.
 RewriteRule '(^|/)\.(git|env|htaccess)' - [F,L]
 
-# 4. SPA fallback: real files and folders win, everything else falls through to
+# 4. Search and AI crawlers that do not run JavaScript receive the same page
+#    React renders, captured at build time from every sitemap route. These
+#    snapshots include the page body, metadata, canonical URL and JSON-LD.
+#    Human visitors continue to use the normal SPA below.
+RewriteCond %{HTTP_USER_AGENT} (bot|crawler|spider|slurp|preview|fetcher|ChatGPT-User|Claude-User|Perplexity) [NC]
+RewriteRule ^$ /seo-prerender/index.html [END]
+RewriteCond %{HTTP_USER_AGENT} (bot|crawler|spider|slurp|preview|fetcher|ChatGPT-User|Claude-User|Perplexity) [NC]
+RewriteCond %{REQUEST_URI} ^/(.+?)/?$
+RewriteCond %{DOCUMENT_ROOT}/seo-prerender/%1.html -f
+RewriteRule ^ /seo-prerender/%1.html [END]
+
+# 5. SPA fallback: real files and folders win, everything else falls through to
 #    index.html. Must stay last — it is the catch-all.
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
