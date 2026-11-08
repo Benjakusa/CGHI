@@ -432,7 +432,7 @@ export default function Careers() {
                                                 <h3 style={{ marginTop: '6px', marginBottom: '4px' }}>{j.title}</h3>
                                                 <div style={{ display: 'flex', gap: '12px', fontSize: 'var(--fs-small)', color: 'var(--ink-muted)', flexWrap: 'wrap' }}>
                                                     {j.employment_type && <span><i className="bi bi-clock" aria-hidden="true"></i> {j.employment_type}</span>}
-                                                    {j.closing_date && <span><i className="bi bi-calendar-x" aria-hidden="true"></i> Closes {j.closing_date}</span>}
+                                                    {j.closing_date && <span><i className="bi bi-clock" aria-hidden="true"></i> Closes {j.closing_date}</span>}
                                                 </div>
                                             </div>
 
