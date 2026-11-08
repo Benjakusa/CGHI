@@ -3,101 +3,122 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
-const fs = require('fs');
+const crypto = require('crypto');
+const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 
 if (!process.env.JWT_SECRET) {
-    console.error(
-        '[CGHPI API] WARNING: JWT_SECRET is not set. ' +
-        `Looked for .env at ${path.join(__dirname, '.env')}. ` +
-        'Authenticated endpoints will refuse requests until this is fixed.'
-    );
+  console.error('[CGHPI API] WARNING: JWT_SECRET is not set. Authenticated endpoints will refuse requests.');
+}
+if (!process.env.DATABASE_URL) {
+  console.error('[CGHPI API] FATAL: DATABASE_URL is not set. Exiting.');
+  process.exit(1);
 }
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-const uploadsDir = path.join(__dirname, 'data', 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
+/* ---------- R2 client ---------- */
+const r2 = new S3Client({
+  region: 'auto',
+  endpoint: 'https://' + process.env.R2_ACCOUNT_ID + '.r2.cloudflarestorage.com',
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+  },
+});
+async function putToR2(buffer, originalname, mimetype, prefix) {
+  const ext = path.extname(originalname || '').toLowerCase() || '.bin';
+  const key = `${prefix}/${Date.now()}-${crypto.randomBytes(6).toString('hex')}${ext}`;
+  await r2.send(new PutObjectCommand({
+    Bucket: process.env.R2_BUCKET,
+    Key: key,
+    Body: buffer,
+    ContentType: mimetype || 'application/octet-stream',
+  }));
+  return `${process.env.R2_PUBLIC_BASE}/${key}`;
+}
+async function deleteFromR2(url) {
+  if (!url || !process.env.R2_PUBLIC_BASE) return;
+  const prefix = process.env.R2_PUBLIC_BASE.replace(/\/+$/, '') + '/';
+  if (!url.startsWith(prefix)) return;
+  const Key = url.slice(prefix.length);
+  try {
+    await r2.send(new DeleteObjectCommand({ Bucket: process.env.R2_BUCKET, Key }));
+  } catch (e) {
+    console.error('[CGHPI API] R2 delete failed for', Key, '-', e.message);
+  }
 }
 
+/* ---------- CORS ---------- */
 const ALLOWED_ORIGINS = [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://localhost:8080',
-    'http://127.0.0.1:8080',
-    // FRONTEND_URL is a comma-separated list (apex + www of the live site).
-    // It used to be pushed as a single element, so a comma-separated value
-    // never matched any real Origin and the deployed site was blocked by CORS.
-    ...(process.env.FRONTEND_URL
-        ? process.env.FRONTEND_URL.split(',')
-            .map((origin) => origin.trim().replace(/\/+$/, ''))
-            .filter(Boolean)
-        : []),
+  'http://localhost:5173', 'http://127.0.0.1:5173',
+  'http://localhost:3000', 'http://127.0.0.1:3000',
+  'http://localhost:8080', 'http://127.0.0.1:8080',
+  ...(process.env.FRONTEND_URL
+    ? process.env.FRONTEND_URL.split(',').map((o) => o.trim().replace(/\/+$/, '')).filter(Boolean)
+    : []),
 ];
-
 const corsOptions = {
-    origin(origin, callback) {
-        if (!origin) return callback(null, true);
-        if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
-        if (/^http:\/\/(\d{1,3}\.){3}\d{1,3}:(5173|3000|8080)$/.test(origin)) {
-            return callback(null, true);
-        }
-        return callback(new Error(`Origin ${origin} not allowed by CORS`));
-    },
-    credentials: true
+  origin(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+    if (/^http:\/\/(\d{1,3}\.){3}\d{1,3}:(5173|3000|8080)$/.test(origin)) return callback(null, true);
+    return callback(new Error(`Origin ${origin} not allowed by CORS`));
+  },
+  credentials: true,
 };
-
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 
-app.use('/uploads', express.static(uploadsDir));
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadsDir);
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
-    }
+/* ---------- upload middleware ---------- */
+const imageUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp|svg|pdf/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype) || file.mimetype === 'application/pdf';
+    if (mimetype && extname) return cb(null, true);
+    cb(new Error('Only images (jpg, png, gif, webp, svg) and PDFs are allowed'));
+  },
 });
 
-const upload = multer({
-    storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 },
-    fileFilter: (req, file, cb) => {
-        const allowedTypes = /jpeg|jpg|png|gif|webp|svg|pdf/;
-        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = allowedTypes.test(file.mimetype) || file.mimetype === 'application/pdf';
-        if (mimetype && extname) {
-            return cb(null, true);
-        }
-        cb(new Error('Only images (jpg, png, gif, webp, svg) and PDFs are allowed'));
-    }
+const applicationsUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp|pdf|doc|docx/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype) ||
+      file.mimetype === 'application/msword' ||
+      file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+      file.mimetype === 'application/pdf';
+    if (mimetype && extname) return cb(null, true);
+    cb(new Error('Only PDF, DOC, DOCX, and images are allowed'));
+  },
 });
 
 const authMiddleware = require('./middleware/auth');
 const db = require('./db');
 
-app.post('/api/upload', authMiddleware, upload.single('image'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' });
-    }
-    const fileUrl = `/uploads/${req.file.filename}`;
-    res.json({ url: fileUrl });
+/* ---------- generic uploads ---------- */
+app.post('/api/upload', authMiddleware, imageUpload.single('image'), async (req, res, next) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    const url = await putToR2(req.file.buffer, req.file.originalname, req.file.mimetype, 'uploads');
+    res.json({ url });
+  } catch (e) { next(e); }
 });
 
-app.post('/api/upload/file', authMiddleware, upload.single('file'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' });
-    }
-    const fileUrl = `/uploads/${req.file.filename}`;
-    res.json({ url: fileUrl });
+app.post('/api/upload/file', authMiddleware, imageUpload.single('file'), async (req, res, next) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    const url = await putToR2(req.file.buffer, req.file.originalname, req.file.mimetype, 'uploads');
+    res.json({ url });
+  } catch (e) { next(e); }
 });
 
+/* ---------- routes ---------- */
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/heroes', require('./routes/heroes'));
 app.use('/api/news', require('./routes/news'));
@@ -108,200 +129,139 @@ app.use('/api/resources', require('./routes/resources'));
 app.use('/api/receipts', require('./routes/receipts'));
 app.use('/api/contact', require('./routes/contact'));
 
-app.get('/api/admin/stats', authMiddleware, (req, res) => {
-    const stat = (table) => {
-        try {
-            const total = db.prepare(`SELECT COUNT(*) as c FROM ${table}`).get().c;
-            const published = db.prepare(`SELECT COUNT(*) as c FROM ${table} WHERE published=1`).get().c;
-            return { total, published, unpublished: total - published };
-        } catch (err) {
-            return { total: 0, published: 0, unpublished: 0 };
-        }
+/* ---------- admin dashboard stats ---------- */
+app.get('/api/admin/stats', authMiddleware, async (req, res, next) => {
+  try {
+    const stat = async (table) => {
+      try {
+        const t = await db.get(`SELECT COUNT(*)::int AS c FROM ${table}`);
+        const p = await db.get(`SELECT COUNT(*)::int AS c FROM ${table} WHERE published=1`);
+        return { total: t.c, published: p.c, unpublished: t.c - p.c };
+      } catch { return { total: 0, published: 0, unpublished: 0 }; }
     };
-
-    try {
-        const payload = {
-            heroes: stat('heroes'),
-            news: stat('news'),
-            partners: stat('partners'),
-            jobs: stat('jobs'),
-            resources: stat('resources')
-        };
-        res.json(payload);
-    } catch (err) {
-        console.error('[CGHPI API] /api/admin/stats failed:', err);
-        res.status(500).json({ error: 'Failed to compute dashboard statistics.' });
-    }
+    res.json({
+      heroes: await stat('heroes'),
+      news: await stat('news'),
+      partners: await stat('partners'),
+      jobs: await stat('jobs'),
+      resources: await stat('resources'),
+    });
+  } catch (e) { next(e); }
 });
 
-
-const applicationsDir = path.join(__dirname, 'data', 'uploads');
-if (!fs.existsSync(applicationsDir)) {
-    fs.mkdirSync(applicationsDir, { recursive: true });
-    console.log(`[CGHPI API] Created applications directory: ${applicationsDir}`);
-}
-
-const jobApplicationsStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, applicationsDir);
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
-const applicationsUpload = multer({
-    storage: jobApplicationsStorage,
-    limits: { fileSize: 10 * 1024 * 1024 },
-    fileFilter: (req, file, cb) => {
-        const allowedTypes = /jpeg|jpg|png|gif|webp|pdf|doc|docx/;
-        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = allowedTypes.test(file.mimetype) ||
-            file.mimetype === 'application/msword' ||
-            file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-            file.mimetype === 'application/pdf';
-        if (mimetype && extname) {
-            return cb(null, true);
-        }
-        cb(new Error('Only PDF, DOC, DOCX, and images are allowed'));
-    }
-});
-
-db.exec(`CREATE TABLE IF NOT EXISTS job_applications (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    phone TEXT NOT NULL,
-    job_title TEXT NOT NULL,
-    job_id INTEGER,
-    cover_letter_url TEXT,
-    cv_url TEXT,
-    certificates_urls TEXT,
-    created_at TEXT DEFAULT (datetime('now')),
-    status TEXT DEFAULT 'pending'
-)`);
-
+/* ---------- job applications ---------- */
 app.post('/api/job-applications', applicationsUpload.fields([
-    { name: 'coverLetter', maxCount: 1 },
-    { name: 'cv', maxCount: 1 },
-    { name: 'certificates', maxCount: 5 }
-]), (req, res) => {
+  { name: 'coverLetter', maxCount: 1 },
+  { name: 'cv', maxCount: 1 },
+  { name: 'certificates', maxCount: 5 },
+]), async (req, res, next) => {
+  try {
     const { name, email, phone, jobTitle, jobId } = req.body;
-
     if (!name || !email || !phone || !jobTitle) {
-        return res.status(400).json({ error: 'Name, email, phone, and job title are required.' });
+      return res.status(400).json({ error: 'Name, email, phone, and job title are required.' });
     }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        return res.status(400).json({ error: 'Invalid email address.' });
+      return res.status(400).json({ error: 'Invalid email address.' });
     }
 
-    try {
-        let coverLetterUrl = null;
-        let cvUrl = null;
-        let certificatesUrls = '[]';
+    let coverLetterUrl = null;
+    let cvUrl = null;
+    const certificateUrls = [];
 
-        if (req.files) {
-            if (req.files.coverLetter && req.files.coverLetter[0]) {
-                coverLetterUrl = '/uploads/' + req.files.coverLetter[0].filename;
-            }
-            if (req.files.cv && req.files.cv[0]) {
-                cvUrl = '/uploads/' + req.files.cv[0].filename;
-            }
-            if (req.files.certificates && req.files.certificates.length > 0) {
-                const certUrls = req.files.certificates.map(f => '/uploads/' + f.filename);
-                certificatesUrls = JSON.stringify(certUrls);
-            }
+    if (req.files) {
+      if (req.files.coverLetter?.[0]) {
+        const f = req.files.coverLetter[0];
+        coverLetterUrl = await putToR2(f.buffer, f.originalname, f.mimetype, 'applications');
+      }
+      if (req.files.cv?.[0]) {
+        const f = req.files.cv[0];
+        cvUrl = await putToR2(f.buffer, f.originalname, f.mimetype, 'applications');
+      }
+      if (req.files.certificates?.length) {
+        for (const f of req.files.certificates) {
+          certificateUrls.push(await putToR2(f.buffer, f.originalname, f.mimetype, 'applications'));
         }
-
-        const result = db.prepare(
-            `INSERT INTO job_applications (name, email, phone, job_title, job_id, cover_letter_url, cv_url, certificates_urls, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-        ).run(
-            name.trim(), email.trim().toLowerCase(), phone.trim(), jobTitle.trim(),
-            jobId ? parseInt(jobId) : null, coverLetterUrl, cvUrl, certificatesUrls, 'pending'
-        );
-
-        res.json({
-            id: result.lastInsertRowid,
-            message: 'Application submitted successfully',
-            application: {
-                id: result.lastInsertRowid,
-                name: name.trim(),
-                email: email.trim().toLowerCase(),
-                phone: phone.trim(),
-                jobTitle: jobTitle.trim(),
-                coverLetterUrl, cvUrl,
-                certificatesUrls: JSON.parse(certificatesUrls)
-            }
-        });
-    } catch (err) {
-        console.error('[CGHPI API] Error creating job application:', err);
-        res.status(500).json({ error: 'Failed to submit application. Please try again.' });
+      }
     }
+
+    const row = await db.get(
+      `INSERT INTO job_applications (name, email, phone, job_title, job_id, cover_letter_url, cv_url, certificates_urls, status)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id`,
+      [name.trim(), email.trim().toLowerCase(), phone.trim(), jobTitle.trim(),
+       jobId ? parseInt(jobId) : null, coverLetterUrl, cvUrl, JSON.stringify(certificateUrls), 'pending'],
+    );
+
+    res.json({
+      id: row.id,
+      message: 'Application submitted successfully',
+      application: {
+        id: row.id,
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        phone: phone.trim(),
+        jobTitle: jobTitle.trim(),
+        coverLetterUrl, cvUrl,
+        certificatesUrls: certificateUrls,
+      },
+    });
+  } catch (e) { next(e); }
 });
 
-app.get('/api/job-applications', authMiddleware, (req, res) => {
-    try {
-        const applications = db.prepare('SELECT * FROM job_applications ORDER BY created_at DESC').all();
-        const result = applications.map(app => ({
-            ...app,
-            certificates_urls: typeof app.certificates_urls === 'string' ? (JSON.parse(app.certificates_urls)||[]) : (app.certificates_urls||[])
-        }));
-        res.json(result);
-    } catch (err) {
-        console.error('[CGHPI API] Error fetching job applications:', err);
-        res.status(500).json({ error: 'Failed to fetch applications.' });
-    }
+app.get('/api/job-applications', authMiddleware, async (req, res, next) => {
+  try {
+    const applications = await db.all('SELECT * FROM job_applications ORDER BY created_at DESC');
+    const result = applications.map((a) => ({
+      ...a,
+      certificates_urls: typeof a.certificates_urls === 'string' ? (JSON.parse(a.certificates_urls) || []) : (a.certificates_urls || []),
+    }));
+    res.json(result);
+  } catch (e) { next(e); }
 });
 
-app.delete('/api/job-applications/:id', authMiddleware, (req, res) => {
-    try {
-        const app = db.prepare('SELECT * FROM job_applications WHERE id=?').get(req.params.id);
-        if (!app) return res.status(404).json({ error: 'Application not found.' });
+app.delete('/api/job-applications/:id', authMiddleware, async (req, res, next) => {
+  try {
+    const application = await db.get('SELECT * FROM job_applications WHERE id=$1', [req.params.id]);
+    if (!application) return res.status(404).json({ error: 'Application not found.' });
 
-        if (app.cover_letter_url) {
-            const p = path.join(__dirname, 'data', 'uploads', path.basename(app.cover_letter_url));
-            if (fs.existsSync(p)) fs.unlinkSync(p);
-        }
-        if (app.cv_url) {
-            const p = path.join(__dirname, 'data', 'uploads', path.basename(app.cv_url));
-            if (fs.existsSync(p)) fs.unlinkSync(p);
-        }
-        const certs = typeof app.certificates_urls === 'string' ? (JSON.parse(app.certificates_urls)||[]) : (app.certificates_urls||[]);
-        certs.forEach(url => {
-            if (url) {
-                const p = path.join(__dirname, 'data', 'uploads', path.basename(url));
-                if (fs.existsSync(p)) fs.unlinkSync(p);
-            }
-        });
+    await deleteFromR2(application.cover_letter_url);
+    await deleteFromR2(application.cv_url);
+    const certs = typeof application.certificates_urls === 'string'
+      ? (JSON.parse(application.certificates_urls) || [])
+      : (application.certificates_urls || []);
+    for (const url of certs) await deleteFromR2(url);
 
-        const result = db.prepare('DELETE FROM job_applications WHERE id=?').run(req.params.id);
-        if (result.changes === 0) return res.status(404).json({ error: 'Application not found.' });
-        res.json({ ok: true });
-    } catch (err) {
-        console.error('[CGHPI API] Error deleting job application:', err);
-        res.status(500).json({ error: 'Failed to delete application.' });
-    }
+    const r = await db.run('DELETE FROM job_applications WHERE id=$1', [req.params.id]);
+    if (r.changes === 0) return res.status(404).json({ error: 'Application not found.' });
+    res.json({ ok: true });
+  } catch (e) { next(e); }
 });
 
+/* ---------- error handler ---------- */
 app.use((err, req, res, next) => {
-    console.error('[CGHPI API] Error:', err.message);
-    if (err instanceof multer.MulterError) {
-        if (err.code === 'LIMIT_FILE_SIZE') {
-            return res.status(400).json({ error: 'File too large. Maximum 5MB.' });
-        }
-        return res.status(400).json({ error: err.message });
-    }
-    if (err && /Only images|Only JPG/.test(err.message)) {
-        return res.status(400).json({ error: err.message });
-    }
-    res.status(500).json({ error: err.message || 'Internal server error' });
+  console.error('[CGHPI API] Error:', err.message);
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') return res.status(400).json({ error: 'File too large. Maximum 5MB (10MB for applications).' });
+    return res.status(400).json({ error: err.message });
+  }
+  if (err && /Only images|Only PDF/.test(err.message)) {
+    return res.status(400).json({ error: err.message });
+  }
+  res.status(500).json({ error: err.message || 'Internal server error' });
 });
 
-app.listen(PORT, () => {
+/* ---------- boot ---------- */
+(async () => {
+  try {
+    await db.initDb();
+    console.log('[CGHPI API] Database schema verified.');
+  } catch (e) {
+    console.error('[CGHPI API] FATAL: could not initialize database:', e.message);
+    process.exit(1);
+  }
+  app.listen(PORT, () => {
     console.log(`[CGHPI API] Running on http://localhost:${PORT}`);
-    console.log(`[CGHPI API] Uploads served from ${uploadsDir}`);
+    console.log(`[CGHPI API] R2 bucket: ${process.env.R2_BUCKET || '(unset)'} | public base: ${process.env.R2_PUBLIC_BASE || '(unset)'}`);
     console.log(`[CGHPI API] CORS allowed origins: ${ALLOWED_ORIGINS.join(', ')} + LAN IPs on :5173/:3000/:8080`);
-});
+  });
+})();

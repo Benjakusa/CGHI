@@ -4,18 +4,16 @@ const db = require('../db');
 
 const router = express.Router();
 
-router.post('/generate', (req, res) => {
+router.post('/generate', async (req, res, next) => {
+  try {
     const { jobId, applicantName, applicantEmail } = req.body;
-
     const jobIdNum = Number(jobId);
     if (!Number.isInteger(jobIdNum) || jobIdNum <= 0) {
-        return res.status(400).json({ error: 'jobId must be a valid job id' });
+      return res.status(400).json({ error: 'jobId must be a valid job id' });
     }
 
-    const job = db.prepare('SELECT * FROM jobs WHERE id=? AND published=1').get(jobIdNum);
-    if (!job) {
-        return res.status(404).json({ error: 'Job not found or not published' });
-    }
+    const job = await db.get('SELECT * FROM jobs WHERE id=$1 AND published=1', [jobIdNum]);
+    if (!job) return res.status(404).json({ error: 'Job not found or not published' });
 
     const doc = new PDFDocument({ margin: 50, size: 'A4', compress: true, info: { Title: 'Application Receipt - CGHPI' } });
 
@@ -28,24 +26,17 @@ router.post('/generate', (req, res) => {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
-
     res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
 
     doc.pipe(res);
-    doc.on('error', err => {
-        if (!res.headersSent) {
-            res.status(500).json({ error: 'Failed to generate PDF' });
-        } else {
-            res.end();
-        }
-    });
+    doc.on('error', () => { if (!res.headersSent) res.status(500).json({ error: 'Failed to generate PDF' }); else res.end(); });
 
     const pageWidth = doc.page.width;
     const center = pageWidth / 2;
     const brandBlue = '#008ecc';
-    const white     = '#FFFFFF';
-    const black     = '#000000';
-    const gray      = '#666666';
+    const white = '#FFFFFF';
+    const black = '#000000';
+    const gray = '#666666';
     const lightGray = '#999999';
     const leftX = 50;
     const labelW = 140;
@@ -53,7 +44,7 @@ router.post('/generate', (req, res) => {
     const valueW = pageWidth - leftX - labelW - 50;
 
     function hr(y, color, width) {
-        doc.moveTo(50, y).lineTo(pageWidth - 50, y).strokeColor(color).lineWidth(width).stroke();
+      doc.moveTo(50, y).lineTo(pageWidth - 50, y).strokeColor(color).lineWidth(width).stroke();
     }
 
     doc.rect(0, 0, pageWidth, 68).fill(brandBlue);
@@ -129,10 +120,10 @@ router.post('/generate', (req, res) => {
     doc.text(job.employment_type || 'Not specified', valueX, jobY + 86, { width: valueW, lineBreak: true });
 
     if (job.closing_date) {
-        doc.fillColor(black).font('Helvetica-Bold');
-        doc.text('Application Deadline:', leftX, jobY + 104);
-        doc.fillColor(black).font('Helvetica');
-        doc.text(job.closing_date, valueX, jobY + 104, { width: valueW, lineBreak: true });
+      doc.fillColor(black).font('Helvetica-Bold');
+      doc.text('Application Deadline:', leftX, jobY + 104);
+      doc.fillColor(black).font('Helvetica');
+      doc.text(job.closing_date, valueX, jobY + 104, { width: valueW, lineBreak: true });
     }
 
     const footerY = jobY + 135;
@@ -143,6 +134,7 @@ router.post('/generate', (req, res) => {
     doc.text('(c) ' + receiptDate.getFullYear() + ' Center for Global Health & Pandemic Intelligence. All rights reserved.', center, footerY + 32, { align: 'center', width: pageWidth - 100 });
 
     doc.end();
+  } catch (e) { next(e); }
 });
 
 module.exports = router;

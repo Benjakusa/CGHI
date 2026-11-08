@@ -9,3 +9,11 @@ dist/
 .DS_Store
 backend/public/uploads/*
 !backend/public/uploads/.gitkeep
+# Migration & test scratch files (do not commit)
+backend/migrate-to-neon.js
+backend/set-admin.js
+backend/check-counts.js
+backend/test-*.js
+backend/neon-backup-*.json
+backend/data/uploads/
+tash
