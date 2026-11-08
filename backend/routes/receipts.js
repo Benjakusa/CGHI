@@ -6,14 +6,21 @@ const router = express.Router();
 
 router.post('/generate', async (req, res, next) => {
   try {
-    const { jobId, applicantName, applicantEmail } = req.body;
+    const { jobId, roleId, applicantName, applicantEmail } = req.body;
     const jobIdNum = Number(jobId);
     if (!Number.isInteger(jobIdNum) || jobIdNum <= 0) {
       return res.status(400).json({ error: 'jobId must be a valid job id' });
     }
+    const roleIdNum = Number(roleId);
+    if (!Number.isInteger(roleIdNum) || roleIdNum <= 0) {
+      return res.status(400).json({ error: 'roleId must be a valid role id' });
+    }
 
     const job = await db.get('SELECT * FROM jobs WHERE id=$1 AND published=1', [jobIdNum]);
     if (!job) return res.status(404).json({ error: 'Job not found or not published' });
+
+    const role = await db.get('SELECT id, title FROM job_roles WHERE id=$1 AND job_id=$2', [roleIdNum, jobIdNum]);
+    if (!role) return res.status(404).json({ error: 'Role not found for this advert' });
 
     const doc = new PDFDocument({ margin: 50, size: 'A4', compress: true, info: { Title: 'Application Receipt - CGHPI' } });
 
@@ -105,28 +112,33 @@ router.post('/generate', async (req, res, next) => {
     doc.text(job.title, valueX, jobY + 32, { width: valueW, lineBreak: true });
 
     doc.fillColor(black).font('Helvetica-Bold');
-    doc.text('Department:', leftX, jobY + 50);
+    doc.text('Role Applied For:', leftX, jobY + 50);
     doc.fillColor(black).font('Helvetica');
-    doc.text(job.department || 'Not specified', valueX, jobY + 50, { width: valueW, lineBreak: true });
+    doc.text(role.title, valueX, jobY + 50, { width: valueW, lineBreak: true });
 
     doc.fillColor(black).font('Helvetica-Bold');
-    doc.text('Location:', leftX, jobY + 68);
+    doc.text('Department:', leftX, jobY + 68);
     doc.fillColor(black).font('Helvetica');
-    doc.text(job.location || 'Not specified', valueX, jobY + 68, { width: valueW, lineBreak: true });
+    doc.text(job.department || 'Not specified', valueX, jobY + 68, { width: valueW, lineBreak: true });
 
     doc.fillColor(black).font('Helvetica-Bold');
-    doc.text('Employment Type:', leftX, jobY + 86);
+    doc.text('Location:', leftX, jobY + 86);
     doc.fillColor(black).font('Helvetica');
-    doc.text(job.employment_type || 'Not specified', valueX, jobY + 86, { width: valueW, lineBreak: true });
+    doc.text(job.location || 'Not specified', valueX, jobY + 86, { width: valueW, lineBreak: true });
+
+    doc.fillColor(black).font('Helvetica-Bold');
+    doc.text('Employment Type:', leftX, jobY + 104);
+    doc.fillColor(black).font('Helvetica');
+    doc.text(job.employment_type || 'Not specified', valueX, jobY + 104, { width: valueW, lineBreak: true });
 
     if (job.closing_date) {
       doc.fillColor(black).font('Helvetica-Bold');
-      doc.text('Application Deadline:', leftX, jobY + 104);
+      doc.text('Application Deadline:', leftX, jobY + 122);
       doc.fillColor(black).font('Helvetica');
-      doc.text(job.closing_date, valueX, jobY + 104, { width: valueW, lineBreak: true });
+      doc.text(job.closing_date, valueX, jobY + 122, { width: valueW, lineBreak: true });
     }
 
-    const footerY = jobY + 135;
+    const footerY = jobY + 153;
     hr(footerY, lightGray, 0.5);
     doc.fillColor(gray).fontSize(7.5).font('Helvetica');
     doc.text('This is a computer-generated receipt. No signature is required.', center, footerY + 8, { align: 'center', width: pageWidth - 100 });

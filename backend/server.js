@@ -156,13 +156,30 @@ app.post('/api/job-applications', applicationsUpload.fields([
   { name: 'certificates', maxCount: 5 },
 ]), async (req, res, next) => {
   try {
-    const { name, email, phone, jobTitle, jobId } = req.body;
+    const { name, email, phone, jobTitle, jobId, roleId } = req.body;
     if (!name || !email || !phone || !jobTitle) {
       return res.status(400).json({ error: 'Name, email, phone, and job title are required.' });
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ error: 'Invalid email address.' });
+    }
+
+    const roleIdNum = Number(roleId);
+    if (!Number.isInteger(roleIdNum) || roleIdNum <= 0) {
+      return res.status(400).json({ error: 'Please select a role to apply for.' });
+    }
+    const jobIdNum = jobId ? Number(jobId) : null;
+    if (!jobIdNum || !Number.isInteger(jobIdNum) || jobIdNum <= 0) {
+      return res.status(400).json({ error: 'Missing advert id.' });
+    }
+
+    const role = await db.get(
+      'SELECT id, title FROM job_roles WHERE id = $1 AND job_id = $2',
+      [roleIdNum, jobIdNum],
+    );
+    if (!role) {
+      return res.status(400).json({ error: 'That role does not belong to this advert.' });
     }
 
     let coverLetterUrl = null;
@@ -186,10 +203,11 @@ app.post('/api/job-applications', applicationsUpload.fields([
     }
 
     const row = await db.get(
-      `INSERT INTO job_applications (name, email, phone, job_title, job_id, cover_letter_url, cv_url, certificates_urls, status)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id`,
+      `INSERT INTO job_applications (name, email, phone, job_title, job_id, role_id, role_title, cover_letter_url, cv_url, certificates_urls, status)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id`,
       [name.trim(), email.trim().toLowerCase(), phone.trim(), jobTitle.trim(),
-       jobId ? parseInt(jobId) : null, coverLetterUrl, cvUrl, JSON.stringify(certificateUrls), 'pending'],
+       jobIdNum, role.id, role.title,
+       coverLetterUrl, cvUrl, JSON.stringify(certificateUrls), 'pending'],
     );
 
     res.json({
@@ -201,6 +219,8 @@ app.post('/api/job-applications', applicationsUpload.fields([
         email: email.trim().toLowerCase(),
         phone: phone.trim(),
         jobTitle: jobTitle.trim(),
+        roleId: role.id,
+        roleTitle: role.title,
         coverLetterUrl, cvUrl,
         certificatesUrls: certificateUrls,
       },

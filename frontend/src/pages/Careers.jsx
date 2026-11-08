@@ -78,9 +78,13 @@ export default function Careers() {
 
     const openApplyModal = (job, trigger) => {
         applyTriggerRef.current = trigger;
+        const firstRole = Array.isArray(job.roles) && job.roles.length > 0 ? job.roles[0] : null;
         setApplyModal({
             jobId: job.id,
             jobTitle: job.title,
+            roles: Array.isArray(job.roles) ? job.roles : [],
+            roleId: firstRole ? firstRole.id : '',
+            roleTitle: firstRole ? firstRole.title : '',
             name: '',
             email: '',
             phone: '',
@@ -133,6 +137,10 @@ export default function Careers() {
             showToast('Please fill in all required fields.', 'error');
             return;
         }
+        if (!applyModal.roleId) {
+            showToast('Please select a role.', 'error');
+            return;
+        }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(applyModal.email)) {
@@ -167,6 +175,8 @@ export default function Careers() {
             formData.append('phone', applyModal.phone);
             formData.append('jobTitle', applyModal.jobTitle);
             formData.append('jobId', applyModal.jobId || '');
+            formData.append('roleId', applyModal.roleId || '');
+            formData.append('roleTitle', applyModal.roleTitle || '');
 
             if (files.coverLetter) formData.append('coverLetter', files.coverLetter);
             if (files.cv) formData.append('cv', files.cv);
@@ -270,6 +280,27 @@ export default function Careers() {
                                         value={applyModal.jobTitle || ''}
                                     />
                                 </div>
+                                {applyModal.roles && applyModal.roles.length > 0 && (
+                                    <div className="form-group">
+                                        <label htmlFor="apply-role">Role you are applying for <span className="required-star">*</span></label>
+                                        <select
+                                            id="apply-role"
+                                            required
+                                            value={applyModal.roleId || ''}
+                                            onChange={e => {
+                                                const id = e.target.value;
+                                                const found = applyModal.roles.find(r => String(r.id) === String(id));
+                                                setApplyModal({ ...applyModal, roleId: id, roleTitle: found ? found.title : '' });
+                                            }}
+                                        >
+                                            {applyModal.roles.map(r => (
+                                                <option key={r.id} value={r.id}>
+                                                    {r.title}{r.location ? ' — ' + r.location : ''}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
                                 <div className="form-group">
                                     <label htmlFor="apply-cover">Upload Cover Letter (PDF/DOC/DOCX) <span className="required-star">*</span></label>
                                     <div className="file-upload-area">
@@ -400,30 +431,51 @@ export default function Careers() {
                                                 <span className="job-dept">{j.department || 'General'}</span>
                                                 <h3 style={{ marginTop: '6px', marginBottom: '4px' }}>{j.title}</h3>
                                                 <div style={{ display: 'flex', gap: '12px', fontSize: 'var(--fs-small)', color: 'var(--ink-muted)', flexWrap: 'wrap' }}>
-                                                    {j.location && <span><i className="bi bi-geo-alt" aria-hidden="true"></i> {j.location}</span>}
                                                     {j.employment_type && <span><i className="bi bi-clock" aria-hidden="true"></i> {j.employment_type}</span>}
+                                                    {j.closing_date && <span><i className="bi bi-calendar-x" aria-hidden="true"></i> Closes {j.closing_date}</span>}
                                                 </div>
                                             </div>
 
+                                            {j.roles && j.roles.length > 0 && (
+                                                <div style={{ marginTop: '8px', marginBottom: '12px' }}>
+                                                    <strong style={{ fontSize: 'var(--fs-small)' }}>
+                                                        {j.roles.length} {j.roles.length === 1 ? 'role' : 'roles'}:
+                                                    </strong>
+                                                    <ul style={{ paddingLeft: '1.2em', margin: '6px 0 0 0', fontSize: 'var(--fs-small)' }}>
+                                                        {j.roles.map(r => (
+                                                            <li key={r.id}>
+                                                                <strong>{r.title}</strong>
+                                                                {r.location ? ' — ' + r.location : ''}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            )}
+
                                             {isOpen && (
                                                 <div className="job-details-expanded" id={`job-details-${j.id}`}>
-                                                    {j.description}
-                                                    {j.qualifications?.length > 0 && (
-                                                        <>
-                                                            <h4 style={{ marginTop: '20px', marginBottom: '8px' }}>Qualifications</h4>
-                                                            <ul style={{ paddingLeft: '1.2em' }}>
-                                                                {j.qualifications.map((q, i) => <li key={i}>{q}</li>)}
-                                                            </ul>
-                                                        </>
-                                                    )}
-                                                    {j.preferred_experience?.length > 0 && (
-                                                        <>
-                                                            <h4 style={{ marginTop: '16px', marginBottom: '8px' }}>Preferred Experience</h4>
-                                                            <ul style={{ paddingLeft: '1.2em' }}>
-                                                                {j.preferred_experience.map((p, i) => <li key={i}>{p}</li>)}
-                                                            </ul>
-                                                        </>
-                                                    )}
+                                                    {(j.roles || []).map(r => (
+                                                        <div key={r.id} style={{ marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid rgba(0,0,0,.08)' }}>
+                                                            <h4 style={{ margin: '0 0 4px' }}>{r.title}{r.location ? ' — ' + r.location : ''}</h4>
+                                                            {r.description && <p style={{ margin: '6px 0 8px' }}>{r.description}</p>}
+                                                            {r.qualifications?.length > 0 && (
+                                                                <>
+                                                                    <strong style={{ display: 'block', marginTop: '10px' }}>Qualifications</strong>
+                                                                    <ul style={{ paddingLeft: '1.2em', margin: '4px 0 0 0' }}>
+                                                                        {r.qualifications.map((q, i) => <li key={i}>{q}</li>)}
+                                                                    </ul>
+                                                                </>
+                                                            )}
+                                                            {r.preferred_experience?.length > 0 && (
+                                                                <>
+                                                                    <strong style={{ display: 'block', marginTop: '10px' }}>Preferred Experience</strong>
+                                                                    <ul style={{ paddingLeft: '1.2em', margin: '4px 0 0 0' }}>
+                                                                        {r.preferred_experience.map((p, i) => <li key={i}>{p}</li>)}
+                                                                    </ul>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             )}
 

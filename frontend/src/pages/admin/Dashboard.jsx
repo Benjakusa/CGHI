@@ -74,10 +74,13 @@ export default function DashboardLayout({ children, title }) {
             <Footer />
 
             <style>{`
+
+                /* ===== Admin shell ===== */
                 .admin-shell {
                     display: flex;
                     flex-direction: column;
                     min-height: calc(100vh - ${NAVBAR_HEIGHT}px);
+                    background: var(--sky-tint);
                 }
                 .admin-shell-inner {
                     display: flex;
@@ -87,80 +90,124 @@ export default function DashboardLayout({ children, title }) {
                 .mobile-sidebar-toggle {
                     display: none;
                 }
+
+                /* ===== Sidebar ===== */
                 .admin-sidebar {
                     width: 260px;
                     flex-shrink: 0;
-                    background: #ffffff;
-                    border-right: 1px solid var(--border);
-                    padding: 32px 0;
+                    background: var(--surface);
+                    border: none;
+                    padding: 24px 0;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    position: relative;
+                    z-index: 1;
                 }
                 .admin-sidebar-label {
-                    padding: 0 24px 32px;
+                    padding: 0 20px 20px;
                 }
                 .admin-sidebar-label span {
-                    font-size: var(--fs-caption);
-                    font-weight: var(--fw-semibold);
+                    font-size: 13px;
+                    font-weight: 600;
                     text-transform: uppercase;
-                    letter-spacing: 0.1em;
+                    letter-spacing: 0.08em;
                     color: var(--ink-muted);
                 }
                 .admin-sidebar-nav {
                     display: flex;
                     flex-direction: column;
+                    gap: 2px;
+                    padding: 0 12px;
                 }
                 .admin-sidebar-nav a {
                     display: flex;
                     align-items: center;
                     gap: 12px;
-                    padding: 12px 24px;
+                    padding: 8px 10px;
                     color: var(--ink);
                     background: transparent;
-                    border-right: 3px solid transparent;
+                    border: none;
+                    border-radius: 8px;
                     text-decoration: none;
-                    font-weight: var(--fw-regular);
-                    font-size: var(--fs-body);
-                    transition: background 0.15s, color 0.15s;
+                    font-weight: 500;
+                    font-size: 15px;
+                    transition: background .15s ease, color .15s ease;
+                }
+                .admin-sidebar-nav a > i {
+                    display: inline-grid;
+                    place-items: center;
+                    width: 36px;
+                    height: 36px;
+                    flex-shrink: 0;
+                    border-radius: 50%;
+                    background: var(--sky-tint-strong);
+                    color: var(--brand);
+                    font-size: 17px;
+                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+                    transition: background .15s ease, color .15s ease, box-shadow .15s ease;
                 }
                 .admin-sidebar-nav a:hover {
-                    background: rgba(0, 0, 0, 0.06);
-                    color: var(--sky-dark);
-                    opacity: 1;
+                    background: var(--sky-tint);
+                    color: var(--ink);
+                }
+                .admin-sidebar-nav a:hover > i {
+                    background: var(--surface);
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
                 }
                 .admin-sidebar-nav a.active {
-                    color: var(--sky-dark);
-                    background: rgba(0, 0, 0, 0.08);
-                    border-right-color: var(--sky);
-                    font-weight: var(--fw-semibold);
+                    background: var(--sky-tint-strong);
+                    color: var(--brand);
+                    font-weight: 600;
                 }
+                .admin-sidebar-nav a.active > i {
+                    background: var(--brand);
+                    color: #ffffff;
+                    box-shadow: 0 2px 4px rgba(1, 117, 162, 0.35);
+                }
+                .admin-sidebar-nav a:focus-visible {
+                    outline: none;
+                    box-shadow: 0 0 0 2px rgba(1, 171, 237, 0.3);
+                }
+
+                /* ===== Main ===== */
                 .admin-main {
                     flex: 1;
                     min-width: 0;
-                    padding: 40px;
-                    background: var(--surface);
+                    padding: 32px;
+                    background: var(--sky-tint);
                 }
                 .admin-main-inner {
                     max-width: 1200px;
                     margin: 0 auto;
                 }
                 .admin-title {
-                    margin-bottom: 24px;
-                    font-size: var(--fs-h1);
-                    font-weight: var(--fw-bold);
+                    margin: 0 0 24px;
+                    font-size: 24px;
+                    font-weight: 700;
+                    line-height: 1.25;
+                    letter-spacing: -0.01em;
+                    color: var(--ink);
                 }
 
+                /* ===== Dashboard cards ===== */
                 .dash-grid {
                     display: grid;
                     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-                    gap: 20px;
+                    gap: 16px;
                 }
                 .dash-card {
                     display: flex;
                     flex-direction: column;
-                    background: #ffffff;
+                    background: var(--surface);
+                    border: none;
+                    outline: none;
                     border-radius: 8px;
-                    padding: 24px;
-                    border: 1px solid var(--border);
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+                    padding: 20px;
+                    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+                    transition: box-shadow .15s ease, transform .15s ease;
+                }
+                .dash-card:hover {
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+                    transform: translateY(-2px);
                 }
                 .dash-card-header {
                     display: flex;
@@ -172,67 +219,85 @@ export default function DashboardLayout({ children, title }) {
                 }
                 .dash-card-header h3 {
                     margin: 0;
-                    font-size: var(--fs-h3);
-                    font-weight: var(--fw-semibold);
+                    font-size: 17px;
+                    font-weight: 600;
+                    line-height: 1.3;
+                    color: var(--ink);
+                    letter-spacing: -0.01em;
                 }
                 .dash-badge {
                     color: #ffffff;
                     padding: 4px 12px;
-                    border-radius: 100px;
-                    font-size: var(--fs-small);
-                    font-weight: var(--fw-semibold);
+                    border-radius: 999px;
+                    font-size: 12px;
+                    font-weight: 600;
                     white-space: nowrap;
+                    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+                    border: none;
                 }
                 .dash-card-stats {
                     display: flex;
-                    gap: 12px;
-                    margin-bottom: 20px;
+                    gap: 10px;
+                    margin-bottom: 16px;
                 }
                 .dash-stat {
                     flex: 1;
-                    background: #ffffff;
-                    padding: 16px;
-                    border-radius: 6px;
+                    background: var(--sky-tint-strong);
+                    padding: 14px 12px;
+                    border-radius: 8px;
+                    border: none;
                     text-align: center;
+                    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
                 }
                 .dash-stat-num {
-                    font-size: var(--fs-stat);
-                    font-weight: var(--fw-bold);
-                    color: var(--ink);
+                    font-size: 28px;
+                    font-weight: 700;
+                    line-height: 1;
+                    color: var(--brand);
                     margin-bottom: 4px;
                 }
                 .dash-stat-lbl {
-                    font-size: var(--fs-caption);
-                    font-weight: var(--fw-semibold);
+                    font-size: 12px;
+                    font-weight: 600;
                     color: var(--ink-muted);
                     text-transform: uppercase;
-                    letter-spacing: 0.1em;
+                    letter-spacing: 0.08em;
                 }
-
                 .dash-manage-btn {
-                    display: block;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
                     margin-top: auto;
                     width: 100%;
+                    min-height: 40px;
                     text-align: center;
                     background: var(--brand);
-                    color: var(--white);
-                    border: 2px solid var(--brand);
-                    border-radius: var(--radius);
-                    padding: 12px 16px;
-                    font-weight: var(--fw-bold);
-                    font-size: var(--fs-small);
-                    letter-spacing: 0.02em;
+                    color: #ffffff;
+                    border: none;
+                    outline: none;
+                    border-radius: 8px;
+                    padding: 10px 16px;
+                    font-weight: 600;
+                    font-size: 15px;
                     text-decoration: none;
                     white-space: normal;
-                    transition: background 0.18s, border-color 0.18s;
+                    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+                    transition: background .15s ease, box-shadow .15s ease, transform .15s ease;
                 }
                 .dash-manage-btn:hover {
-                    background: var(--brand-dark);
-                    border-color: var(--brand-dark);
-                    color: var(--white);
+                    background: var(--sky);
+                    color: #ffffff;
                     opacity: 1;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+                    transform: translateY(-1px);
+                }
+                .dash-manage-btn:focus-visible {
+                    outline: none;
+                    box-shadow: 0 0 0 2px rgba(1, 171, 237, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
                 }
 
+                /* ===== Mobile ===== */
                 @media (max-width: 768px) {
                     .mobile-sidebar-toggle {
                         display: flex;
@@ -247,10 +312,13 @@ export default function DashboardLayout({ children, title }) {
                         background: var(--brand);
                         color: #ffffff;
                         border: none;
-                        border-radius: 6px;
+                        border-radius: 50%;
                         cursor: pointer;
-                        font-size: var(--fs-h3);
-                        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                        font-size: 20px;
+                        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+                    }
+                    .mobile-sidebar-toggle:hover {
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), 0 6px 12px rgba(0, 0, 0, 0.1);
                     }
                     .admin-shell-inner {
                         flex-direction: column;
@@ -261,14 +329,13 @@ export default function DashboardLayout({ children, title }) {
                         left: 0;
                         width: 100%;
                         height: calc(100vh - ${NAVBAR_HEIGHT}px);
-                        border-right: none;
-                        border-bottom: 1px solid var(--border);
+                        border: none;
                         padding: 20px 0;
                         overflow-y: auto;
                         z-index: 998;
                         transform: translateX(-100%);
                         transition: transform 0.25s ease;
-                        box-shadow: 4px 0 16px rgba(0,0,0,0.08);
+                        box-shadow: 4px 0 16px rgba(0, 0, 0, 0.1);
                     }
                     .admin-sidebar.is-open {
                         transform: translateX(0);
@@ -277,20 +344,14 @@ export default function DashboardLayout({ children, title }) {
                         padding: 0 20px 16px;
                     }
                     .admin-sidebar-nav a {
-                        padding: 14px 20px;
-                        border-right: none;
-                        border-left: 3px solid transparent;
-                        font-size: var(--fs-body);
-                    }
-                    .admin-sidebar-nav a.active {
-                        border-right-color: transparent;
-                        border-left-color: var(--sky);
+                        padding: 10px 12px;
+                        font-size: 15px;
                     }
                     .admin-main {
                         padding: 72px 16px 24px;
                     }
                     .admin-title {
-                        font-size: var(--fs-h1);
+                        font-size: 22px;
                     }
                     .dash-card {
                         padding: 16px;
@@ -302,6 +363,25 @@ export default function DashboardLayout({ children, title }) {
                         padding: 12px;
                     }
                 }
+
+                @media (max-width: 480px) {
+                    .admin-main {
+                        padding: 68px 12px 20px;
+                    }
+                    .admin-title {
+                        font-size: 20px;
+                    }
+                    .dash-card-header h3 {
+                        font-size: 16px;
+                    }
+                    .dash-stat-num {
+                        font-size: 24px;
+                    }
+                    .dash-manage-btn {
+                        min-height: 44px;
+                    }
+                }
+
             `}</style>
         </>
     );

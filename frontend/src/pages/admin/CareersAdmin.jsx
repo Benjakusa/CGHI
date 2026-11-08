@@ -75,6 +75,17 @@ export default function CareersAdmin() {
         e.preventDefault();
         const isEdit = !!current.id;
         const url = isEdit ? `${API_BASE}/api/jobs/admin/${current.id}` : `${API_BASE}/api/jobs/admin`;
+        const roles = Array.isArray(current.roles) ? current.roles : [];
+        if (roles.length === 0) {
+            alert('Please add at least one role.');
+            return;
+        }
+        for (let i = 0; i < roles.length; i++) {
+            if (!roles[i].title || !roles[i].title.trim()) {
+                alert('Role ' + (i + 1) + ': title is required.');
+                return;
+            }
+        }
         fetch(url, {
             method: isEdit ? 'PUT' : 'POST',
             headers: { 
@@ -82,9 +93,20 @@ export default function CareersAdmin() {
                 'Authorization': `Bearer ${getToken()}` 
             },
             body: JSON.stringify({
-                ...current,
-                qualifications: Array.isArray(current.qualifications) ? current.qualifications : [],
-                preferred_experience: Array.isArray(current.preferred_experience) ? current.preferred_experience : []
+                department: current.department || '',
+                employment_type: current.employment_type || '',
+                apply_email: current.apply_email || '',
+                apply_subject: current.apply_subject || '',
+                closing_date: current.closing_date || null,
+                document_url: current.document_url || '',
+                published: current.published ? 1 : 0,
+                roles: roles.map((r) => ({
+                    title: r.title,
+                    location: r.location || '',
+                    description: r.description || '',
+                    qualifications: Array.isArray(r.qualifications) ? r.qualifications : [],
+                    preferred_experience: Array.isArray(r.preferred_experience) ? r.preferred_experience : [],
+                })),
             })
         })
         .then(r => {
@@ -134,7 +156,7 @@ export default function CareersAdmin() {
             }}>
                 <button 
                     className="btn-primary" 
-                    onClick={() => { setCurrent({ published: 1, qualifications: [], preferred_experience: [] }); setModalOpen(true); }}
+                    onClick={() => { setCurrent({ published: 1, roles: [{ title: '', location: '', description: '', qualifications: [], preferred_experience: [] }] }); setModalOpen(true); }}
                     style={{ 
                         width: isMobile ? '100%' : 'auto',
                         padding: '12px',
@@ -215,7 +237,7 @@ export default function CareersAdmin() {
                                             <i className={item.published ? 'bi bi-toggle-off' : 'bi bi-toggle-on'} style={{ marginRight: '4px' }}></i>
                                             {item.published ? 'Unpublish' : 'Publish'}
                                         </button>
-                                        <button type="button" aria-label={`Edit job: ${item.title}`} title="Edit job" onClick={() => { setCurrent({ ...item }); setModalOpen(true); }} style={{ 
+                                        <button type="button" aria-label={`Edit job: ${item.title}`} title="Edit job" onClick={() => { setCurrent({ ...item, roles: Array.isArray(item.roles) && item.roles.length > 0 ? item.roles.map(r => ({ title: r.title || '', location: r.location || '', description: r.description || '', qualifications: Array.isArray(r.qualifications) ? r.qualifications : [], preferred_experience: Array.isArray(r.preferred_experience) ? r.preferred_experience : [] })) : [{ title: '', location: '', description: '', qualifications: [], preferred_experience: [] }] }); setModalOpen(true); }} style={{ 
                                             background: 'none', 
                                             border: '1px solid var(--border)', 
                                             borderRadius: '4px', 
@@ -275,178 +297,43 @@ export default function CareersAdmin() {
                     }}>
                         <h2 style={{ marginBottom: '24px', fontSize: 'var(--fs-h1)' }}>{current.id ? 'Edit Job' : 'Add Job'}</h2>
                         <form onSubmit={handleSave}>
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Job Title *</label>
-                                <input required value={current.title || ''} onChange={e => setCurrent({ ...current, title: e.target.value })} style={{ 
-                                    width: '100%', 
-                                    padding: '10px', 
-                                    border: '1px solid var(--border)', 
-                                    borderRadius: '4px',
-                                    fontSize: 'var(--fs-body)'
-                                }} />
-                            </div>
+                            <h3 style={{ margin: '0 0 12px', fontSize: '16px', fontWeight: 600 }}>Advert details (shared across all roles)</h3>
 
-                            <div style={{ 
-                                display: 'flex', 
-                                flexDirection: isMobile ? 'column' : 'row',
-                                gap: isMobile ? '12px' : '16px', 
-                                marginBottom: '16px' 
-                            }}>
+                            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '12px' : '16px', marginBottom: '16px' }}>
                                 <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
                                     <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Department</label>
-                                    <input value={current.department || ''} onChange={e => setCurrent({ ...current, department: e.target.value })} style={{ 
-                                        width: '100%', 
-                                        padding: '10px', 
-                                        border: '1px solid var(--border)', 
-                                        borderRadius: '4px',
-                                        fontSize: 'var(--fs-body)'
-                                    }} />
+                                    <input value={current.department || ''} onChange={e => setCurrent({ ...current, department: e.target.value })} style={{ width: '100%', padding: '10px', border: '1px solid var(--border)', borderRadius: '4px', fontSize: 'var(--fs-body)' }} />
                                 </div>
                                 <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Location</label>
-                                    <input value={current.location || ''} onChange={e => setCurrent({ ...current, location: e.target.value })} style={{ 
-                                        width: '100%', 
-                                        padding: '10px', 
-                                        border: '1px solid var(--border)', 
-                                        borderRadius: '4px',
-                                        fontSize: 'var(--fs-body)'
-                                    }} />
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Employment Type</label>
+                                    <input value={current.employment_type || ''} onChange={e => setCurrent({ ...current, employment_type: e.target.value })} placeholder="Full-time, Contract, etc." style={{ width: '100%', padding: '10px', border: '1px solid var(--border)', borderRadius: '4px', fontSize: 'var(--fs-body)' }} />
                                 </div>
                             </div>
 
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Employment Type</label>
-                                <input value={current.employment_type || ''} onChange={e => setCurrent({ ...current, employment_type: e.target.value })} style={{ 
-                                    width: '100%', 
-                                    padding: '10px', 
-                                    border: '1px solid var(--border)', 
-                                    borderRadius: '4px',
-                                    fontSize: 'var(--fs-body)'
-                                }} placeholder="Full-time, Contract, etc." />
-                            </div>
-
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Job Description</label>
-                                <textarea rows="4" value={current.description || ''} onChange={e => setCurrent({ ...current, description: e.target.value })} style={{ 
-                                    width: '100%', 
-                                    padding: '10px', 
-                                    border: '1px solid var(--border)', 
-                                    borderRadius: '4px', 
-                                    fontFamily: 'inherit',
-                                    fontSize: 'var(--fs-body)'
-                                }} />
-                            </div>
-
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Qualifications (comma separated)</label>
-                                <input value={Array.isArray(current.qualifications) ? current.qualifications.join(', ') : ''} 
-                                    onChange={e => setCurrent({ ...current, qualifications: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} 
-                                    style={{ 
-                                        width: '100%', 
-                                        padding: '10px', 
-                                        border: '1px solid var(--border)', 
-                                        borderRadius: '4px',
-                                        fontSize: 'var(--fs-body)'
-                                    }} 
-                                    placeholder="Qualification 1, Qualification 2, ..." />
-                            </div>
-
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Preferred Experience (comma separated)</label>
-                                <input value={Array.isArray(current.preferred_experience) ? current.preferred_experience.join(', ') : ''} 
-                                    onChange={e => setCurrent({ ...current, preferred_experience: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} 
-                                    style={{ 
-                                        width: '100%', 
-                                        padding: '10px', 
-                                        border: '1px solid var(--border)', 
-                                        borderRadius: '4px',
-                                        fontSize: 'var(--fs-body)'
-                                    }} 
-                                    placeholder="Experience 1, Experience 2, ..." />
-                            </div>
-
-                            <div style={{ 
-                                display: 'flex', 
-                                flexDirection: isMobile ? 'column' : 'row',
-                                gap: isMobile ? '12px' : '16px', 
-                                marginBottom: '16px' 
-                            }}>
+                            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '12px' : '16px', marginBottom: '16px' }}>
                                 <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
                                     <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Apply Email</label>
-                                    <input value={current.apply_email || ''} onChange={e => setCurrent({ ...current, apply_email: e.target.value })} style={{ 
-                                        width: '100%', 
-                                        padding: '10px', 
-                                        border: '1px solid var(--border)', 
-                                        borderRadius: '4px',
-                                        fontSize: 'var(--fs-body)'
-                                    }} placeholder="jobs@example.com" />
+                                    <input value={current.apply_email || ''} onChange={e => setCurrent({ ...current, apply_email: e.target.value })} placeholder="jobs@example.com" style={{ width: '100%', padding: '10px', border: '1px solid var(--border)', borderRadius: '4px', fontSize: 'var(--fs-body)' }} />
                                 </div>
                                 <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
                                     <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Email Subject</label>
-                                    <input value={current.apply_subject || ''} onChange={e => setCurrent({ ...current, apply_subject: e.target.value })} style={{ 
-                                        width: '100%', 
-                                        padding: '10px', 
-                                        border: '1px solid var(--border)', 
-                                        borderRadius: '4px',
-                                        fontSize: 'var(--fs-body)'
-                                    }} placeholder="Application - Job Title" />
+                                    <input value={current.apply_subject || ''} onChange={e => setCurrent({ ...current, apply_subject: e.target.value })} placeholder="Application - 2026 Cohort" style={{ width: '100%', padding: '10px', border: '1px solid var(--border)', borderRadius: '4px', fontSize: 'var(--fs-body)' }} />
                                 </div>
                             </div>
 
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Closing Date</label>
-                                <input type="date" value={current.closing_date || ''} onChange={e => setCurrent({ ...current, closing_date: e.target.value })} style={{ 
-                                    width: '100%', 
-                                    padding: '10px', 
-                                    border: '1px solid var(--border)', 
-                                    borderRadius: '4px',
-                                    fontSize: 'var(--fs-body)'
-                                }} />
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Closing Date (per advert)</label>
+                                <input type="date" value={current.closing_date || ''} onChange={e => setCurrent({ ...current, closing_date: e.target.value })} style={{ width: '100%', padding: '10px', border: '1px solid var(--border)', borderRadius: '4px', fontSize: 'var(--fs-body)' }} />
                             </div>
 
-                            {/* Document Upload Section */}
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Attach Document (PDF/Image)</label>
-                                
-                                <div style={{ 
-                                    display: 'flex', 
-                                    flexDirection: isMobile ? 'column' : 'row',
-                                    gap: '10px',
-                                    alignItems: isMobile ? 'stretch' : 'center',
-                                    marginBottom: '10px'
-                                }}>
-                                    <input
-                                        type="file"
-                                        ref={fileInputRef}
-                                        accept="image/*,.pdf"
-                                        onChange={handleFileUpload}
-                                        style={{ 
-                                            flex: 1,
-                                            padding: isMobile ? '8px' : '8px',
-                                            border: '1px solid var(--border)',
-                                            borderRadius: '4px',
-                                            fontSize: 'var(--fs-small)'
-                                        }}
-                                    />
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Attach Document (PDF/Image, shared)</label>
+                                <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '10px', alignItems: isMobile ? 'stretch' : 'center', marginBottom: '10px' }}>
+                                    <input type="file" ref={fileInputRef} accept="image/*,.pdf" onChange={handleFileUpload} style={{ flex: 1, padding: '8px', border: '1px solid var(--border)', borderRadius: '4px', fontSize: 'var(--fs-small)' }} />
                                     {uploading && <span style={{ color: '#01abed', fontSize: 'var(--fs-small)' }}>Uploading...</span>}
                                 </div>
-
-                                <div style={{ marginTop: '8px' }}>
-                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: 'var(--fs-small)', color: 'var(--ink-muted)' }}>Or enter document URL directly:</label>
-                                    <input 
-                                        value={current.document_url || ''} 
-                                        onChange={e => setCurrent({ ...current, document_url: e.target.value })} 
-                                        placeholder="https://example.com/document.pdf" 
-                                        style={{ 
-                                            width: '100%', 
-                                            padding: '10px', 
-                                            border: '1px solid var(--border)', 
-                                            borderRadius: '4px',
-                                            fontSize: 'var(--fs-body)'
-                                        }} 
-                                    />
-                                </div>
-
+                                <label style={{ display: 'block', marginBottom: '4px', fontSize: 'var(--fs-small)', color: 'var(--ink-muted)' }}>Or enter document URL directly:</label>
+                                <input value={current.document_url || ''} onChange={e => setCurrent({ ...current, document_url: e.target.value })} placeholder="https://example.com/document.pdf" style={{ width: '100%', padding: '10px', border: '1px solid var(--border)', borderRadius: '4px', fontSize: 'var(--fs-body)' }} />
                                 {current.document_url && (
                                     <div style={{ marginTop: '10px' }}>
                                         {current.document_url.match(/\.(pdf)$/i) ? (
@@ -455,58 +342,90 @@ export default function CareersAdmin() {
                                                 View Document (PDF)
                                             </a>
                                         ) : (
-                                            <img src={resolveAssetUrl(current.document_url)} alt="Preview" style={{ 
-                                                maxWidth: '100%', 
-                                                maxHeight: '100px', 
-                                                objectFit: 'contain',
-                                                border: '1px solid var(--border)',
-                                                borderRadius: '4px',
-                                                padding: '4px'
-                                            }} />
+                                            <img src={resolveAssetUrl(current.document_url)} alt="Preview" style={{ maxWidth: '100%', maxHeight: '100px', objectFit: 'contain', border: '1px solid var(--border)', borderRadius: '4px', padding: '4px' }} />
                                         )}
                                     </div>
                                 )}
                             </div>
 
-                            <div style={{ 
-                                display: 'flex', 
-                                flexDirection: isMobile ? 'column' : 'row',
-                                gap: isMobile ? '12px' : '16px', 
-                                marginBottom: '24px' 
-                            }}>
-                                <div style={{ 
-                                    flex: 1, 
-                                    display: 'flex', 
-                                    alignItems: 'center',
-                                    width: isMobile ? '100%' : 'auto'
-                                }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>
-                                        <input type="checkbox" checked={!!current.published} onChange={e => setCurrent({ ...current, published: e.target.checked ? 1 : 0 })} style={{ width: '18px', height: '18px' }} />
-                                        Published
-                                    </label>
-                                </div>
+                            <div style={{ marginBottom: '24px' }}>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>
+                                    <input type="checkbox" checked={!!current.published} onChange={e => setCurrent({ ...current, published: e.target.checked ? 1 : 0 })} style={{ width: '18px', height: '18px' }} />
+                                    Published
+                                </label>
                             </div>
 
-                            <div style={{ 
-                                display: 'flex', 
-                                flexDirection: isMobile ? 'column-reverse' : 'row',
-                                justifyContent: 'flex-end', 
-                                gap: '12px' 
-                            }}>
-                                <button type="button" onClick={() => setModalOpen(false)} style={{ 
-                                    padding: '12px 20px', 
-                                    border: '1px solid var(--border)', 
-                                    background: '#ffffff', 
-                                    borderRadius: '4px', 
-                                    cursor: 'pointer',
-                                    width: isMobile ? '100%' : 'auto',
-                                    fontSize: 'var(--fs-body)'
-                                }}>Cancel</button>
-                                <button type="submit" className="btn-primary" style={{ 
-                                    width: isMobile ? '100%' : 'auto',
-                                    padding: '12px 24px',
-                                    fontSize: 'var(--fs-body)'
-                                }}>Save Job</button>
+                            <h3 style={{ margin: '0 0 12px', fontSize: '16px', fontWeight: 600 }}>Roles (one or more)</h3>
+
+                            {(current.roles || []).map((role, idx) => (
+                                <div key={idx} style={{ marginBottom: '16px', padding: '16px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--sky-tint)' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                                        <strong style={{ fontSize: 'var(--fs-body)' }}>Role {idx + 1}</strong>
+                                        {(current.roles || []).length > 1 && (
+                                            <button type="button" onClick={() => {
+                                                const next = current.roles.filter((_, i) => i !== idx);
+                                                setCurrent({ ...current, roles: next });
+                                            }} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer', fontSize: 'var(--fs-small)' }}>
+                                                <i className="bi bi-x-lg" style={{ marginRight: '4px' }}></i> Remove
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '12px' : '16px', marginBottom: '12px' }}>
+                                        <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
+                                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Job Title *</label>
+                                            <input required value={role.title || ''} onChange={e => {
+                                                const next = [...current.roles];
+                                                next[idx] = { ...next[idx], title: e.target.value };
+                                                setCurrent({ ...current, roles: next });
+                                            }} style={{ width: '100%', padding: '10px', border: '1px solid var(--border)', borderRadius: '4px', fontSize: 'var(--fs-body)' }} />
+                                        </div>
+                                        <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
+                                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Location</label>
+                                            <input value={role.location || ''} onChange={e => {
+                                                const next = [...current.roles];
+                                                next[idx] = { ...next[idx], location: e.target.value };
+                                                setCurrent({ ...current, roles: next });
+                                            }} style={{ width: '100%', padding: '10px', border: '1px solid var(--border)', borderRadius: '4px', fontSize: 'var(--fs-body)' }} />
+                                        </div>
+                                    </div>
+
+                                    <div style={{ marginBottom: '12px' }}>
+                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Job Description</label>
+                                        <textarea rows="3" value={role.description || ''} onChange={e => {
+                                            const next = [...current.roles];
+                                            next[idx] = { ...next[idx], description: e.target.value };
+                                            setCurrent({ ...current, roles: next });
+                                        }} style={{ width: '100%', padding: '10px', border: '1px solid var(--border)', borderRadius: '4px', fontFamily: 'inherit', fontSize: 'var(--fs-body)' }} />
+                                    </div>
+
+                                    <div style={{ marginBottom: '12px' }}>
+                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Qualifications (comma separated)</label>
+                                        <input value={Array.isArray(role.qualifications) ? role.qualifications.join(', ') : ''} onChange={e => {
+                                            const next = [...current.roles];
+                                            next[idx] = { ...next[idx], qualifications: e.target.value.split(',').map(s => s.trim()).filter(Boolean) };
+                                            setCurrent({ ...current, roles: next });
+                                        }} placeholder="Qualification 1, Qualification 2, ..." style={{ width: '100%', padding: '10px', border: '1px solid var(--border)', borderRadius: '4px', fontSize: 'var(--fs-body)' }} />
+                                    </div>
+
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Preferred Experience (comma separated)</label>
+                                        <input value={Array.isArray(role.preferred_experience) ? role.preferred_experience.join(', ') : ''} onChange={e => {
+                                            const next = [...current.roles];
+                                            next[idx] = { ...next[idx], preferred_experience: e.target.value.split(',').map(s => s.trim()).filter(Boolean) };
+                                            setCurrent({ ...current, roles: next });
+                                        }} placeholder="Experience 1, Experience 2, ..." style={{ width: '100%', padding: '10px', border: '1px solid var(--border)', borderRadius: '4px', fontSize: 'var(--fs-body)' }} />
+                                    </div>
+                                </div>
+                            ))}
+
+                            <button type="button" onClick={() => setCurrent({ ...current, roles: [...(current.roles || []), { title: '', location: '', description: '', qualifications: [], preferred_experience: [] }] })} style={{ marginBottom: '24px', padding: '10px 16px', border: '1px dashed var(--border)', borderRadius: '6px', background: 'transparent', cursor: 'pointer', fontSize: 'var(--fs-body)', width: '100%' }}>
+                                <i className="bi bi-plus-circle" style={{ marginRight: '6px' }}></i> Add another role
+                            </button>
+
+                            <div style={{ display: 'flex', flexDirection: isMobile ? 'column-reverse' : 'row', justifyContent: 'flex-end', gap: '12px' }}>
+                                <button type="button" onClick={() => setModalOpen(false)} style={{ padding: '12px 20px', border: '1px solid var(--border)', background: '#ffffff', borderRadius: '4px', cursor: 'pointer', width: isMobile ? '100%' : 'auto', fontSize: 'var(--fs-body)' }}>Cancel</button>
+                                <button type="submit" className="btn-primary" style={{ width: isMobile ? '100%' : 'auto', padding: '12px 24px', fontSize: 'var(--fs-body)' }}>Save advert</button>
                             </div>
                         </form>
                     </div>
