@@ -116,6 +116,40 @@ async function cmsDetailRoutes() {
   }
 }
 
+/** Team profiles are dynamic CMS records and must be individually indexable. */
+async function cmsTeamRoutes() {
+  let apiBase = process.env.VITE_API_BASE_URL?.trim();
+  if (!apiBase) {
+    try {
+      const env = await readFile(resolve(root, '.env'), 'utf8');
+      apiBase = env.match(/^VITE_API_BASE_URL=(.*)$/m)?.[1]?.trim().replace(/^['"]|['"]$/g, '');
+    } catch { /* Shell-provided value is optional for content-only builds. */ }
+  }
+  if (!apiBase || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(apiBase)) return [];
+
+  try {
+    const response = await fetch(`${apiBase.replace(/\/+$/, '')}/api/team`, {
+      signal: AbortSignal.timeout(10000),
+      headers: { Accept: 'application/json' },
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const members = await response.json();
+    if (!Array.isArray(members)) throw new Error('API returned a non-list response');
+    const nameToSlugSafe = (name) => String(name || '')
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    return members
+      .filter((m) => m && nameToSlugSafe(m.name))
+      .map((m) => `/leadership/${nameToSlugSafe(m.name)}`);
+  } catch (error) {
+    console.warn(`[sitemap] Could not fetch team profile routes (${error.message}); skipping.`);
+    return [];
+  }
+}
+
 async function baseUrl() {
   const fromEnv = process.env.VITE_SITE_URL?.trim();
   if (fromEnv) return fromEnv.replace(/\/+$/, '');
@@ -189,12 +223,14 @@ async function main() {
   const routes = await routesFromNavigation();
   const details = await detailRoutes();
   const cmsDetails = await cmsDetailRoutes();
+  const teamDetails = await cmsTeamRoutes();
 
   const entries = [
     ...routes.map((r) => ({ ...r })),
     // Detail pages are not in the nav, so they get conservative values.
     ...details.map((path) => ({ path, priority: '0.6', changefreq: 'monthly' })),
     ...cmsDetails.map((path) => ({ path, priority: '0.6', changefreq: 'monthly' })),
+    ...teamDetails.map((path) => ({ path, priority: '0.5', changefreq: 'monthly' })),
   ].filter((entry) => !entry.path.startsWith('/admin') && entry.path !== '/404');
 
   const urls = [...new Map(entries.map((e) => [e.path, e])).values()].map((entry) => {

@@ -9,6 +9,7 @@ import { resolveAssetUrl } from '../context/AuthContext';
 import { PAGE_META } from '../content/navigation';
 import ShareProfileButton from '../components/ShareProfileButton';
 import { BRAND } from '../config/site';
+import { nameToSlug } from '../lib/slug';
 
 const META = PAGE_META['/leadership'];
 
@@ -23,11 +24,11 @@ function getSocialSymbol(label, url) {
 }
 
 export default function TeamProfile() {
-  const { id } = useParams();
+  const { id: slug } = useParams();
   const team = useApi('/api/team', []);
-  const member = (team.data || []).find((person) => String(person.id) === id);
+  const member = (team.data || []).find((person) => nameToSlug(person.name) === slug);
   const links = Array.isArray(member?.social_links) ? member.social_links : [];
-  const canonicalPath = `/leadership/${id}`;
+  const canonicalPath = member ? `/leadership/${nameToSlug(member.name)}` : `/leadership/${slug}`;
   const jsonLd = [
     ...BASE_JSONLD,
     pageJsonLd({ name: member?.name || 'Team profile', path: canonicalPath, description: member?.biography || META.description }),
@@ -61,10 +62,12 @@ export default function TeamProfile() {
     </header>
     <section className="section-surface" aria-live="polite">
       <div className="wrap">
-        {member ? <article className="team-profile">
-          {member.image_url
-            ? <SmartImage className="team-profile-photo" src={resolveAssetUrl(member.image_url)} alt={`Portrait of ${member.name}`} width="720" height="900" />
-            : <div className="team-profile-photo team-image-fallback" aria-hidden="true"><i className="bi bi-person" /></div>}
+        {member ? <article className="team-profile-card">
+          <div className="team-profile-media">
+            {member.image_url
+              ? <SmartImage className="team-profile-photo" src={resolveAssetUrl(member.image_url)} alt={`Portrait of ${member.name}`} width="900" height="1200" />
+              : <div className="team-profile-photo team-image-fallback" aria-hidden="true"><i className="bi bi-person" /></div>}
+          </div>
           <div className="team-profile-copy">
             <h1>{member.name}</h1>
             <p className="team-profile-role">{member.role}</p>
@@ -75,11 +78,13 @@ export default function TeamProfile() {
               {member.email && <a href={`mailto:${member.email}`}>{member.email}</a>}
               {member.phone && <a href={`tel:${member.phone.replace(/[^+\d]/g, '')}`}>{member.phone}</a>}
             </div>}
-            {links.length > 0 && <nav className="team-profile-socials" aria-label="Social media links">
-              {links.map((link) => <a key={`${link.label}-${link.url}`} href={link.url} target="_blank" rel="noopener noreferrer" aria-label={`${link.label} profile`} title={link.label}>{getSocialSymbol(link.label, link.url)}</a>)}
-            </nav>}
-            <ShareProfileButton name={member.name} url={canonicalPath} />
-            <p><SmartLink className="text-link" to="/leadership">← Back to Leadership &amp; Team</SmartLink></p>
+            <div className="team-profile-foot">
+              {links.length > 0 && <nav className="team-profile-socials" aria-label="Social media links">
+                {links.map((link) => <a key={`${link.label}-${link.url}`} href={link.url} target="_blank" rel="noopener noreferrer" aria-label={`${link.label} profile`} title={link.label}>{getSocialSymbol(link.label, link.url)}</a>)}
+              </nav>}
+              <ShareProfileButton name={member.name} url={canonicalPath} imageUrl={member.image_url ? resolveAssetUrl(member.image_url) : undefined} />
+            </div>
+            <p className="team-profile-back"><SmartLink className="text-link" to="/leadership">← Back to Leadership &amp; Team</SmartLink></p>
           </div>
         </article> : team.loading
           ? <p>Loading team profile…</p>

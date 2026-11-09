@@ -22,6 +22,16 @@ async function getJson(path) {
 }
 
 /**
+ * Kick off a request before React mounts so it is already in flight (or
+ * resolved) by the time a component calls useApi() with the same path.
+ */
+export function primeApi(path) {
+  getJson(path).catch(() => {
+    // Swallow here; useApi() will surface the error to the component.
+  });
+}
+
+/**
  * @param {string} path  API path, e.g. '/api/news'
  * @param {*} fallback    value used when the request fails or returns null
  */

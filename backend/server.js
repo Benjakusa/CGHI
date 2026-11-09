@@ -62,7 +62,7 @@ const corsOptions = {
   origin(origin, callback) {
     if (!origin) return callback(null, true);
     if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
-    if (/^http:\/\/(\d{1,3}\.){3}\d{1,3}:(5173|3000|8080)$/.test(origin)) return callback(null, true);
+    if (/^http:\/\/(\d{1,3}\.){3}\d{1,3}:(5173|3000|4179|8080)$/.test(origin)) return callback(null, true);
     return callback(new Error(`Origin ${origin} not allowed by CORS`));
   },
   credentials: true,

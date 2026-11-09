@@ -503,27 +503,6 @@ export default function Careers() {
                                 })}
                             </div>
                         )}
-
-                        <h2 style={{ marginBottom: '24px' }}>Technical Areas of Work</h2>
-                        <ul className="tech-area-list" aria-label="Technical areas at CGHPI">
-                            <li>Epidemic &amp; pandemic intelligence</li>
-                            <li>IHR 2005, JEE, SPAR, NAPHS</li>
-                            <li>7-1-7 outbreak detection &amp; response monitoring</li>
-                            <li>IDSR and syndromic surveillance</li>
-                            <li>Event-based and community-based surveillance</li>
-                            <li>One Health surveillance and integration</li>
-                            <li>Zoonotic disease detection and response</li>
-                            <li>Climate-sensitive disease early warning</li>
-                            <li>Simulation exercises &amp; tabletop exercises</li>
-                            <li>AI/ML in epidemic forecasting</li>
-                            <li>Digital health tools and dashboards</li>
-                            <li>GIS and geospatial health analysis</li>
-                            <li>Risk communication &amp; community engagement</li>
-                            <li>Pandemic Fund proposal development</li>
-                            <li>Public health emergency management</li>
-                            <li>Data science &amp; epidemiological analysis</li>
-                            <li>Technical writing &amp; scientific communication</li>
-                        </ul>
                     </div>
                 </section>
 

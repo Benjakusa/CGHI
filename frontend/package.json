@@ -12,7 +12,8 @@
     "lint": "oxlint",
     "package:cpanel": "npm run build && node scripts/package-cpanel.mjs",
     "preview": "vite preview",
-    "sitemap": "node scripts/generate-sitemap.mjs"
+    "sitemap": "node scripts/generate-sitemap.mjs",
+    "postbuild": "node scripts/prerender-crawlers.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.4",

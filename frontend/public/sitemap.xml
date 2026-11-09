@@ -117,6 +117,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://cghpi.org/news/operationalizing-7-1-7-kenya-s-shift-from-metrics-and-timelines-to-decision-intelligence</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://cghpi.org/news/kenya-validates-groundbreaking-decision-making-tool-for-public-health-emergencies-dmt-phe</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -137,26 +142,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://cghpi.org/news/what-the-u-s-advancing-global-health-initiative-means-for-africa-s-health-security-and-sov</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://cghpi.org/news/kenya-launches-naphs-ii-and-knphi-strategic-plan-to-strengthen-epidemic-intelligence-and-d</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://cghpi.org/news/from-detection-to-decision-how-kenya-is-transforming-public-health-emergency-response-with</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://cghpi.org/news/development-and-evaluation-of-an-artificial-intelligence-assisted-decision-support-system-</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://cghpi.org/news/strengthening-kenya-s-health-security-through-validation-of-the-national-action-plan-for-h</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -172,13 +157,48 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://cghpi.org/news/what-the-u-s-advancing-global-health-initiative-means-for-africa-s-health-security-and-sov</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://cghpi.org/news/from-detection-to-decision-how-kenya-is-transforming-public-health-emergency-response-with</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://cghpi.org/news/the-first-100-days-why-the-drc-ebola-epidemic-is-still-accelerating</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://cghpi.org/news/operationalizing-7-1-7-kenya-s-shift-from-metrics-and-timelines-to-decision-intelligence</loc>
+    <loc>https://cghpi.org/news/kenya-launches-naphs-ii-and-knphi-strategic-plan-to-strengthen-epidemic-intelligence-and-d</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://cghpi.org/news/development-and-evaluation-of-an-artificial-intelligence-assisted-decision-support-system-</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://cghpi.org/leadership/dr-andrew-g-thaiyah</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://cghpi.org/leadership/dr-ian-njeru</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://cghpi.org/leadership/james-magige</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://cghpi.org/leadership/benard-oloo-ochieng</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 </urlset>

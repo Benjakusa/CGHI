@@ -1,12 +1,31 @@
 import React, { useState } from 'react';
 
-export default function ShareProfileButton({ name, url, compact = false }) {
+export default function ShareProfileButton({ name, url, imageUrl, compact = false }) {
   const [status, setStatus] = useState('');
   const share = async () => {
     const profileUrl = new URL(url, window.location.origin).href;
     try {
-      if (navigator.share) await navigator.share({ title: `${name} | CGHI`, url: profileUrl });
-      else {
+      if (navigator.share) {
+        const payload = { title: `${name} | CGHI`, url: profileUrl };
+        // Fetch the person's photo and attach it as a file so the shared card
+        // shows the individual, not the site logo.
+        if (imageUrl && typeof File !== 'undefined' && navigator.canShare) {
+          try {
+            const res = await fetch(imageUrl, { mode: 'cors' });
+            if (res.ok) {
+              const blob = await res.blob();
+              const ext = (blob.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
+              const file = new File([blob], `${name.replace(/\s+/g, '-').toLowerCase()}.${ext}`, { type: blob.type });
+              if (navigator.canShare({ files: [file] })) {
+                payload.files = [file];
+              }
+            }
+          } catch {
+            // If the image can't be fetched (CORS etc.), fall back to title+url.
+          }
+        }
+        await navigator.share(payload);
+      } else {
         await navigator.clipboard.writeText(profileUrl);
         setStatus('Profile link copied');
         window.setTimeout(() => setStatus(''), 2500);

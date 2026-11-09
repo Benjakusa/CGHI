@@ -60,10 +60,10 @@ try {
 
     const result = spawnSync(chrome, [
       '--headless', '--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage',
-      '--disable-crash-reporter', '--disable-breakpad', '--disable-web-security',
-      `--user-data-dir=${profile}`, '--virtual-time-budget=8000', '--timeout=15000',
+      '--disable-crash-reporter', '--disable-breakpad', '--disable-background-networking', '--no-first-run',
+      `--user-data-dir=${profile}`, '--virtual-time-budget=15000', '--timeout=30000',
       '--dump-dom', `${origin}${path}`,
-    ], { encoding: 'utf8', timeout: 25000, maxBuffer: 24 * 1024 * 1024 });
+    ], { encoding: 'utf8', timeout: 45000, maxBuffer: 24 * 1024 * 1024 });
 
     if (result.error || result.status !== 0 || !result.stdout.includes('<div id="root">')) {
       throw new Error(`[prerender] Chrome could not render ${path}: ${result.error?.message || result.stderr?.slice(-500) || `exit ${result.status}`}`);
