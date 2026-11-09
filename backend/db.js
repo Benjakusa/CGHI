@@ -167,6 +167,7 @@ async function initDb() {
   await createSchema();
   // Idempotent column additions on tables that pre-date their server.js usage.
   await query(`
+    ALTER TABLE jobs ADD COLUMN IF NOT EXISTS instructions TEXT;
     ALTER TABLE job_applications ADD COLUMN IF NOT EXISTS job_title TEXT;
     ALTER TABLE job_applications ADD COLUMN IF NOT EXISTS cover_letter_url TEXT;
     ALTER TABLE job_applications ADD COLUMN IF NOT EXISTS certificates_urls TEXT;

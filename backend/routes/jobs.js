@@ -35,6 +35,7 @@ async function enrich(job) {
     apply_subject: job.apply_subject || '',
     closing_date: job.closing_date,
     document_url: job.document_url || '',
+    instructions: job.instructions || '',
     published: job.published,
     created_at: job.created_at,
     updated_at: job.updated_at,
@@ -106,6 +107,15 @@ router.get('/admin/:id', auth, async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+/* -------- Public: single advert -------- */
+router.get('/:id', async (req, res, next) => {
+  try {
+    const job = await db.get('SELECT * FROM jobs WHERE id=$1 AND published=1', [req.params.id]);
+    if (!job) return res.status(404).json({ error: 'Not found.' });
+    res.json(await enrich(job));
+  } catch (e) { next(e); }
+});
+
 /* -------- Create -------- */
 router.post('/admin', auth, async (req, res, next) => {
   const client = await db.pool.connect();
@@ -115,14 +125,20 @@ router.post('/admin', auth, async (req, res, next) => {
     const err = validateRoles(roles);
     if (err) { client.release(); return res.status(400).json({ error: err }); }
 
+    // A single-role advert takes its title from the role. A multi-role advert
+    // must supply its own advert title, because no single role names it.
+    const advertTitle = (b.title && String(b.title).trim())
+      || (roles.length === 1 ? roles[0].title.trim() : '');
+    if (!advertTitle) { client.release(); return res.status(400).json({ error: 'Advert title is required when there is more than one role.' }); }
+
     await client.query('BEGIN');
     const inserted = await client.query(
       `INSERT INTO jobs (title, department, location, employment_type, description,
                          qualifications, preferred_experience, apply_email, apply_subject,
-                         closing_date, document_url, published, updated_at)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) RETURNING id`,
+                         closing_date, document_url, published, instructions, updated_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING id`,
       [
-        roles[0].title.trim(),
+        advertTitle,
         b.department || '',
         roles[0].location || '',
         b.employment_type || '',
@@ -134,6 +150,7 @@ router.post('/admin', auth, async (req, res, next) => {
         b.closing_date || null,
         b.document_url || '',
         b.published ? 1 : 0,
+        b.instructions || '',
         now(),
       ],
     );
@@ -164,14 +181,18 @@ router.put('/admin/:id', auth, async (req, res, next) => {
     const err = validateRoles(roles);
     if (err) { client.release(); return res.status(400).json({ error: err }); }
 
+    const advertTitle = (b.title && String(b.title).trim())
+      || (roles.length === 1 ? roles[0].title.trim() : '');
+    if (!advertTitle) { client.release(); return res.status(400).json({ error: 'Advert title is required when there is more than one role.' }); }
+
     await client.query('BEGIN');
     await client.query(
       `UPDATE jobs SET title=$1, department=$2, location=$3, employment_type=$4,
                        description=$5, qualifications=$6, preferred_experience=$7,
                        apply_email=$8, apply_subject=$9, closing_date=$10,
-                       document_url=$11, published=$12, updated_at=$13 WHERE id=$14`,
+                       document_url=$11, published=$12, instructions=$13, updated_at=$14 WHERE id=$15`,
       [
-        roles[0].title.trim(),
+        advertTitle,
         b.department || '',
         roles[0].location || '',
         b.employment_type || '',

@@ -31,6 +31,7 @@ const TeamProfile = lazy(() => import('./pages/TeamProfile'));
 const Resources = lazy(() => import('./pages/Resources'));
 const PartnerWithUs = lazy(() => import('./pages/PartnerWithUs'));
 const Careers = lazy(() => import('./pages/Careers'));
+const CareerDetail = lazy(() => import('./pages/CareerDetail'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const Accessibility = lazy(() => import('./pages/Accessibility'));
@@ -157,6 +158,7 @@ function AppRoutes() {
         <Route path="/resources" element={<Resources />} />
         <Route path="/partner-with-us" element={<PartnerWithUs />} />
         <Route path="/careers" element={<Careers />} />
+        <Route path="/careers/:id" element={<CareerDetail />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/accessibility" element={<Accessibility />} />

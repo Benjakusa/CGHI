@@ -52,7 +52,7 @@ export default function CareersAdmin() {
         formData.append('file', file);
 
         try {
-            const response = await fetch(`${API_BASE}/api/upload`, {
+            const response = await fetch(`${API_BASE}/api/upload/file`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${getToken()}` },
                 body: formData
@@ -86,6 +86,10 @@ export default function CareersAdmin() {
                 return;
             }
         }
+        if (roles.length > 1 && (!current.title || !current.title.trim())) {
+            alert('Please enter an advert title (required when there is more than one role).');
+            return;
+        }
         fetch(url, {
             method: isEdit ? 'PUT' : 'POST',
             headers: { 
@@ -93,12 +97,14 @@ export default function CareersAdmin() {
                 'Authorization': `Bearer ${getToken()}` 
             },
             body: JSON.stringify({
+                title: (Array.isArray(current.roles) && current.roles.length > 1) ? (current.title || '') : '',
                 department: current.department || '',
                 employment_type: current.employment_type || '',
                 apply_email: current.apply_email || '',
                 apply_subject: current.apply_subject || '',
                 closing_date: current.closing_date || null,
                 document_url: current.document_url || '',
+                instructions: current.instructions || '',
                 published: current.published ? 1 : 0,
                 roles: roles.map((r) => ({
                     title: r.title,
@@ -355,6 +361,14 @@ export default function CareersAdmin() {
                                 </label>
                             </div>
 
+                            {(current.roles || []).length > 1 && (
+                                <div style={{ marginBottom: '16px' }}>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Advert Title *</label>
+                                    <input value={current.title || ''} onChange={e => setCurrent({ ...current, title: e.target.value })} placeholder="e.g. Public Health Opportunities - 2026 Cohort" style={{ width: '100%', padding: '10px', border: '1px solid var(--border)', borderRadius: '4px', fontSize: 'var(--fs-body)' }} />
+                                    <p style={{ margin: '6px 0 0', fontSize: 'var(--fs-small)', color: 'var(--ink-muted)' }}>Shown as the advert heading on the Careers page. Required because this advert has multiple roles.</p>
+                                </div>
+                            )}
+
                             <h3 style={{ margin: '0 0 12px', fontSize: '16px', fontWeight: 600 }}>Roles (one or more)</h3>
 
                             {(current.roles || []).map((role, idx) => (
@@ -422,6 +436,11 @@ export default function CareersAdmin() {
                             <button type="button" onClick={() => setCurrent({ ...current, roles: [...(current.roles || []), { title: '', location: '', description: '', qualifications: [], preferred_experience: [] }] })} style={{ marginBottom: '24px', padding: '10px 16px', border: '1px dashed var(--border)', borderRadius: '6px', background: 'transparent', cursor: 'pointer', fontSize: 'var(--fs-body)', width: '100%' }}>
                                 <i className="bi bi-plus-circle" style={{ marginRight: '6px' }}></i> Add another role
                             </button>
+
+                            <div style={{ marginBottom: '24px' }}>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-body)' }}>Instructions to Applicants</label>
+                                <textarea rows="4" value={current.instructions || ''} onChange={e => setCurrent({ ...current, instructions: e.target.value })} placeholder="How to apply, documents to attach, deadlines, equal-opportunity note, etc." style={{ width: '100%', padding: '10px', border: '1px solid var(--border)', borderRadius: '4px', fontFamily: 'inherit', fontSize: 'var(--fs-body)' }} />
+                            </div>
 
                             <div style={{ display: 'flex', flexDirection: isMobile ? 'column-reverse' : 'row', justifyContent: 'flex-end', gap: '12px' }}>
                                 <button type="button" onClick={() => setModalOpen(false)} style={{ padding: '12px 20px', border: '1px solid var(--border)', background: '#ffffff', borderRadius: '4px', cursor: 'pointer', width: isMobile ? '100%' : 'auto', fontSize: 'var(--fs-body)' }}>Cancel</button>

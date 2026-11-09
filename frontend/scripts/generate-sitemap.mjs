@@ -150,6 +150,32 @@ async function cmsTeamRoutes() {
   }
 }
 
+/** Published job adverts are individually indexable and shareable. */
+async function cmsJobRoutes() {
+  let apiBase = process.env.VITE_API_BASE_URL?.trim();
+  if (!apiBase) {
+    try {
+      const env = await readFile(resolve(root, '.env'), 'utf8');
+      apiBase = env.match(/^VITE_API_BASE_URL=(.*)$/m)?.[1]?.trim().replace(/^['"]|['"]$/g, '');
+    } catch { /* optional */ }
+  }
+  if (!apiBase || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(apiBase)) return [];
+
+  try {
+    const response = await fetch(`${apiBase.replace(/\/+$/, '')}/api/jobs`, {
+      signal: AbortSignal.timeout(15000),
+      headers: { Accept: 'application/json' },
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const jobs = await response.json();
+    if (!Array.isArray(jobs)) throw new Error('non-list response');
+    return jobs.filter((j) => j && j.id != null).map((j) => `/careers/${j.id}`);
+  } catch (error) {
+    console.warn(`[sitemap] Could not fetch job advert routes (${error.message}); skipping.`);
+    return [];
+  }
+}
+
 async function baseUrl() {
   const fromEnv = process.env.VITE_SITE_URL?.trim();
   if (fromEnv) return fromEnv.replace(/\/+$/, '');
@@ -224,6 +250,7 @@ async function main() {
   const details = await detailRoutes();
   const cmsDetails = await cmsDetailRoutes();
   const teamDetails = await cmsTeamRoutes();
+  const jobDetails = await cmsJobRoutes();
 
   const entries = [
     ...routes.map((r) => ({ ...r })),
@@ -231,6 +258,7 @@ async function main() {
     ...details.map((path) => ({ path, priority: '0.6', changefreq: 'monthly' })),
     ...cmsDetails.map((path) => ({ path, priority: '0.6', changefreq: 'monthly' })),
     ...teamDetails.map((path) => ({ path, priority: '0.5', changefreq: 'monthly' })),
+    ...jobDetails.map((path) => ({ path, priority: '0.6', changefreq: 'weekly' })),
   ].filter((entry) => !entry.path.startsWith('/admin') && entry.path !== '/404');
 
   const urls = [...new Map(entries.map((e) => [e.path, e])).values()].map((entry) => {

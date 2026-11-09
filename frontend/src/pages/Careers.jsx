@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Layout from '../components/Layout';
+import SmartLink from '../components/SmartLink';
 import PageHeader from '../components/PageHeader';
 import Seo, { BASE_JSONLD, breadcrumbJsonLd, pageJsonLd } from '../components/Seo';
 import useApi from '../hooks/useApi';
@@ -12,7 +13,6 @@ const META = PAGE_META['/careers'];
 
 export default function Careers() {
     const jobsApi = useApi('/api/jobs', []);
-    const [openJobId, setOpenJobId] = useState(null);
     const [applyModal, setApplyModal] = useState(null);
     const applyTriggerRef = useRef(null);
     const [submitting, setSubmitting] = useState(false);
@@ -72,9 +72,6 @@ export default function Careers() {
         []
     );
 
-    const toggleJob = (id) => {
-        setOpenJobId(prev => (prev === id ? null : id));
-    };
 
     const openApplyModal = (job, trigger) => {
         applyTriggerRef.current = trigger;
@@ -424,7 +421,6 @@ export default function Careers() {
                         ) : (
                             <div className="grid-3" style={{ marginBottom: '56px' }}>
                                 {jobs.map(j => {
-                                    const isOpen = openJobId === j.id;
                                     return (
                                         <article className="job-card" key={j.id}>
                                             <div style={{ marginBottom: '12px' }}>
@@ -452,44 +448,12 @@ export default function Careers() {
                                                 </div>
                                             )}
 
-                                            {isOpen && (
-                                                <div className="job-details-expanded" id={`job-details-${j.id}`}>
-                                                    {(j.roles || []).map(r => (
-                                                        <div key={r.id} style={{ marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid rgba(0,0,0,.08)' }}>
-                                                            <h4 style={{ margin: '0 0 4px' }}>{r.title}{r.location ? ' — ' + r.location : ''}</h4>
-                                                            {r.description && <p style={{ margin: '6px 0 8px' }}>{r.description}</p>}
-                                                            {r.qualifications?.length > 0 && (
-                                                                <>
-                                                                    <strong style={{ display: 'block', marginTop: '10px' }}>Qualifications</strong>
-                                                                    <ul style={{ paddingLeft: '1.2em', margin: '4px 0 0 0' }}>
-                                                                        {r.qualifications.map((q, i) => <li key={i}>{q}</li>)}
-                                                                    </ul>
-                                                                </>
-                                                            )}
-                                                            {r.preferred_experience?.length > 0 && (
-                                                                <>
-                                                                    <strong style={{ display: 'block', marginTop: '10px' }}>Preferred Experience</strong>
-                                                                    <ul style={{ paddingLeft: '1.2em', margin: '4px 0 0 0' }}>
-                                                                        {r.preferred_experience.map((p, i) => <li key={i}>{p}</li>)}
-                                                                    </ul>
-                                                                </>
-                                                            )}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
 
                                             {/* Footer actions: View Details (left) · Apply Now (right) */}
                                             <div className="job-card-actions">
-                                                <button
-                                                    className="btn job-card-view-btn"
-                                                    type="button"
-                                                    onClick={() => toggleJob(j.id)}
-                                                    aria-expanded={isOpen}
-                                                    aria-controls={`job-details-${j.id}`}
-                                                >
-                                                    {isOpen ? 'Hide Details' : 'View Details'}
-                                                </button>
+                                                <SmartLink className="btn job-card-view-btn" to={`/careers/${j.id}`}>
+                                                    View Details
+                                                </SmartLink>
                                                 <button
                                                     type="button"
                                                     className="btn job-card-apply-btn"
