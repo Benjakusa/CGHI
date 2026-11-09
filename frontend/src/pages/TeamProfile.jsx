@@ -62,7 +62,7 @@ export default function TeamProfile() {
     </header>
     <section className="section-surface" aria-live="polite">
       <div className="wrap">
-        {member ? <article className="team-profile-card">
+        {member ? <article className="team-profile-card" data-prerender-ready="true">
           <div className="team-profile-media">
             {member.image_url
               ? <SmartImage className="team-profile-photo" src={resolveAssetUrl(member.image_url)} alt={`Portrait of ${member.name}`} width="900" height="1200" />
