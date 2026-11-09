@@ -204,6 +204,7 @@ router.put('/admin/:id', auth, async (req, res, next) => {
         b.closing_date || null,
         b.document_url || '',
         b.published ? 1 : 0,
+        b.instructions || '',
         now(),
         id,
       ],
