@@ -87,13 +87,25 @@ try {
       // If the page declares a readiness signal (data-driven pages), wait for
       // it. Otherwise give the SPA a short bounded window for React to mount
       // and any immediate fetches to resolve.
-      const hasSignal = await page.evaluate(() =>
-        Boolean(document.querySelector('[data-prerender-ready]'))
-      );
-      if (hasSignal) {
-        await page.waitForSelector('[data-prerender-ready="true"]', { timeout: 20000 });
+      // Career detail pages resolve the advert from the full job list, so wait
+      // for the explicit loaded marker rather than a generic presence check.
+      if (path.startsWith('/careers/')) {
+        // The advert resolves from the full job list; wait for it but do not
+        // fail the whole build if a single advert cannot be resolved.
+        try {
+          await page.waitForSelector('[data-career-loaded="1"]', { timeout: 15000 });
+        } catch {
+          console.warn(`[prerender] career advert not resolved for ${path}`);
+        }
       } else {
-        await delay(1200);
+        const hasSignal = await page.evaluate(() =>
+          Boolean(document.querySelector('[data-prerender-ready]'))
+        );
+        if (hasSignal) {
+          await page.waitForSelector('[data-prerender-ready="true"]', { timeout: 20000 });
+        } else {
+          await delay(1200);
+        }
       }
 
       const html = (await page.content())

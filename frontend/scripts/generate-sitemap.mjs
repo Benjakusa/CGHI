@@ -169,7 +169,15 @@ async function cmsJobRoutes() {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const jobs = await response.json();
     if (!Array.isArray(jobs)) throw new Error('non-list response');
-    return jobs.filter((j) => j && j.id != null).map((j) => `/careers/${j.id}`);
+    const slugify = (t) => String(t || '')
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    return jobs
+      .filter((j) => j && slugify(j.title))
+      .map((j) => `/careers/${slugify(j.title)}`);
   } catch (error) {
     console.warn(`[sitemap] Could not fetch job advert routes (${error.message}); skipping.`);
     return [];

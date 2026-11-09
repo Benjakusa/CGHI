@@ -451,7 +451,7 @@ export default function Careers() {
 
                                             {/* Footer actions: View Details (left) · Apply Now (right) */}
                                             <div className="job-card-actions">
-                                                <SmartLink className="btn job-card-view-btn" to={`/careers/${j.id}`}>
+                                                <SmartLink className="btn job-card-view-btn" to={`/careers/${String(j.title || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}`}>
                                                     View Details
                                                 </SmartLink>
                                                 <button

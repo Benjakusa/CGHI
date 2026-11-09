@@ -4,14 +4,25 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { API_BASE } from '../context/AuthContext';
 
 const inFlight = new Map();
+const resolved = new Map();
+const RESOLVED_TTL_MS = 60000;
 
 async function getJson(path) {
   if (inFlight.has(path)) return inFlight.get(path);
+
+  // A primed request that has already finished should be reused rather than
+  // re-fetched, so pages that mount after priming read the result instantly.
+  const cached = resolved.get(path);
+  if (cached && Date.now() - cached.at < RESOLVED_TTL_MS) return cached.value;
 
   const promise = fetch(`${API_BASE}${path}`, { headers: { Accept: 'application/json' } })
     .then((response) => {
       if (!response.ok) throw new Error(`Request failed: ${response.status}`);
       return response.json();
+    })
+    .then((value) => {
+      resolved.set(path, { value, at: Date.now() });
+      return value;
     })
     .finally(() => {
       inFlight.delete(path);

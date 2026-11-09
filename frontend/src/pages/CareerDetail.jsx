@@ -15,11 +15,12 @@ const META = {
 };
 
 export default function CareerDetail() {
-  const { id } = useParams();
-  const jobApi = useApi(`/api/jobs/${id}`, null);
+  const { id: slug } = useParams();
   const allJobsApi = useApi('/api/jobs', []);
-  const job = jobApi.data;
-  const canonicalPath = `/careers/${id}`;
+  const slugify = (t) => String(t || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const jobsList = Array.isArray(allJobsApi.data) ? allJobsApi.data : [];
+  const job = jobsList.find((j) => slugify(j.title) === slug);
+  const canonicalPath = `/careers/${slug}`;
 
   const title = job ? `${job.title} | ${BRAND.abbr} Careers` : META.title;
   const description = job
@@ -31,8 +32,8 @@ export default function CareerDetail() {
 
   const otherJobs = useMemo(() => {
     const list = Array.isArray(allJobsApi.data) ? allJobsApi.data : [];
-    return list.filter((j) => String(j.id) !== String(id)).slice(0, 3);
-  }, [allJobsApi.data, id]);
+    return list.filter((j) => slugify(j.title) !== slug).slice(0, 3);
+  }, [allJobsApi.data, slug]);
 
   const jsonLd = [
     ...BASE_JSONLD,
@@ -70,7 +71,7 @@ export default function CareerDetail() {
         <div className="wrap" style={{ maxWidth: '900px' }}>
           {job ? (
             <>
-              <article className="career-detail-card" data-prerender-ready="true">
+              <article className="career-detail-card" data-prerender-ready="true" data-career-loaded={job ? "1" : undefined}>
                 <div className="career-detail-head">
                   <div style={{ minWidth: 0 }}>
                     <h1 style={{ marginBottom: '8px' }}>{job.title}</h1>
@@ -141,7 +142,7 @@ export default function CareerDetail() {
                   <h2>More open roles</h2>
                   <div className="career-more-grid">
                     {otherJobs.map((j) => (
-                      <SmartLink key={j.id} className="career-more-card" to={`/careers/${j.id}`}>
+                      <SmartLink key={j.id} className="career-more-card" to={`/careers/${slugify(j.title)}`}>
                         <span className="career-more-dept">{j.department || 'General'}</span>
                         <strong>{j.title}</strong>
                         <span className="career-more-meta">
@@ -158,7 +159,7 @@ export default function CareerDetail() {
                 </div>
               )}
             </>
-          ) : jobApi.loading ? (
+          ) : allJobsApi.loading ? (
             <p>Loading advert…</p>
           ) : (
             <div className="empty-state">
