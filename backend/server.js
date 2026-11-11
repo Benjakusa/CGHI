@@ -1,5 +1,8 @@
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
+// Prefer IPv4 so a host with no IPv6 route still connects (some dev networks
+// resolve Neon to IPv6 first and time out).
+require('node:dns').setDefaultResultOrder('ipv4first');
 const express = require('express');
 const archiver = require('archiver');
 const cors = require('cors');
