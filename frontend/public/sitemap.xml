@@ -182,32 +182,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://cghpi.org/leadership/dr-andrew-g-thaiyah</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://cghpi.org/leadership/dr-ian-njeru</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://cghpi.org/leadership/james-magige</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://cghpi.org/leadership/benard-oloo-ochieng</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://cghpi.org/careers/finance-business-development-and-grants-officer</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://cghpi.org/careers/technical-consultant</loc>
+    <loc>https://cghpi.org/careers/career-opportunity</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>

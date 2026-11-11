@@ -9,6 +9,8 @@ export default function JobApplications() {
     const [deleteConfirm, setDeleteConfirm] = useState(null);
     const [deleting, setDeleting] = useState(false);
     const [toast, setToast] = useState(null);
+    const [roleFilter, setRoleFilter] = useState('all');
+    const [selectedIds, setSelectedIds] = useState([]);
 
     useEffect(() => { loadApplications(); }, []);
 
@@ -66,6 +68,66 @@ export default function JobApplications() {
         }
     }
 
+    function toggleSelect(id) {
+        setSelectedIds((prev) => prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]);
+    }
+
+    function toggleSelectAll(visible) {
+        setSelectedIds((prev) => prev.length === visible.length ? [] : visible.map((a) => a.id));
+    }
+
+    async function downloadSelected(type) {
+        if (selectedIds.length === 0) { showToast('Select at least one applicant first', 'error'); return; }
+        try {
+            const params = new URLSearchParams({ type, ids: selectedIds.join(',') });
+            const res = await fetch(`${API_BASE}/api/job-applications/download?${params.toString()}`, {
+                headers: { 'Authorization': `Bearer ${getToken()}` },
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.error || 'Download failed');
+            }
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `applications-selected-${type}-${Date.now()}.zip`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+            showToast('Download started', 'success');
+        } catch (err) {
+            showToast('Download failed: ' + err.message, 'error');
+        }
+    }
+
+    async function downloadArchive(type) {
+        try {
+            const params = new URLSearchParams({ type });
+            if (roleFilter !== 'all') params.set('role', roleFilter);
+            const res = await fetch(`${API_BASE}/api/job-applications/download?${params.toString()}`, {
+                headers: { 'Authorization': `Bearer ${getToken()}` },
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.error || 'Download failed');
+            }
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `applications-${type}-${Date.now()}.zip`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+            showToast('Download started', 'success');
+        } catch (err) {
+            showToast('Download failed: ' + err.message, 'error');
+        }
+    }
+
     function formatDate(dateStr) {
         if (!dateStr) return '-';
         try {
@@ -75,6 +137,19 @@ export default function JobApplications() {
             });
         } catch { return dateStr; }
     }
+
+    const roleOf = (app) => app.role_title || app.roleTitle || app.jobTitle || '—';
+
+    const roleOptions = [...new Set(applications.map(roleOf))].sort((a, b) => a.localeCompare(b));
+
+    const visibleApplications = (roleFilter === 'all'
+        ? applications
+        : applications.filter((app) => roleOf(app) === roleFilter)
+    ).slice().sort((a, b) => {
+        const roleCmp = roleOf(a).localeCompare(roleOf(b));
+        if (roleCmp !== 0) return roleCmp;
+        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+    });
 
     if (loading) {
         return (
@@ -138,28 +213,92 @@ export default function JobApplications() {
                     <p style={{ margin: '8px 0 0' }}>Job applications will appear here once candidates start applying.</p>
                 </div>
             ) : (
+                <>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap' }}>
+                    <label htmlFor="role-filter" style={{ fontWeight: 'var(--fw-semibold)', fontSize: 'var(--fs-small)' }}>Filter by role</label>
+                    <select
+                        id="role-filter"
+                        value={roleFilter}
+                        onChange={(e) => { setRoleFilter(e.target.value); setSelectedIds([]); }}
+                        style={{ padding: '8px 12px', border: '1px solid var(--border)', borderRadius: '6px', fontSize: 'var(--fs-small)', minWidth: '240px' }}
+                    >
+                        <option value="all">All roles ({applications.length})</option>
+                        {roleOptions.map((role) => (
+                            <option key={role} value={role}>{role}</option>
+                        ))}
+                    </select>
+                    <button
+                        type="button"
+                        onClick={() => downloadArchive('cv')}
+                        style={{ padding: '8px 14px', border: '1px solid var(--border)', borderRadius: '6px', background: 'var(--white)', cursor: 'pointer', fontSize: 'var(--fs-small)', fontWeight: 'var(--fw-semibold)' }}
+                    >
+                        <i className="bi bi-file-earmark-arrow-down" style={{ marginRight: '6px' }}></i> Download CVs
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => downloadArchive('cover_letter')}
+                        style={{ padding: '8px 14px', border: '1px solid var(--border)', borderRadius: '6px', background: 'var(--white)', cursor: 'pointer', fontSize: 'var(--fs-small)', fontWeight: 'var(--fw-semibold)' }}
+                    >
+                        <i className="bi bi-file-earmark-arrow-down" style={{ marginRight: '6px' }}></i> Download Cover Letters
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => downloadSelected('cv')}
+                        disabled={selectedIds.length === 0}
+                        style={{ padding: '8px 14px', border: '1px solid var(--border)', borderRadius: '6px', background: 'var(--white)', cursor: selectedIds.length === 0 ? 'not-allowed' : 'pointer', fontSize: 'var(--fs-small)', fontWeight: 'var(--fw-semibold)', opacity: selectedIds.length === 0 ? 0.5 : 1 }}
+                    >
+                        Download selected CVs ({selectedIds.length})
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => downloadSelected('cover_letter')}
+                        disabled={selectedIds.length === 0}
+                        style={{ padding: '8px 14px', border: '1px solid var(--border)', borderRadius: '6px', background: 'var(--white)', cursor: selectedIds.length === 0 ? 'not-allowed' : 'pointer', fontSize: 'var(--fs-small)', fontWeight: 'var(--fw-semibold)', opacity: selectedIds.length === 0 ? 0.5 : 1 }}
+                    >
+                        Download selected cover letters ({selectedIds.length})
+                    </button>
+                </div>
+
                 <div className="careers-table-wrapper">
                     <table className="applications-table">
                         <thead>
                             <tr>
+                                <th style={{ width: '40px' }}>
+                                    <input
+                                        type="checkbox"
+                                        aria-label="Select all visible applications"
+                                        checked={visibleApplications.length > 0 && selectedIds.length === visibleApplications.length}
+                                        onChange={() => toggleSelectAll(visibleApplications)}
+                                    />
+                                </th>
                                 <th>#</th>
                                 <th>Applicant Name</th>
                                 <th>Email</th>
                                 <th>Phone</th>
                                 <th>Job Title</th>
+                                <th>Role Applied</th>
                                 <th>Documents</th>
                                 <th>Submitted</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {applications.map(app => (
+                            {visibleApplications.map(app => (
                                 <tr key={app.id}>
+                                    <td>
+                                        <input
+                                            type="checkbox"
+                                            aria-label={`Select application from ${app.name}`}
+                                            checked={selectedIds.includes(app.id)}
+                                            onChange={() => toggleSelect(app.id)}
+                                        />
+                                    </td>
                                     <td style={{ color: 'var(--ink-muted)', fontFamily: 'var(--mono)', fontSize: 'var(--fs-small)' }}>#{app.id}</td>
                                     <td><strong>{app.name}</strong></td>
                                     <td><a href={`mailto:${app.email}`} style={{ color: 'var(--sky)', textDecoration: 'none' }}>{app.email}</a></td>
                                     <td style={{ fontFamily: 'var(--mono)', fontSize: 'var(--fs-small)' }}>{app.phone}</td>
                                     <td>{app.jobTitle}</td>
+                                    <td>{app.role_title || app.roleTitle || '—'}</td>
                                     <td>
                                         {app.cover_letter_url && (
                                             <a className="doc-link" href={resolveAssetUrl(app.cover_letter_url)} target="_blank" rel="noopener noreferrer"
@@ -198,6 +337,7 @@ export default function JobApplications() {
                         </tbody>
                     </table>
                 </div>
+                </>
             )}
         </DashboardLayout>
     );

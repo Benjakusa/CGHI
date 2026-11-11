@@ -1,10 +1,11 @@
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
+const archiver = require('archiver');
 const cors = require('cors');
 const multer = require('multer');
 const crypto = require('crypto');
-const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
 
 if (!process.env.JWT_SECRET) {
   console.error('[CGHPI API] WARNING: JWT_SECRET is not set. Authenticated endpoints will refuse requests.');
@@ -237,6 +238,87 @@ app.get('/api/job-applications', authMiddleware, async (req, res, next) => {
     }));
     res.json(result);
   } catch (e) { next(e); }
+});
+
+/**
+ * Bulk download applications as a zip.
+ * Query: type=cv|cover_letter|all (default cv), role=<optional role_title filter>
+ * Files are stored as {Role}/{Applicant}-{Type}.{ext} so the archive is grouped by role.
+ */
+app.get('/api/job-applications/download', authMiddleware, async (req, res, next) => {
+  try {
+    const type = String(req.query.type || 'cv');
+    const role = req.query.role && req.query.role !== 'all' ? String(req.query.role) : null;
+    const ids = req.query.ids
+      ? String(req.query.ids).split(',').map((v) => Number(v)).filter((n) => Number.isFinite(n))
+      : null;
+
+    let rows;
+    if (ids && ids.length > 0) {
+      rows = await db.all(
+        `SELECT * FROM job_applications WHERE id = ANY($1::bigint[]) ORDER BY role_title, name`,
+        [ids]
+      );
+    } else if (role) {
+      rows = await db.all(
+        'SELECT * FROM job_applications WHERE role_title = $1 ORDER BY role_title, name',
+        [role]
+      );
+    } else {
+      rows = await db.all('SELECT * FROM job_applications ORDER BY role_title, name');
+    }
+
+    const pickUrls = (app) => {
+      if (type === 'cover_letter') return app.cover_letter_url ? [{ url: app.cover_letter_url, label: 'Cover-Letter' }] : [];
+      if (type === 'all') {
+        const out = [];
+        if (app.cover_letter_url) out.push({ url: app.cover_letter_url, label: 'Cover-Letter' });
+        if (app.cv_url) out.push({ url: app.cv_url, label: 'CV' });
+        return out;
+      }
+      return app.cv_url ? [{ url: app.cv_url, label: 'CV' }] : [];
+    };
+
+    const prefix = (process.env.R2_PUBLIC_BASE || '').replace(/\/+$/, '') + '/';
+    const safe = (v) => String(v || 'unknown').replace(/[^a-z0-9._-]+/gi, '-').replace(/^-+|-+$/g, '');
+
+    const archive = archiver('zip', { zlib: { level: 6 } });
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="applications-${type}-${Date.now()}.zip"`);
+    archive.on('error', (err) => next(err));
+    archive.pipe(res);
+
+    let added = 0;
+    for (const app of rows) {
+      for (const file of pickUrls(app)) {
+        if (!file.url.startsWith(prefix)) continue;
+        const key = file.url.slice(prefix.length);
+        try {
+          const object = await r2.send(new GetObjectCommand({ Bucket: process.env.R2_BUCKET, Key: key }));
+          const chunks = [];
+          for await (const chunk of object.Body) chunks.push(chunk);
+          const buffer = Buffer.concat(chunks);
+          const ext = key.slice(key.lastIndexOf('.'));
+          const folder = safe(app.role_title || app.job_title || 'General');
+          const filename = `${safe(app.name)}-${file.label}${ext}`;
+          archive.append(buffer, { name: `${folder}/${filename}` });
+          added += 1;
+        } catch (e) {
+          console.error('[CGHPI API] zip fetch failed for', key, '-', e.message);
+        }
+      }
+    }
+
+    if (added === 0) {
+      archive.abort();
+      if (!res.headersSent) res.status(404).json({ error: 'No matching files to download.' });
+      return;
+    }
+
+    await archive.finalize();
+  } catch (e) {
+    next(e);
+  }
 });
 
 app.delete('/api/job-applications/:id', authMiddleware, async (req, res, next) => {

@@ -33,9 +33,9 @@ RewriteRule '(^|/)\.(git|env|htaccess)' - [F,L]
 #    React renders, captured at build time from every sitemap route. These
 #    snapshots include the page body, metadata, canonical URL and JSON-LD.
 #    Human visitors continue to use the normal SPA below.
-RewriteCond %{HTTP_USER_AGENT} (bot|crawler|spider|slurp|preview|fetcher|ChatGPT-User|Claude-User|Perplexity) [NC]
+RewriteCond %{HTTP_USER_AGENT} (bot|crawler|spider|slurp|preview|fetcher|WhatsApp|facebookexternalhit|Facebot|ChatGPT-User|Claude-User|Perplexity) [NC]
 RewriteRule ^$ /seo-prerender/index.html [END]
-RewriteCond %{HTTP_USER_AGENT} (bot|crawler|spider|slurp|preview|fetcher|ChatGPT-User|Claude-User|Perplexity) [NC]
+RewriteCond %{HTTP_USER_AGENT} (bot|crawler|spider|slurp|preview|fetcher|WhatsApp|facebookexternalhit|Facebot|ChatGPT-User|Claude-User|Perplexity) [NC]
 RewriteCond %{REQUEST_URI} ^/(.+?)/?$
 RewriteCond %{DOCUMENT_ROOT}/seo-prerender/%1.html -f
 RewriteRule ^ /seo-prerender/%1.html [END]

@@ -8,6 +8,7 @@ import { primeApi } from './hooks/useApi'
 // available (or in flight) by the time <Home /> first renders.
 primeApi('/api/heroes')
 primeApi('/api/jobs')
+primeApi('/api/news')
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

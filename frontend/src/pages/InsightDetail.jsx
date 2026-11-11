@@ -193,6 +193,7 @@ export default function InsightDetail() {
     );
   }
 
+
   if (!article) {
     return (
       <Layout navId="insights">
@@ -215,5 +216,5 @@ export default function InsightDetail() {
     );
   }
 
-  return <ArticleBody article={article} all={all} />;
+  return <div data-insight-loaded="1"><ArticleBody article={article} all={all} /></div>;
 }

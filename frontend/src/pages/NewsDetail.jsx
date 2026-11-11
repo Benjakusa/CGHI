@@ -75,7 +75,8 @@ export default function NewsDetail() {
     requestAnimationFrame(() => document.getElementById('news-article')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' }));
   }, [article]);
   return <Layout navId="insights">
-    {article && <Seo title={`${article.title} | ${BRAND.abbr}`} description={article.excerpt} path={`/news/${article.slug}`} type="article" image={article.cover_image || article.image_url} imageAlt={article.title} author={article.author} />}
+    {article && <span data-news-loaded="1" hidden />}
+            {article && <Seo title={`${article.title} | ${BRAND.abbr}`} description={article.excerpt} path={`/news/${article.slug}`} type="article" image={article.cover_image || article.image_url} imageAlt={article.title} author={article.author} />}
     <main id="news-article" className="news-wrap news-permalink">
       {article ? <><ArticleView article={article} expanded />
         <NewsComments key={article.slug} slug={article.slug} />

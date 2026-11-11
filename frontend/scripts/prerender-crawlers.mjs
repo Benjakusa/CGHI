@@ -89,7 +89,13 @@ try {
       // and any immediate fetches to resolve.
       // Career detail pages resolve the advert from the full job list, so wait
       // for the explicit loaded marker rather than a generic presence check.
-      if (path.startsWith('/careers/')) {
+      if (path.startsWith('/news/') || path.startsWith('/insights/')) {
+        try {
+          await page.waitForSelector('[data-news-loaded="1"], [data-insight-loaded="1"]', { timeout: 15000 });
+        } catch {
+          console.warn(`[prerender] news article not resolved for ${path}`);
+        }
+      } else if (path.startsWith('/careers/')) {
         // The advert resolves from the full job list; wait for it but do not
         // fail the whole build if a single advert cannot be resolved.
         try {
